@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    /* Sudoku specific variables */
+    --cell-bg: 0 0% 100%;
+    --cell-border: 214.3 31.8% 91.4%;
+    --cell-highlight: 210 40% 96.1%;
+    --cell-selected: 221.2 83.2% 95%;
+    --conflict: 0 84.2% 60.2%;
+    --candidate-color: 215.4 16.3% 46.9%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    /* Sudoku specific variables - dark mode */
+    --cell-bg: 217.2 32.6% 17.5%;
+    --cell-border: 217.2 32.6% 30%;
+    --cell-highlight: 217.2 32.6% 25%;
+    --cell-selected: 217.2 91.2% 20%;
+    --conflict: 0 62.8% 30.6%;
+    --candidate-color: 215 20.2% 65.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .sudoku-cell {
+    @apply aspect-square flex items-center justify-center;
+    @apply border transition-colors duration-100;
+    background-color: hsl(var(--cell-bg));
+    border-color: hsl(var(--cell-border));
+  }
+
+  .sudoku-cell-initial {
+    @apply font-bold text-foreground bg-muted;
+  }
+
+  .sudoku-cell-selected {
+    @apply ring-2 ring-primary;
+    background-color: hsl(var(--cell-selected));
+  }
+
+  .sudoku-cell-highlighted {
+    background-color: hsl(var(--cell-highlight));
+  }
+
+  .sudoku-cell-conflict {
+    @apply text-destructive;
+    background-color: hsl(var(--conflict) / 0.2);
+  }
+
+  .sudoku-cell:not(.sudoku-cell-initial):hover {
+    background-color: hsl(var(--accent) / 0.5);
+  }
+}
