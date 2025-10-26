@@ -11,7 +11,9 @@ export function ActionBar() {
     reset,
     togglePause,
     toggleShowConflicts,
+    toggleShowCandidates,
     showConflicts,
+    showCandidates,
     isPaused,
     history,
     historyIndex,
@@ -113,6 +115,18 @@ export function ActionBar() {
               title="Get a hint"
             >
               💡 Hint
+            </button>
+
+            <button
+              onClick={toggleShowCandidates}
+              className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
+                showCandidates
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-accent"
+              }`}
+              title="Toggle candidate display"
+            >
+              {showCandidates ? "✓" : ""} Candidates
             </button>
 
             <button

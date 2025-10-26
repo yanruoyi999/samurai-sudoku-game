@@ -7,6 +7,7 @@ import { SamuraiBoard } from "@/components/sudoku/SamuraiBoard";
 import { ActionBar } from "@/components/sudoku/ActionBar";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
 import { NumberPad } from "@/components/sudoku/NumberPad";
+import { StatsPanel } from "@/components/sudoku/StatsPanel";
 import Link from "next/link";
 
 export default function SamuraiGamePage() {
@@ -61,7 +62,11 @@ export default function SamuraiGamePage() {
           </div>
         )}
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Stats Panel */}
+          <StatsPanel />
+
+          {/* Game Board */}
           <SamuraiBoard />
         </div>
       </main>

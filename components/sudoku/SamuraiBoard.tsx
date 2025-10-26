@@ -11,6 +11,7 @@ export function SamuraiBoard() {
     initial,
     selectedCell,
     showConflicts,
+    showCandidates,
     engine,
     selectCell,
     setCell,
@@ -123,6 +124,9 @@ export function SamuraiBoard() {
             );
           }
 
+          // Get candidates for this cell
+          const candidates = engine?.getCandidates(pos);
+
           return (
             <Cell
               key={`${row}-${col}`}
@@ -134,6 +138,8 @@ export function SamuraiBoard() {
               }
               isHighlighted={isCellHighlighted(pos)}
               hasConflict={hasCellConflict(pos)}
+              candidates={candidates}
+              showCandidates={showCandidates}
               onClick={() => handleCellClick(pos)}
             />
           );
