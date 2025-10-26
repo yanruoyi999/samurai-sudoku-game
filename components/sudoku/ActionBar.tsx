@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
+import { SudokuSolver } from "@/lib/sudoku/solver";
 
 export function ActionBar() {
   const {
@@ -14,7 +16,11 @@ export function ActionBar() {
     history,
     historyIndex,
     engine,
+    incrementHints,
+    selectCell,
   } = useSudokuStore();
+
+  const [hintMessage, setHintMessage] = useState<string | null>(null);
 
   const canUndo = historyIndex >= 0;
   const canRedo = historyIndex < history.length - 1;
@@ -29,9 +35,41 @@ export function ActionBar() {
     return engine?.getCompletionPercentage() || 0;
   };
 
+  const handleGetHint = () => {
+    if (!engine) return;
+
+    const solver = new SudokuSolver(engine);
+    const hint = solver.getHint();
+
+    if (hint) {
+      incrementHints();
+      selectCell(hint.position);
+
+      const messages = {
+        'naked-single': `This cell can only be ${hint.value} (naked single)`,
+        'hidden-single': `${hint.value} can only go here in this row/column/box`,
+      };
+
+      setHintMessage(messages[hint.type as keyof typeof messages] || 'Try this cell');
+
+      // Clear hint message after 5 seconds
+      setTimeout(() => setHintMessage(null), 5000);
+    } else {
+      setHintMessage('No obvious hints available. Try exploring candidates!');
+      setTimeout(() => setHintMessage(null), 3000);
+    }
+  };
+
   return (
     <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-3">
+        {/* Hint Message */}
+        {hintMessage && (
+          <div className="mb-3 p-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 rounded text-sm text-center">
+            💡 {hintMessage}
+          </div>
+        )}
+
         {/* Progress Bar */}
         <div className="mb-3">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
@@ -69,6 +107,14 @@ export function ActionBar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleGetHint}
+              className="px-3 py-2 text-sm font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+              title="Get a hint"
+            >
+              💡 Hint
+            </button>
+
             <button
               onClick={toggleShowConflicts}
               className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${

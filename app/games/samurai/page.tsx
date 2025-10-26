@@ -6,6 +6,7 @@ import { SAMPLE_PUZZLE } from "@/lib/sudoku/sample-puzzle";
 import { SamuraiBoard } from "@/components/sudoku/SamuraiBoard";
 import { ActionBar } from "@/components/sudoku/ActionBar";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
+import { NumberPad } from "@/components/sudoku/NumberPad";
 import Link from "next/link";
 
 export default function SamuraiGamePage() {
@@ -64,6 +65,11 @@ export default function SamuraiGamePage() {
           <SamuraiBoard />
         </div>
       </main>
+
+      {/* Mobile Number Pad */}
+      <div className="md:hidden">
+        <NumberPad showCandidates />
+      </div>
 
       {/* Action Bar */}
       <ActionBar />
