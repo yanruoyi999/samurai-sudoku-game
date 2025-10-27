@@ -1,0 +1,90 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "backToHome": "← 返回首页",
+    "language": "语言"
+  },
+  "game": {
+    "title": "武士数独",
+    "puzzle": "谜题",
+    "difficulty": {
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难",
+      "label": "难度"
+    },
+    "completed": "🎉 恭喜！您已完成这个谜题！",
+    "loadingPuzzle": "加载谜题中...",
+    "puzzleNotFound": "未找到谜题"
+  },
+  "stats": {
+    "time": "时间",
+    "progress": "进度",
+    "hints": "提示",
+    "moves": "移动"
+  },
+  "actions": {
+    "newGame": "新游戏",
+    "undo": "撤销",
+    "redo": "重做",
+    "hint": "提示",
+    "candidates": "候选",
+    "conflicts": "冲突",
+    "clear": "清空",
+    "erase": "⌫",
+    "pause": "暂停",
+    "resume": "继续"
+  },
+  "hints": {
+    "noHint": "没有可用的提示。尝试使用撤销按钮或清除一些单元格。",
+    "nakedSingle": "这个单元格只能是 {value}。所有其他数字已在其行、列或宫格中使用。",
+    "hiddenSingle": "在这个{unit}中，数字 {value} 只能放在这个单元格。",
+    "units": {
+      "row": "行",
+      "column": "列",
+      "box": "宫格"
+    }
+  },
+  "archive": {
+    "title": "谜题归档",
+    "description": "浏览并游玩所有可用的武士数独谜题",
+    "filters": {
+      "all": "全部",
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难"
+    },
+    "table": {
+      "id": "谜题 ID",
+      "difficulty": "难度",
+      "estimatedTime": "预计时间",
+      "tags": "标签",
+      "action": "操作"
+    },
+    "play": "开始",
+    "noResults": "未找到谜题。",
+    "pagination": {
+      "previous": "← 上一页",
+      "next": "下一页 →",
+      "showing": "显示第 {start}-{end} 个，共 {total} 个谜题"
+    }
+  },
+  "home": {
+    "welcome": "欢迎来到武士数独",
+    "description": "体验终极数独挑战，五个互连的网格",
+    "playNow": "立即开始",
+    "browseArchive": "浏览归档",
+    "features": {
+      "title": "特性",
+      "intelligent": "智能提示",
+      "intelligentDesc": "获得策略指导而不破坏解决方案",
+      "candidates": "候选标记",
+      "candidatesDesc": "通过自动候选检测可视化可能的数字",
+      "progress": "进度追踪",
+      "progressDesc": "监控您的时间、移动和完成率",
+      "mobile": "移动优化",
+      "mobileDesc": "在任何设备上都有流畅的游戏体验和触控友好的控制"
+    }
+  }
+}

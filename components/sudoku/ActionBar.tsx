@@ -3,8 +3,13 @@
 import { useState } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
+import { useTranslations } from 'next-intl';
 
 export function ActionBar() {
+  const t = useTranslations('actions');
+  const tStats = useTranslations('stats');
+  const tHints = useTranslations('hints');
+
   const {
     undo,
     redo,
@@ -48,8 +53,8 @@ export function ActionBar() {
       selectCell(hint.position);
 
       const messages = {
-        'naked-single': `This cell can only be ${hint.value} (naked single)`,
-        'hidden-single': `${hint.value} can only go here in this row/column/box`,
+        'naked-single': tHints('nakedSingle', { value: hint.value }),
+        'hidden-single': tHints('hiddenSingle', { value: hint.value, unit: '' }),
       };
 
       setHintMessage(messages[hint.type as keyof typeof messages] || 'Try this cell');
@@ -57,7 +62,7 @@ export function ActionBar() {
       // Clear hint message after 5 seconds
       setTimeout(() => setHintMessage(null), 5000);
     } else {
-      setHintMessage('No obvious hints available. Try exploring candidates!');
+      setHintMessage(tHints('noHint'));
       setTimeout(() => setHintMessage(null), 3000);
     }
   };
@@ -75,7 +80,7 @@ export function ActionBar() {
         {/* Progress Bar */}
         <div className="mb-3">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-            <span>Progress</span>
+            <span>{tStats('progress')}</span>
             <span>{getCompletionPercentage()}%</span>
           </div>
           <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
@@ -95,7 +100,7 @@ export function ActionBar() {
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               title="Undo (Ctrl+Z)"
             >
-              ↶ Undo
+              ↶ {t('undo')}
             </button>
 
             <button
@@ -104,7 +109,7 @@ export function ActionBar() {
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               title="Redo (Ctrl+Y)"
             >
-              ↷ Redo
+              ↷ {t('redo')}
             </button>
           </div>
 
@@ -114,7 +119,7 @@ export function ActionBar() {
               className="px-3 py-2 text-sm font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               title="Get a hint"
             >
-              💡 Hint
+              💡 {t('hint')}
             </button>
 
             <button
@@ -126,7 +131,7 @@ export function ActionBar() {
               }`}
               title="Toggle candidate display"
             >
-              {showCandidates ? "✓" : ""} Candidates
+              {showCandidates ? "✓" : ""} {t('candidates')}
             </button>
 
             <button
@@ -138,7 +143,7 @@ export function ActionBar() {
               }`}
               title="Toggle conflict highlighting"
             >
-              {showConflicts ? "✓" : ""} Conflicts
+              {showConflicts ? "✓" : ""} {t('conflicts')}
             </button>
 
             <button
@@ -146,7 +151,7 @@ export function ActionBar() {
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors"
               title="Pause timer"
             >
-              {isPaused ? "▶️ Resume" : "⏸️ Pause"}
+              {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}
             </button>
 
             <button
@@ -154,7 +159,7 @@ export function ActionBar() {
               className="px-3 py-2 text-sm font-medium rounded-md border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
               title="Reset puzzle"
             >
-              🔄 Reset
+              🔄 {t('newGame')}
             </button>
           </div>
         </div>

@@ -2,8 +2,12 @@
 
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { formatTime } from "@/lib/utils";
+import { useTranslations } from 'next-intl';
 
 export function StatsPanel() {
+  const t = useTranslations('stats');
+  const tGame = useTranslations('game');
+
   const {
     elapsedTime,
     hintsUsed,
@@ -15,35 +19,39 @@ export function StatsPanel() {
   const completion = engine?.getCompletionPercentage() || 0;
   const movesCount = history.length;
 
+  const getDifficultyTranslation = (diff: string) => {
+    return tGame(`difficulty.${diff}`);
+  };
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg">
       <StatItem
-        label="Time"
+        label={t('time')}
         value={formatTime(elapsedTime)}
         icon="⏱️"
       />
 
       <StatItem
-        label="Progress"
+        label={t('progress')}
         value={`${completion}%`}
         icon="📊"
       />
 
       <StatItem
-        label="Hints"
+        label={t('hints')}
         value={hintsUsed.toString()}
         icon="💡"
       />
 
       <StatItem
-        label="Moves"
+        label={t('moves')}
         value={movesCount.toString()}
         icon="🎯"
       />
 
       {difficulty && (
         <div className="col-span-2 md:col-span-4 text-center text-sm text-muted-foreground">
-          Difficulty: <span className="font-semibold capitalize">{difficulty}</span>
+          {tGame('difficulty.label')}: <span className="font-semibold capitalize">{getDifficultyTranslation(difficulty)}</span>
         </div>
       )}
     </div>

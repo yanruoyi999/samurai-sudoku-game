@@ -1,0 +1,90 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "backToHome": "← Back to Home",
+    "language": "Language"
+  },
+  "game": {
+    "title": "Samurai Sudoku",
+    "puzzle": "Puzzle",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "label": "Difficulty"
+    },
+    "completed": "🎉 Congratulations! You solved the puzzle!",
+    "loadingPuzzle": "Loading puzzle...",
+    "puzzleNotFound": "Puzzle not found"
+  },
+  "stats": {
+    "time": "Time",
+    "progress": "Progress",
+    "hints": "Hints",
+    "moves": "Moves"
+  },
+  "actions": {
+    "newGame": "New Game",
+    "undo": "Undo",
+    "redo": "Redo",
+    "hint": "Hint",
+    "candidates": "Candidates",
+    "conflicts": "Conflicts",
+    "clear": "Clear",
+    "erase": "⌫",
+    "pause": "Pause",
+    "resume": "Resume"
+  },
+  "hints": {
+    "noHint": "No hints available. Try using the undo button or clearing some cells.",
+    "nakedSingle": "This cell can only be {value}. All other numbers are already used in its row, column, or box.",
+    "hiddenSingle": "In this {unit}, the number {value} can only go in this cell.",
+    "units": {
+      "row": "row",
+      "column": "column",
+      "box": "box"
+    }
+  },
+  "archive": {
+    "title": "Puzzle Archive",
+    "description": "Browse and play all available Samurai Sudoku puzzles",
+    "filters": {
+      "all": "All",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "table": {
+      "id": "Puzzle ID",
+      "difficulty": "Difficulty",
+      "estimatedTime": "Est. Time",
+      "tags": "Tags",
+      "action": "Action"
+    },
+    "play": "Play",
+    "noResults": "No puzzles found.",
+    "pagination": {
+      "previous": "← Previous",
+      "next": "Next →",
+      "showing": "Showing {start}-{end} of {total} puzzles"
+    }
+  },
+  "home": {
+    "welcome": "Welcome to Samurai Sudoku",
+    "description": "Experience the ultimate Sudoku challenge with 5 interconnected grids",
+    "playNow": "Play Now",
+    "browseArchive": "Browse Archive",
+    "features": {
+      "title": "Features",
+      "intelligent": "Intelligent Hints",
+      "intelligentDesc": "Get strategic guidance without spoiling the solution",
+      "candidates": "Candidate Marking",
+      "candidatesDesc": "Visualize possible numbers with automatic candidate detection",
+      "progress": "Progress Tracking",
+      "progressDesc": "Monitor your time, moves, and completion rate",
+      "mobile": "Mobile Optimized",
+      "mobileDesc": "Seamless gameplay on any device with touch-friendly controls"
+    }
+  }
+}
