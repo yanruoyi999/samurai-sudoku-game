@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { getTodayDate } from "@/lib/utils";
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getTranslations('home');
+  const tGame = await getTranslations('game');
+  const tArchive = await getTranslations('archive');
+
   const today = getTodayDate();
 
   return (
@@ -10,11 +16,11 @@ export default function HomePage() {
       <section className="flex-1 flex items-center justify-center px-4 py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            Samurai Sudoku
+            {tGame('title')}
           </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-            Challenge yourself with the ultimate Sudoku puzzle. Five 9×9 grids interconnected in perfect harmony.
+            {t('description')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
@@ -22,14 +28,14 @@ export default function HomePage() {
               href="/games/samurai"
               className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
             >
-              Play Today's Puzzle
+              {t('playNow')}
             </Link>
 
             <Link
               href="/games/samurai/archive"
               className="px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold text-lg hover:bg-primary/10 transition-colors"
             >
-              Browse Archive
+              {t('browseArchive')}
             </Link>
           </div>
 
@@ -37,18 +43,18 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16">
             <FeatureCard
               icon="📱"
-              title="Offline Support"
-              description="Play anytime, anywhere. Your progress is saved locally."
+              title={t('features.offline')}
+              description={t('features.offlineDesc')}
             />
             <FeatureCard
               icon="💡"
-              title="Smart Hints"
-              description="Get intelligent hints when you're stuck, with detailed explanations."
+              title={t('features.intelligent')}
+              description={t('features.intelligentDesc')}
             />
             <FeatureCard
               icon="📊"
-              title="Track Progress"
-              description="Monitor your completion time, hints used, and improvement over time."
+              title={t('features.progress')}
+              description={t('features.progressDesc')}
             />
           </div>
         </div>
@@ -56,7 +62,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t text-center text-sm text-muted-foreground">
-        <p>© 2025 Samurai Sudoku. Daily puzzles for puzzle enthusiasts.</p>
+        <p>{t('footer')}</p>
       </footer>
     </main>
   );

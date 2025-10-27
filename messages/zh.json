@@ -15,7 +15,7 @@
       "label": "难度"
     },
     "completed": "🎉 恭喜！您已完成这个谜题！",
-    "loadingPuzzle": "加载谜题中...",
+    "loadingPuzzle": "加载谜题中",
     "puzzleNotFound": "未找到谜题"
   },
   "stats": {
@@ -49,6 +49,8 @@
   "archive": {
     "title": "谜题归档",
     "description": "浏览并游玩所有可用的武士数独谜题",
+    "playToday": "今日谜题",
+    "browseMore": "浏览更多谜题",
     "filters": {
       "all": "全部",
       "easy": "简单",
@@ -67,22 +69,27 @@
     "pagination": {
       "previous": "← 上一页",
       "next": "下一页 →",
+      "page": "第",
+      "of": "页，共",
       "showing": "显示第 {start}-{end} 个，共 {total} 个谜题"
     }
   },
   "home": {
     "welcome": "欢迎来到武士数独",
-    "description": "体验终极数独挑战，五个互连的网格",
-    "playNow": "立即开始",
+    "description": "挑战终极数独谜题。五个 9×9 网格完美互连。",
+    "playNow": "今日谜题",
     "browseArchive": "浏览归档",
+    "footer": "© 2025 武士数独。为数独爱好者提供每日谜题。",
     "features": {
       "title": "特性",
+      "offline": "离线支持",
+      "offlineDesc": "随时随地游玩。您的进度保存在本地。",
       "intelligent": "智能提示",
-      "intelligentDesc": "获得策略指导而不破坏解决方案",
+      "intelligentDesc": "在遇到困难时获得智能提示和详细解释。",
       "candidates": "候选标记",
       "candidatesDesc": "通过自动候选检测可视化可能的数字",
       "progress": "进度追踪",
-      "progressDesc": "监控您的时间、移动和完成率",
+      "progressDesc": "监控完成时间、使用的提示和进步情况。",
       "mobile": "移动优化",
       "mobileDesc": "在任何设备上都有流畅的游戏体验和触控友好的控制"
     }

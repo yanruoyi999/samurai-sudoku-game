@@ -49,6 +49,8 @@
   "archive": {
     "title": "Puzzle Archive",
     "description": "Browse and play all available Samurai Sudoku puzzles",
+    "playToday": "Play Today's Puzzle",
+    "browseMore": "Browse More Puzzles",
     "filters": {
       "all": "All",
       "easy": "Easy",
@@ -67,22 +69,27 @@
     "pagination": {
       "previous": "← Previous",
       "next": "Next →",
+      "page": "Page",
+      "of": "of",
       "showing": "Showing {start}-{end} of {total} puzzles"
     }
   },
   "home": {
     "welcome": "Welcome to Samurai Sudoku",
-    "description": "Experience the ultimate Sudoku challenge with 5 interconnected grids",
-    "playNow": "Play Now",
+    "description": "Challenge yourself with the ultimate Sudoku puzzle. Five 9×9 grids interconnected in perfect harmony.",
+    "playNow": "Play Today's Puzzle",
     "browseArchive": "Browse Archive",
+    "footer": "© 2025 Samurai Sudoku. Daily puzzles for puzzle enthusiasts.",
     "features": {
       "title": "Features",
-      "intelligent": "Intelligent Hints",
-      "intelligentDesc": "Get strategic guidance without spoiling the solution",
+      "offline": "Offline Support",
+      "offlineDesc": "Play anytime, anywhere. Your progress is saved locally.",
+      "intelligent": "Smart Hints",
+      "intelligentDesc": "Get intelligent hints when you're stuck, with detailed explanations.",
       "candidates": "Candidate Marking",
       "candidatesDesc": "Visualize possible numbers with automatic candidate detection",
-      "progress": "Progress Tracking",
-      "progressDesc": "Monitor your time, moves, and completion rate",
+      "progress": "Track Progress",
+      "progressDesc": "Monitor your completion time, hints used, and improvement over time.",
       "mobile": "Mobile Optimized",
       "mobileDesc": "Seamless gameplay on any device with touch-friendly controls"
     }

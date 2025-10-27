@@ -8,9 +8,13 @@ import { SamuraiBoard } from "@/components/sudoku/SamuraiBoard";
 import { ActionBar } from "@/components/sudoku/ActionBar";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
 import { NumberPad } from "@/components/sudoku/NumberPad";
+import { useTranslations } from 'next-intl';
 import Link from "next/link";
 
 export default function PuzzlePage() {
+  const t = useTranslations('game');
+  const tArchive = useTranslations('archive');
+
   const params = useParams();
   const puzzleId = params.id as string;
   const { puzzleId: currentPuzzleId, loadPuzzle, status } = useSudokuStore();
@@ -54,7 +58,7 @@ export default function PuzzlePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading puzzle {puzzleId}...</p>
+          <p className="text-muted-foreground">{t('loadingPuzzle')}...</p>
         </div>
       </div>
     );
@@ -65,20 +69,20 @@ export default function PuzzlePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-2xl font-bold mb-2">Puzzle Not Found</h1>
+          <h1 className="text-2xl font-bold mb-2">{t('puzzleNotFound')}</h1>
           <p className="text-muted-foreground mb-6">{error}</p>
           <div className="flex gap-4 justify-center">
             <Link
               href="/games/samurai/archive"
               className="px-4 py-2 border rounded hover:bg-accent transition-colors"
             >
-              Browse Archive
+              {tArchive('title')}
             </Link>
             <Link
               href="/games/samurai"
               className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
             >
-              Today's Puzzle
+              {tArchive('playToday')}
             </Link>
           </div>
         </div>
@@ -95,11 +99,11 @@ export default function PuzzlePage() {
             href="/games/samurai/archive"
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            ← Archive
+            ← {tArchive('title')}
           </Link>
 
           <div className="text-sm">
-            <span className="text-muted-foreground">Puzzle: </span>
+            <span className="text-muted-foreground">{t('puzzle')}: </span>
             <span className="font-semibold">{puzzleId}</span>
           </div>
         </div>
@@ -114,14 +118,14 @@ export default function PuzzlePage() {
         {status === "completed" && (
           <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
             <p className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">
-              🎉 Congratulations! You solved the puzzle!
+              {t('completed')}
             </p>
             <div className="flex gap-4 justify-center mt-4">
               <Link
                 href="/games/samurai/archive"
                 className="px-4 py-2 border border-green-600 text-green-700 dark:text-green-400 rounded hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors"
               >
-                Browse More Puzzles
+                {tArchive('browseMore') || 'Browse More Puzzles'}
               </Link>
             </div>
           </div>

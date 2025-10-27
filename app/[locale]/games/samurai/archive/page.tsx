@@ -2,6 +2,8 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import Link from 'next/link';
 import { PuzzleIndex, Difficulty } from '@/lib/sudoku/types';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 // Revalidate every hour
 export const revalidate = 3600;
@@ -26,6 +28,10 @@ export default async function ArchivePage({
 }: {
   searchParams: { difficulty?: string; page?: string };
 }) {
+  const t = await getTranslations('archive');
+  const tCommon = await getTranslations('common');
+  const tGame = await getTranslations('game');
+
   const index = await getPuzzleIndex();
   const currentPage = parseInt(searchParams.page || '1', 10);
   const selectedDifficulty = searchParams.difficulty as Difficulty | undefined;
@@ -55,11 +61,15 @@ export default async function ArchivePage({
               href="/"
               className="text-sm text-muted-foreground hover:text-foreground mb-2 inline-block"
             >
-              ← Back to Home
+              {tCommon('backToHome')}
             </Link>
-            <h1 className="text-2xl font-bold">Puzzle Archive</h1>
+            <h1 className="text-2xl font-bold">{t('title')}</h1>
             <p className="text-sm text-muted-foreground">
-              {index.total} puzzles available
+              {t('pagination.showing', {
+                start: 1,
+                end: index.total,
+                total: index.total
+              })}
             </p>
           </div>
 
@@ -67,7 +77,7 @@ export default async function ArchivePage({
             href="/games/samurai"
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
-            Play Today's Puzzle
+            {t('playToday') || 'Play Today\'s Puzzle'}
           </Link>
         </div>
       </header>
@@ -76,26 +86,26 @@ export default async function ArchivePage({
       <main className="flex-1 container mx-auto px-4 py-8">
         {/* Filters */}
         <div className="mb-6 flex items-center gap-4">
-          <span className="text-sm font-medium">Filter by difficulty:</span>
+          <span className="text-sm font-medium">{tGame('difficulty.label')}:</span>
           <div className="flex gap-2">
             <DifficultyFilter
               difficulty={null}
-              label="All"
+              label={t('filters.all')}
               currentDifficulty={selectedDifficulty}
             />
             <DifficultyFilter
               difficulty="easy"
-              label="Easy"
+              label={tGame('difficulty.easy')}
               currentDifficulty={selectedDifficulty}
             />
             <DifficultyFilter
               difficulty="medium"
-              label="Medium"
+              label={tGame('difficulty.medium')}
               currentDifficulty={selectedDifficulty}
             />
             <DifficultyFilter
               difficulty="hard"
-              label="Hard"
+              label={tGame('difficulty.hard')}
               currentDifficulty={selectedDifficulty}
             />
           </div>
@@ -103,25 +113,29 @@ export default async function ArchivePage({
 
         {/* Stats */}
         <div className="mb-6 text-sm text-muted-foreground">
-          Showing {paginatedPuzzles.length} of {filteredPuzzles.length} puzzles
-          {selectedDifficulty && ` (${selectedDifficulty})`}
+          {t('pagination.showing', {
+            start: startIdx + 1,
+            end: Math.min(endIdx, filteredPuzzles.length),
+            total: filteredPuzzles.length
+          })}
+          {selectedDifficulty && ` (${tGame(`difficulty.${selectedDifficulty}`)})`}
         </div>
 
         {/* Puzzle List */}
         {paginatedPuzzles.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No puzzles found.</p>
+            <p className="text-muted-foreground">{t('noResults')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left p-3 font-medium">Date</th>
-                  <th className="text-left p-3 font-medium">Difficulty</th>
-                  <th className="text-left p-3 font-medium">Est. Time</th>
-                  <th className="text-left p-3 font-medium">Tags</th>
-                  <th className="text-right p-3 font-medium">Action</th>
+                  <th className="text-left p-3 font-medium">{t('table.id')}</th>
+                  <th className="text-left p-3 font-medium">{t('table.difficulty')}</th>
+                  <th className="text-left p-3 font-medium">{t('table.estimatedTime')}</th>
+                  <th className="text-left p-3 font-medium">{t('table.tags')}</th>
+                  <th className="text-right p-3 font-medium">{t('table.action')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,7 +148,7 @@ export default async function ArchivePage({
                       <span className="font-medium">{puzzle.id}</span>
                     </td>
                     <td className="p-3">
-                      <DifficultyBadge difficulty={puzzle.difficulty} />
+                      <DifficultyBadge difficulty={puzzle.difficulty} tGame={tGame} />
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {puzzle.estimatedTime} min
@@ -156,7 +170,7 @@ export default async function ArchivePage({
                         href={`/games/samurai/${puzzle.id}`}
                         className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors inline-block"
                       >
-                        Play
+                        {t('play')}
                       </Link>
                     </td>
                   </tr>
@@ -174,12 +188,12 @@ export default async function ArchivePage({
                 href={`?page=${currentPage - 1}${selectedDifficulty ? `&difficulty=${selectedDifficulty}` : ''}`}
                 className="px-3 py-2 border rounded hover:bg-accent transition-colors"
               >
-                Previous
+                {t('pagination.previous')}
               </Link>
             )}
 
             <span className="px-4 py-2 text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
+              {t('pagination.page') || 'Page'} {currentPage} {t('pagination.of') || 'of'} {totalPages}
             </span>
 
             {currentPage < totalPages && (
@@ -187,7 +201,7 @@ export default async function ArchivePage({
                 href={`?page=${currentPage + 1}${selectedDifficulty ? `&difficulty=${selectedDifficulty}` : ''}`}
                 className="px-3 py-2 border rounded hover:bg-accent transition-colors"
               >
-                Next
+                {t('pagination.next')}
               </Link>
             )}
           </div>
@@ -222,7 +236,7 @@ function DifficultyFilter({
   );
 }
 
-function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
+function DifficultyBadge({ difficulty, tGame }: { difficulty: Difficulty; tGame: any }) {
   const colors = {
     easy: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     medium:
@@ -234,7 +248,7 @@ function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
     <span
       className={`px-2 py-1 text-xs font-medium rounded ${colors[difficulty]}`}
     >
-      {difficulty.toUpperCase()}
+      {tGame(`difficulty.${difficulty}`).toUpperCase()}
     </span>
   );
 }
