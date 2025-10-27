@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { ThemeProvider } from "@/components/theme-provider";
@@ -12,17 +12,39 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export const metadata: Metadata = {
-  title: "Samurai Sudoku - Daily Puzzle Challenge",
-  description: "Play Samurai Sudoku online. Daily puzzles with offline support, hints, and progress tracking.",
-  keywords: ["sudoku", "samurai sudoku", "puzzle", "brain game", "logic game"],
-  authors: [{ name: "Samurai Sudoku" }],
-  openGraph: {
-    title: "Samurai Sudoku - Daily Puzzle Challenge",
-    description: "Challenge yourself with daily Samurai Sudoku puzzles",
-    type: "website",
-  },
-};
+export async function generateMetadata({
+  params: { locale }
+}: {
+  params: { locale: string }
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    keywords: t('keywords').split(',').map(k => k.trim()),
+    authors: [{ name: "Samurai Sudoku" }],
+    openGraph: {
+      title: t('og.title'),
+      description: t('og.description'),
+      type: "website",
+      locale: locale,
+      alternateLocale: locales.filter(l => l !== locale),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('og.title'),
+      description: t('og.description'),
+    },
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        'en': '/en',
+        'zh': '/zh',
+      },
+    },
+  };
+}
 
 export default async function LocaleLayout({
   children,
@@ -41,19 +63,15 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <div className={inter.className}>{children}</div>
+      </ThemeProvider>
+    </NextIntlClientProvider>
   );
 }

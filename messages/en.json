@@ -74,6 +74,15 @@
       "showing": "Showing {start}-{end} of {total} puzzles"
     }
   },
+  "metadata": {
+    "title": "Samurai Sudoku - Daily Puzzle Challenge",
+    "description": "Play Samurai Sudoku online. Daily puzzles with offline support, hints, and progress tracking. Challenge yourself with 5 interconnected 9×9 grids.",
+    "keywords": "sudoku, samurai sudoku, puzzle, brain game, logic game, daily puzzle, online sudoku, free sudoku",
+    "og": {
+      "title": "Samurai Sudoku - Daily Puzzle Challenge",
+      "description": "Challenge yourself with daily Samurai Sudoku puzzles. Five 9×9 grids interconnected in perfect harmony."
+    }
+  },
   "home": {
     "welcome": "Welcome to Samurai Sudoku",
     "description": "Challenge yourself with the ultimate Sudoku puzzle. Five 9×9 grids interconnected in perfect harmony.",

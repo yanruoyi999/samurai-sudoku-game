@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { getTodayDate } from "@/lib/utils";
-import { useTranslations } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {
+  const locale = await getLocale();
   const t = await getTranslations('home');
   const tGame = await getTranslations('game');
   const tArchive = await getTranslations('archive');
@@ -25,14 +25,14 @@ export default async function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
             <Link
-              href="/games/samurai"
+              href={`/${locale}/games/samurai`}
               className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
             >
               {t('playNow')}
             </Link>
 
             <Link
-              href="/games/samurai/archive"
+              href={`/${locale}/games/samurai/archive`}
               className="px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold text-lg hover:bg-primary/10 transition-colors"
             >
               {t('browseArchive')}
