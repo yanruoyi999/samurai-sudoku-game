@@ -26,6 +26,7 @@
   },
   "actions": {
     "newGame": "新游戏",
+    "reset": "重置",
     "undo": "撤销",
     "redo": "重做",
     "hint": "提示",
@@ -33,6 +34,8 @@
     "conflicts": "冲突",
     "clear": "清空",
     "erase": "⌫",
+    "newGameConfirm": "开始新游戏？当前进度将丢失。",
+    "resetConfirm": "确定重置谜题？所有进度将丢失。",
     "pause": "暂停",
     "resume": "继续"
   },

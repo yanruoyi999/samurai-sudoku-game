@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
+import { generateQuickPuzzle } from "@/lib/sudoku/puzzle-generator";
 import { useTranslations } from 'next-intl';
 
 export function ActionBar() {
@@ -25,6 +26,7 @@ export function ActionBar() {
     engine,
     incrementHints,
     selectCell,
+    loadPuzzle,
   } = useSudokuStore();
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
@@ -33,8 +35,21 @@ export function ActionBar() {
   const canRedo = historyIndex < history.length - 1;
 
   const handleReset = () => {
-    if (confirm("Are you sure you want to reset the puzzle? All progress will be lost.")) {
+    if (confirm(t('resetConfirm') || "Are you sure you want to reset the puzzle? All progress will be lost.")) {
       reset();
+    }
+  };
+
+  const handleNewGame = () => {
+    if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
+      try {
+        const newPuzzle = generateQuickPuzzle();
+        loadPuzzle(newPuzzle);
+        setHintMessage(null);
+      } catch (error) {
+        console.error('Failed to generate puzzle:', error);
+        alert('Failed to generate a new puzzle. Please try again.');
+      }
     }
   };
 
@@ -156,10 +171,18 @@ export function ActionBar() {
 
             <button
               onClick={handleReset}
-              className="px-3 py-2 text-sm font-medium rounded-md border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+              className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors"
               title="Reset puzzle"
             >
-              🔄 {t('newGame')}
+              🔄 {t('reset')}
+            </button>
+
+            <button
+              onClick={handleNewGame}
+              className="px-3 py-2 text-sm font-medium rounded-md border border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+              title="Start new game"
+            >
+              ✨ {t('newGame')}
             </button>
           </div>
         </div>

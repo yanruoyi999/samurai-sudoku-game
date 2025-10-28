@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SAMPLE_PUZZLE } from "@/lib/sudoku/sample-puzzle";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
@@ -34,6 +34,7 @@ const StatsPanel = dynamic(() => import("@/components/sudoku/StatsPanel").then(m
 export default function SamuraiGamePage() {
   const t = useTranslations('common');
   const tGame = useTranslations('game');
+  const locale = useLocale();
 
   const { puzzleId, loadPuzzle, status } = useSudokuStore();
 
@@ -60,7 +61,7 @@ export default function SamuraiGamePage() {
       {/* Header */}
       <header className="border-b px-4 py-3 flex items-center justify-between">
         <Link
-          href="/"
+          href={`/${locale}`}
           className="text-sm text-muted-foreground hover:text-foreground"
         >
           {t('backToHome')}

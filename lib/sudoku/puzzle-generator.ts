@@ -1,0 +1,174 @@
+import { Puzzle, GridData } from './types';
+
+/**
+ * 简单的数独谜题生成器
+ * 生成一个完整的数独解决方案，然后移除一些数字作为谜题
+ */
+
+// 生成一个完整的9x9数独网格
+function generateCompleteSudoku(): number[][] {
+  const grid: number[][] = Array(9).fill(0).map(() => Array(9).fill(0));
+
+  // 使用回溯算法填充网格
+  function isValid(row: number, col: number, num: number): boolean {
+    // 检查行
+    for (let i = 0; i < 9; i++) {
+      if (grid[row][i] === num) return false;
+    }
+
+    // 检查列
+    for (let i = 0; i < 9; i++) {
+      if (grid[i][col] === num) return false;
+    }
+
+    // 检查3x3方块
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (grid[boxRow + i][boxCol + j] === num) return false;
+      }
+    }
+
+    return true;
+  }
+
+  function solve(): boolean {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === 0) {
+          // 随机顺序尝试数字1-9
+          const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          shuffle(numbers);
+
+          for (const num of numbers) {
+            if (isValid(row, col, num)) {
+              grid[row][col] = num;
+              if (solve()) return true;
+              grid[row][col] = 0;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  solve();
+  return grid;
+}
+
+// Fisher-Yates 洗牌算法
+function shuffle<T>(array: T[]): void {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// 从完整的数独网格生成谜题（移除一些数字）
+function createPuzzleFromSolution(solution: number[][], cellsToRemove: number): number[][] {
+  const puzzle = solution.map(row => [...row]);
+
+  const positions: Array<[number, number]> = [];
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      positions.push([i, j]);
+    }
+  }
+
+  shuffle(positions);
+
+  for (let i = 0; i < Math.min(cellsToRemove, positions.length); i++) {
+    const [row, col] = positions[i];
+    puzzle[row][col] = 0;
+  }
+
+  return puzzle;
+}
+
+/**
+ * 生成一个新的武士数独谜题
+ * @param difficulty 难度：easy (简单), medium (中等), hard (困难)
+ * @returns 完整的武士数独谜题
+ */
+export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' = 'medium'): Puzzle {
+  // 根据难度决定要移除的单元格数量
+  const cellsToRemove = {
+    easy: 35,      // 移除35个单元格（保留46个）
+    medium: 45,    // 移除45个单元格（保留36个）
+    hard: 55,      // 移除55个单元格（保留26个）
+  }[difficulty];
+
+  // 为5个网格分别生成完整的解决方案
+  const solutions: number[][][] = [];
+  for (let i = 0; i < 5; i++) {
+    solutions.push(generateCompleteSudoku());
+  }
+
+  // 处理重叠区域 - 使中心网格的重叠区域与其他网格一致
+  // Grid 0 (Top-Left) 与 Grid 2 (Center) 的重叠：Grid 0 的右下角 = Grid 2 的左上角
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      solutions[2][i][j] = solutions[0][6 + i][6 + j];
+    }
+  }
+
+  // Grid 1 (Top-Right) 与 Grid 2 (Center) 的重叠：Grid 1 的左下角 = Grid 2 的右上角
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      solutions[2][i][6 + j] = solutions[1][6 + i][j];
+    }
+  }
+
+  // Grid 3 (Bottom-Left) 与 Grid 2 (Center) 的重叠：Grid 3 的右上角 = Grid 2 的左下角
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      solutions[2][6 + i][j] = solutions[3][i][6 + j];
+    }
+  }
+
+  // Grid 4 (Bottom-Right) 与 Grid 2 (Center) 的重叠：Grid 4 的左上角 = Grid 2 的右下角
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      solutions[2][6 + i][6 + j] = solutions[4][i][j];
+    }
+  }
+
+  // 为每个网格创建谜题
+  const grids: GridData[] = solutions.map(solution => ({
+    initial: createPuzzleFromSolution(solution, cellsToRemove),
+    solution: solution,
+  }));
+
+  // 生成谜题ID
+  const now = new Date();
+  const id = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${Date.now()}`;
+
+  // 估计完成时间（分钟）
+  const estimatedTime = {
+    easy: 20,
+    medium: 35,
+    hard: 60,
+  }[difficulty];
+
+  return {
+    id,
+    difficulty,
+    grids,
+    metadata: {
+      createdAt: now.toISOString(),
+      estimatedTime,
+      checksum: `generated-${Date.now()}`,
+      tags: ['generated', difficulty],
+    },
+  };
+}
+
+/**
+ * 快速生成一个新谜题（用于"新游戏"按钮）
+ */
+export function generateQuickPuzzle(): Puzzle {
+  return generateSamuraiPuzzle('medium');
+}

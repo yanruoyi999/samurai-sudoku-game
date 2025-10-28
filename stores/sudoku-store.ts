@@ -8,6 +8,7 @@ interface SudokuStore {
   // Puzzle info
   puzzleId: string | null;
   difficulty: string | null;
+  puzzle: Puzzle | null;
 
   // Board state
   board: number[][];
@@ -63,6 +64,7 @@ export const useSudokuStore = create<SudokuStore>()(
       // Initial state
       puzzleId: null,
       difficulty: null,
+      puzzle: null,
       board: createEmptyBoard(),
       initial: Array(21)
         .fill(false)
@@ -87,6 +89,7 @@ export const useSudokuStore = create<SudokuStore>()(
         set({
           puzzleId: puzzle.id,
           difficulty: puzzle.difficulty,
+          puzzle,
           board: engine.getBoard(),
           initial: engine.getInitial(),
           engine,
@@ -281,6 +284,7 @@ export const useSudokuStore = create<SudokuStore>()(
       partialize: (state) => ({
         puzzleId: state.puzzleId,
         difficulty: state.difficulty,
+        puzzle: state.puzzle,
         board: state.board,
         initial: state.initial,
         candidates: Array.from(state.candidates.entries()).map(([k, v]) => [
@@ -292,13 +296,47 @@ export const useSudokuStore = create<SudokuStore>()(
         historyIndex: state.historyIndex,
         hintsUsed: state.hintsUsed,
         status: state.status,
+        showCandidates: state.showCandidates,
+        showConflicts: state.showConflicts,
+        isPaused: state.isPaused,
       }),
       // Restore candidates from serialized format
       onRehydrateStorage: () => (state) => {
-        if (state && Array.isArray(state.candidates)) {
+        if (!state) {
+          return;
+        }
+
+        if (state.candidates && Array.isArray(state.candidates)) {
           state.candidates = new Map(
             (state.candidates as any[]).map(([k, v]) => [k, new Set(v)])
-          );
+          ) as unknown as Map<string, Set<number>>;
+        } else {
+          state.candidates = new Map();
+        }
+
+        if (state.puzzle) {
+          const engine = new SudokuEngine(state.puzzle as Puzzle);
+
+          if (state.board) {
+            engine.loadState(state.board as number[][]);
+          }
+
+          state.engine = engine;
+          state.board = engine.getBoard();
+          state.initial = engine.getInitial();
+        } else {
+          state.engine = null;
+        }
+
+        state.showCandidates = state.showCandidates ?? true;
+        state.showConflicts = state.showConflicts ?? true;
+        state.isPaused = state.isPaused ?? false;
+
+        if (state.status === 'playing' && !state.isPaused) {
+          const elapsed = state.elapsedTime ?? 0;
+          state.startTime = Date.now() - elapsed * 1000;
+        } else {
+          state.startTime = null;
         }
       },
     }

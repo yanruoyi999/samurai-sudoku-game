@@ -26,6 +26,7 @@
   },
   "actions": {
     "newGame": "New Game",
+    "reset": "Reset",
     "undo": "Undo",
     "redo": "Redo",
     "hint": "Hint",
@@ -33,6 +34,8 @@
     "conflicts": "Conflicts",
     "clear": "Clear",
     "erase": "⌫",
+    "newGameConfirm": "Start a new puzzle? Current progress will be lost.",
+    "resetConfirm": "Are you sure you want to reset the puzzle? All progress will be lost.",
     "pause": "Pause",
     "resume": "Resume"
   },

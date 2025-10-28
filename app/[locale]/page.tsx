@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { getTodayDate } from "@/lib/utils";
 import { getLocale, getTranslations } from 'next-intl/server';
 
 export default async function HomePage() {
@@ -7,8 +6,6 @@ export default async function HomePage() {
   const t = await getTranslations('home');
   const tGame = await getTranslations('game');
   const tArchive = await getTranslations('archive');
-
-  const today = getTodayDate();
 
   return (
     <main className="min-h-screen flex flex-col">

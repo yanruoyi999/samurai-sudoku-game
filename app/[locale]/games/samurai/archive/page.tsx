@@ -2,7 +2,6 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import Link from 'next/link';
 import { PuzzleIndex, Difficulty } from '@/lib/sudoku/types';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 // Revalidate every hour
@@ -24,8 +23,10 @@ async function getPuzzleIndex(): Promise<PuzzleIndex> {
 }
 
 export default async function ArchivePage({
+  params,
   searchParams,
 }: {
+  params: { locale: string };
   searchParams: { difficulty?: string; page?: string };
 }) {
   const t = await getTranslations('archive');
@@ -35,6 +36,7 @@ export default async function ArchivePage({
   const index = await getPuzzleIndex();
   const currentPage = parseInt(searchParams.page || '1', 10);
   const selectedDifficulty = searchParams.difficulty as Difficulty | undefined;
+  const locale = params.locale;
 
   // Filter by difficulty
   let filteredPuzzles = index.puzzles;
@@ -58,7 +60,7 @@ export default async function ArchivePage({
         <div className="container mx-auto flex items-center justify-between">
           <div>
             <Link
-              href="/"
+              href={`/${locale}`}
               className="text-sm text-muted-foreground hover:text-foreground mb-2 inline-block"
             >
               {tCommon('backToHome')}
@@ -74,7 +76,7 @@ export default async function ArchivePage({
           </div>
 
           <Link
-            href="/games/samurai"
+            href={`/${locale}/games/samurai`}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             {t('playToday') || 'Play Today\'s Puzzle'}
@@ -91,21 +93,25 @@ export default async function ArchivePage({
             <DifficultyFilter
               difficulty={null}
               label={t('filters.all')}
+              locale={locale}
               currentDifficulty={selectedDifficulty}
             />
             <DifficultyFilter
               difficulty="easy"
               label={tGame('difficulty.easy')}
+              locale={locale}
               currentDifficulty={selectedDifficulty}
             />
             <DifficultyFilter
               difficulty="medium"
               label={tGame('difficulty.medium')}
+              locale={locale}
               currentDifficulty={selectedDifficulty}
             />
             <DifficultyFilter
               difficulty="hard"
               label={tGame('difficulty.hard')}
+              locale={locale}
               currentDifficulty={selectedDifficulty}
             />
           </div>
@@ -167,7 +173,7 @@ export default async function ArchivePage({
                     </td>
                     <td className="p-3 text-right">
                       <Link
-                        href={`/games/samurai/${puzzle.id}`}
+                        href={`/${locale}/games/samurai/${puzzle.id}`}
                         className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors inline-block"
                       >
                         {t('play')}
@@ -185,7 +191,7 @@ export default async function ArchivePage({
           <div className="mt-8 flex items-center justify-center gap-2">
             {currentPage > 1 && (
               <Link
-                href={`?page=${currentPage - 1}${selectedDifficulty ? `&difficulty=${selectedDifficulty}` : ''}`}
+                href={`/${locale}/games/samurai/archive?page=${currentPage - 1}${selectedDifficulty ? `&difficulty=${selectedDifficulty}` : ''}`}
                 className="px-3 py-2 border rounded hover:bg-accent transition-colors"
               >
                 {t('pagination.previous')}
@@ -198,7 +204,7 @@ export default async function ArchivePage({
 
             {currentPage < totalPages && (
               <Link
-                href={`?page=${currentPage + 1}${selectedDifficulty ? `&difficulty=${selectedDifficulty}` : ''}`}
+                href={`/${locale}/games/samurai/archive?page=${currentPage + 1}${selectedDifficulty ? `&difficulty=${selectedDifficulty}` : ''}`}
                 className="px-3 py-2 border rounded hover:bg-accent transition-colors"
               >
                 {t('pagination.next')}
@@ -215,16 +221,19 @@ function DifficultyFilter({
   difficulty,
   label,
   currentDifficulty,
+  locale,
 }: {
   difficulty: Difficulty | null;
   label: string;
   currentDifficulty?: Difficulty;
+  locale: string;
 }) {
   const isActive = difficulty === currentDifficulty || (!difficulty && !currentDifficulty);
+  const basePath = `/${locale}/games/samurai/archive`;
 
   return (
     <Link
-      href={difficulty ? `?difficulty=${difficulty}` : '/games/samurai/archive'}
+      href={difficulty ? `${basePath}?difficulty=${difficulty}` : basePath}
       className={`px-3 py-1 text-sm rounded border transition-colors ${
         isActive
           ? 'bg-primary text-primary-foreground'
