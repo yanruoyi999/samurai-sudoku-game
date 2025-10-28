@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
-import { generateQuickPuzzle } from "@/lib/sudoku/puzzle-generator";
+import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
 import { useTranslations } from 'next-intl';
 
 export function ActionBar() {
   const t = useTranslations('actions');
   const tStats = useTranslations('stats');
   const tHints = useTranslations('hints');
+  const tGame = useTranslations('game');
 
   const {
     undo,
@@ -30,6 +31,7 @@ export function ActionBar() {
   } = useSudokuStore();
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
 
   const canUndo = historyIndex >= 0;
   const canRedo = historyIndex < history.length - 1;
@@ -43,7 +45,7 @@ export function ActionBar() {
   const handleNewGame = () => {
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       try {
-        const newPuzzle = generateQuickPuzzle();
+        const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
         loadPuzzle(newPuzzle);
         setHintMessage(null);
       } catch (error) {
@@ -103,6 +105,45 @@ export function ActionBar() {
               className="h-full bg-primary transition-all duration-300"
               style={{ width: `${getCompletionPercentage()}%` }}
             />
+          </div>
+        </div>
+
+        {/* Difficulty Selector */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            {tGame('difficulty.label')}:
+          </span>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setSelectedDifficulty('easy')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                selectedDifficulty === 'easy'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-secondary hover:bg-secondary/80'
+              }`}
+            >
+              {tGame('difficulty.easy')}
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty('medium')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                selectedDifficulty === 'medium'
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-secondary hover:bg-secondary/80'
+              }`}
+            >
+              {tGame('difficulty.medium')}
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty('hard')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                selectedDifficulty === 'hard'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-secondary hover:bg-secondary/80'
+              }`}
+            >
+              {tGame('difficulty.hard')}
+            </button>
           </div>
         </div>
 
