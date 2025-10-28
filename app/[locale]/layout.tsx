@@ -6,7 +6,13 @@ import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
+  variable: '--font-inter',
+});
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

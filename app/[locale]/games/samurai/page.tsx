@@ -1,16 +1,35 @@
 "use client";
 
 import { useEffect } from "react";
+import dynamic from "next/dynamic";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SAMPLE_PUZZLE } from "@/lib/sudoku/sample-puzzle";
-import { SamuraiBoard } from "@/components/sudoku/SamuraiBoard";
-import { ActionBar } from "@/components/sudoku/ActionBar";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
-import { NumberPad } from "@/components/sudoku/NumberPad";
-import { StatsPanel } from "@/components/sudoku/StatsPanel";
 import { useTranslations } from 'next-intl';
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
+
+// Dynamic imports for heavy components with loading skeletons
+const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
+  loading: () => <BoardSkeleton />,
+  ssr: false
+});
+
+const ActionBar = dynamic(() => import("@/components/sudoku/ActionBar").then(mod => ({ default: mod.ActionBar })), {
+  loading: () => <ActionBarSkeleton />,
+  ssr: false
+});
+
+const NumberPad = dynamic(() => import("@/components/sudoku/NumberPad").then(mod => ({ default: mod.NumberPad })), {
+  loading: () => <NumberPadSkeleton />,
+  ssr: false
+});
+
+const StatsPanel = dynamic(() => import("@/components/sudoku/StatsPanel").then(mod => ({ default: mod.StatsPanel })), {
+  loading: () => <StatsPanelSkeleton />,
+  ssr: false
+});
 
 export default function SamuraiGamePage() {
   const t = useTranslations('common');

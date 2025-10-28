@@ -1,15 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { Puzzle } from "@/lib/sudoku/types";
-import { SamuraiBoard } from "@/components/sudoku/SamuraiBoard";
-import { ActionBar } from "@/components/sudoku/ActionBar";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
-import { NumberPad } from "@/components/sudoku/NumberPad";
 import { useTranslations } from 'next-intl';
 import Link from "next/link";
+import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton } from "@/components/LoadingSkeleton";
+
+// Dynamic imports for heavy components with loading skeletons
+const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
+  loading: () => <BoardSkeleton />,
+  ssr: false
+});
+
+const ActionBar = dynamic(() => import("@/components/sudoku/ActionBar").then(mod => ({ default: mod.ActionBar })), {
+  loading: () => <ActionBarSkeleton />,
+  ssr: false
+});
+
+const NumberPad = dynamic(() => import("@/components/sudoku/NumberPad").then(mod => ({ default: mod.NumberPad })), {
+  loading: () => <NumberPadSkeleton />,
+  ssr: false
+});
 
 export default function PuzzlePage() {
   const t = useTranslations('game');
