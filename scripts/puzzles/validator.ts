@@ -2,7 +2,7 @@
 
 import { Puzzle, GridData } from '@/lib/sudoku/types';
 import { SudokuEngine } from '@/lib/sudoku/engine';
-import { GlobalPosition, globalToLocal } from '@/lib/sudoku/coordinates';
+import { GlobalPosition, globalToLocal, localToGlobal } from '@/lib/sudoku/coordinates';
 
 /**
  * Validation result
@@ -105,7 +105,7 @@ export function validatePuzzle(puzzle: Puzzle): ValidationResult {
       const grid = solution[gridIdx];
       for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
-          const global = globalToLocal({ grid: gridIdx as 0 | 1 | 2 | 3 | 4, row, col });
+          const global = localToGlobal({ grid: gridIdx as 0 | 1 | 2 | 3 | 4, row, col });
           if (global.length === 0) continue;
 
           const pos = global[0];

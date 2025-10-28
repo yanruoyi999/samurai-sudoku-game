@@ -5,6 +5,7 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { ThemeProvider } from "@/components/theme-provider";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -76,7 +77,10 @@ export default async function LocaleLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <div className={inter.className}>{children}</div>
+        <div className={inter.className}>
+          {children}
+          <InstallPrompt />
+        </div>
       </ThemeProvider>
     </NextIntlClientProvider>
   );
