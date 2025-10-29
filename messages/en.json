@@ -5,19 +5,6 @@
     "backToHome": "← Back to Home",
     "language": "Language"
   },
-  "game": {
-    "title": "Samurai Sudoku",
-    "puzzle": "Puzzle",
-    "difficulty": {
-      "easy": "Easy",
-      "medium": "Medium",
-      "hard": "Hard",
-      "label": "Difficulty"
-    },
-    "completed": "🎉 Congratulations! You solved the puzzle!",
-    "loadingPuzzle": "Loading puzzle...",
-    "puzzleNotFound": "Puzzle not found"
-  },
   "stats": {
     "time": "Time",
     "progress": "Progress",
@@ -87,11 +74,12 @@
     }
   },
   "home": {
+    "title": "Samurai Sudoku",
     "welcome": "Welcome to Samurai Sudoku",
-    "description": "Challenge yourself with the ultimate Sudoku puzzle. Five 9×9 grids interconnected in perfect harmony.",
+    "description": "Master Samurai Sudoku online with curated daily challenges, smart hints, and progress tracking across five overlapping 9×9 grids.",
     "playNow": "Play Today's Puzzle",
     "browseArchive": "Browse Archive",
-    "footer": "© 2025 Samurai Sudoku. Daily puzzles for puzzle enthusiasts.",
+    "footer": "© 2025 Samurai Sudoku. Daily Samurai Sudoku puzzles for puzzle enthusiasts.",
     "features": {
       "title": "Features",
       "offline": "Offline Support",
@@ -104,6 +92,33 @@
       "progressDesc": "Monitor your completion time, hints used, and improvement over time.",
       "mobile": "Mobile Optimized",
       "mobileDesc": "Seamless gameplay on any device with touch-friendly controls"
+    },
+    "seoSection": {
+      "title": "Why Samurai Sudoku Keeps Your Brain Sharp",
+      "description": "Samurai Sudoku links five classic Sudoku grids together, amplifying the logic required. Our platform helps you improve with:",
+      "points": [
+        "Daily Samurai Sudoku puzzles generated and validated for unique solutions and balanced difficulty.",
+        "Interactive Samurai Sudoku board with conflict detection, candidate notes, and timer tracking for speed runs.",
+        "Strategy-driven hints and tutorials that explain Samurai Sudoku solving patterns step by step."
+      ],
+      "cta": "Read more Samurai Sudoku strategies"
+    },
+    "faq": {
+      "title": "Samurai Sudoku FAQ",
+      "items": [
+        {
+          "question": "What is Samurai Sudoku?",
+          "answer": "Samurai Sudoku is a five-grid variant of classic Sudoku where overlapping regions link each puzzle together. You must satisfy the rules in every grid at once, creating a deeper logical challenge."
+        },
+        {
+          "question": "How can I get better at Samurai Sudoku?",
+          "answer": "Focus on the overlapping zones first, track pencil marks, and use our guided hints to learn advanced Samurai Sudoku strategies such as cross-grid singles and elimination chains."
+        },
+        {
+          "question": "Is Samurai Sudoku harder than normal Sudoku?",
+          "answer": "Yes. Samurai Sudoku multiplies the search space with five interconnected grids. We grade each puzzle and offer easy, medium, and hard Samurai Sudoku levels so you can improve gradually."
+        }
+      ]
     }
   }
 }
