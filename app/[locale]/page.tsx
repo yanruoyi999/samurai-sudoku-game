@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations, getMessages } from 'next-intl/server';
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -7,14 +7,47 @@ export default async function HomePage() {
   const tGame = await getTranslations('game');
   const tArchive = await getTranslations('archive');
 
+  const messages = await getMessages({ locale });
+  const homeMessages = (messages as any)?.home ?? {};
+  const seoSection = homeMessages.seoSection ?? {};
+  const faqSection = homeMessages.faq ?? {};
+
+  const seoPoints: string[] = Array.isArray(seoSection.points)
+    ? seoSection.points
+    : [];
+  const faqItems: { question: string; answer: string }[] = Array.isArray(
+    faqSection.items
+  )
+    ? faqSection.items
+    : [];
+  const seoPointHeading: string =
+    typeof seoSection.pointHeading === 'string'
+      ? seoSection.pointHeading
+      : t('seoSection.title');
+  const heroTitle: string =
+    typeof homeMessages.title === 'string' ? homeMessages.title : tGame('title');
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+
   return (
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-            {tGame('title')}
-          </h1>
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+          {heroTitle}
+        </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
             {t('description')}
@@ -54,6 +87,63 @@ export default async function HomePage() {
               description={t('features.progressDesc')}
             />
           </div>
+
+          <section className="mt-20 space-y-6 text-left">
+            <h2 className="text-3xl md:text-4xl font-semibold text-foreground text-center">
+              {t('seoSection.title')}
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center">
+              {t('seoSection.description')}
+            </p>
+            <div className="grid gap-4 md:grid-cols-3">
+              {seoPoints.map((point, index) => (
+                <div
+                  key={index}
+                  className="p-5 rounded-lg border bg-background/80 shadow-sm"
+                >
+                  <h3 className="text-lg font-medium text-primary mb-2">
+                    {`${seoPointHeading} ${index + 1}`}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {point}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center pt-2">
+              <Link
+                href={`/${locale}/games/samurai/archive`}
+                className="inline-flex items-center gap-2 px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition-colors"
+              >
+                {t('seoSection.cta')}
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </section>
+
+          <section className="mt-16 space-y-6 text-left">
+            <h2 className="text-3xl md:text-4xl font-semibold text-foreground text-center">
+              {t('faq.title')}
+            </h2>
+            <div className="max-w-3xl mx-auto space-y-4">
+              {faqItems.map((item, index) => (
+                <details
+                  key={index}
+                  className="group border rounded-lg bg-background/80 p-4 transition-all"
+                >
+                  <summary className="cursor-pointer text-lg font-medium text-foreground flex items-center justify-between">
+                    <span>{item.question}</span>
+                    <span className="text-primary group-open:rotate-90 transition-transform" aria-hidden>
+                      ➤
+                    </span>
+                  </summary>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                    {item.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </section>
         </div>
       </section>
 
@@ -61,6 +151,11 @@ export default async function HomePage() {
       <footer className="py-8 px-4 border-t text-center text-sm text-muted-foreground">
         <p>{t('footer')}</p>
       </footer>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
     </main>
   );
 }
