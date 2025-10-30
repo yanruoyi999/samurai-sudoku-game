@@ -85,22 +85,24 @@ export function ActionBar() {
   };
 
   return (
-    <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 py-3">
+    <>
+      {/* Desktop Sidebar Layout (lg+) */}
+      <div className="hidden lg:block p-4 space-y-4">
         {/* Hint Message */}
         {hintMessage && (
-          <div className="mb-3 p-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 rounded text-sm text-center">
+          <div className="p-3 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 rounded text-sm">
             💡 {hintMessage}
           </div>
         )}
 
-        {/* Progress Bar */}
-        <div className="mb-3">
+        {/* Progress Section */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">{tStats('progress')}</h3>
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-            <span>{tStats('progress')}</span>
+            <span>完成度</span>
             <span>{getCompletionPercentage()}%</span>
           </div>
-          <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300"
               style={{ width: `${getCompletionPercentage()}%` }}
@@ -109,14 +111,12 @@ export function ActionBar() {
         </div>
 
         {/* Difficulty Selector */}
-        <div className="mb-3 flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            {tGame('difficulty.label')}:
-          </span>
-          <div className="flex gap-1">
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">{tGame('difficulty.label')}</h3>
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setSelectedDifficulty('easy')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                 selectedDifficulty === 'easy'
                   ? 'bg-green-500 text-white'
                   : 'bg-secondary hover:bg-secondary/80'
@@ -126,7 +126,7 @@ export function ActionBar() {
             </button>
             <button
               onClick={() => setSelectedDifficulty('medium')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                 selectedDifficulty === 'medium'
                   ? 'bg-yellow-500 text-white'
                   : 'bg-secondary hover:bg-secondary/80'
@@ -136,7 +136,7 @@ export function ActionBar() {
             </button>
             <button
               onClick={() => setSelectedDifficulty('hard')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                 selectedDifficulty === 'hard'
                   ? 'bg-red-500 text-white'
                   : 'bg-secondary hover:bg-secondary/80'
@@ -146,7 +146,7 @@ export function ActionBar() {
             </button>
             <button
               onClick={() => setSelectedDifficulty('evil')}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                 selectedDifficulty === 'evil'
                   ? 'bg-purple-600 text-white'
                   : 'bg-secondary hover:bg-secondary/80'
@@ -157,9 +157,18 @@ export function ActionBar() {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+        {/* Control Buttons */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">操作</h3>
+
+          <button
+            onClick={handleNewGame}
+            className="w-full px-4 py-3 text-sm font-medium rounded-md border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+          >
+            ✨ {t('newGame')}
+          </button>
+
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={undo}
               disabled={!canUndo}
@@ -168,7 +177,6 @@ export function ActionBar() {
             >
               ↶ {t('undo')}
             </button>
-
             <button
               onClick={redo}
               disabled={!canRedo}
@@ -179,15 +187,14 @@ export function ActionBar() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleGetHint}
-              className="px-3 py-2 text-sm font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-              title="Get a hint"
-            >
-              💡 {t('hint')}
-            </button>
+          <button
+            onClick={handleGetHint}
+            className="w-full px-4 py-2 text-sm font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+          >
+            💡 {t('hint')}
+          </button>
 
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={toggleShowCandidates}
               className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
@@ -195,11 +202,9 @@ export function ActionBar() {
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-accent"
               }`}
-              title="Toggle candidate display"
             >
-              {showCandidates ? "✓" : ""} {t('candidates')}
+              {showCandidates ? "✓ " : ""}{t('candidates')}
             </button>
-
             <button
               onClick={toggleShowConflicts}
               className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
@@ -207,37 +212,136 @@ export function ActionBar() {
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-accent"
               }`}
-              title="Toggle conflict highlighting"
             >
-              {showConflicts ? "✓" : ""} {t('conflicts')}
+              {showConflicts ? "✓ " : ""}{t('conflicts')}
             </button>
+          </div>
 
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={togglePause}
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors"
-              title="Pause timer"
             >
               {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}
             </button>
-
             <button
               onClick={handleReset}
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors"
-              title="Reset puzzle"
             >
               🔄 {t('reset')}
             </button>
+          </div>
+        </div>
+      </div>
 
+      {/* Mobile/Tablet Bottom Layout */}
+      <div className="lg:hidden border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="px-4 py-3 space-y-3">
+          {/* Hint Message */}
+          {hintMessage && (
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 rounded text-sm text-center">
+              💡 {hintMessage}
+            </div>
+          )}
+
+          {/* Progress Bar */}
+          <div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+              <span>{tStats('progress')}</span>
+              <span>{getCompletionPercentage()}%</span>
+            </div>
+            <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${getCompletionPercentage()}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Difficulty Selector */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+              {tGame('difficulty.label')}:
+            </span>
+            <div className="flex gap-1">
+              {(['easy', 'medium', 'hard', 'evil'] as const).map((diff) => (
+                <button
+                  key={diff}
+                  onClick={() => setSelectedDifficulty(diff)}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
+                    selectedDifficulty === diff
+                      ? diff === 'easy' ? 'bg-green-500 text-white'
+                        : diff === 'medium' ? 'bg-yellow-500 text-white'
+                        : diff === 'hard' ? 'bg-red-500 text-white'
+                        : 'bg-purple-600 text-white'
+                      : 'bg-secondary hover:bg-secondary/80'
+                  }`}
+                >
+                  {tGame(`difficulty.${diff}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons - Scrollable on mobile */}
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              onClick={undo}
+              disabled={!canUndo}
+              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            >
+              ↶ {t('undo')}
+            </button>
+            <button
+              onClick={redo}
+              disabled={!canRedo}
+              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            >
+              ↷ {t('redo')}
+            </button>
+            <button
+              onClick={handleGetHint}
+              className="px-3 py-2 text-xs font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors whitespace-nowrap"
+            >
+              💡 {t('hint')}
+            </button>
+            <button
+              onClick={toggleShowCandidates}
+              className={`px-3 py-2 text-xs font-medium rounded-md border transition-colors whitespace-nowrap ${
+                showCandidates ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+              }`}
+            >
+              {showCandidates ? "✓ " : ""}{t('candidates')}
+            </button>
+            <button
+              onClick={toggleShowConflicts}
+              className={`px-3 py-2 text-xs font-medium rounded-md border transition-colors whitespace-nowrap ${
+                showConflicts ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+              }`}
+            >
+              {showConflicts ? "✓ " : ""}{t('conflicts')}
+            </button>
+            <button
+              onClick={togglePause}
+              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent transition-colors whitespace-nowrap"
+            >
+              {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}
+            </button>
+            <button
+              onClick={handleReset}
+              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent transition-colors whitespace-nowrap"
+            >
+              🔄 {t('reset')}
+            </button>
             <button
               onClick={handleNewGame}
-              className="px-3 py-2 text-sm font-medium rounded-md border border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-              title="Start new game"
+              className="px-3 py-2 text-xs font-medium rounded-md border border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors whitespace-nowrap"
             >
               ✨ {t('newGame')}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

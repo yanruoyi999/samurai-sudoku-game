@@ -59,7 +59,7 @@ export default function SamuraiGamePage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b px-4 py-3 flex items-center justify-between">
+      <header className="border-b px-4 py-3 flex items-center justify-between flex-wrap gap-2">
         <Link
           href={`/${locale}`}
           className="text-sm text-muted-foreground hover:text-foreground"
@@ -67,7 +67,7 @@ export default function SamuraiGamePage() {
           {t('backToHome')}
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4 flex-wrap">
           <LanguageSwitcher />
           <TimerDisplay />
 
@@ -78,32 +78,57 @@ export default function SamuraiGamePage() {
         </div>
       </header>
 
-      {/* Main Game Area */}
-      <main className="flex-1 container mx-auto px-4 py-8">
+      {/* Main Game Area - Responsive Layout */}
+      <main className="flex-1 overflow-hidden">
         {status === "completed" && (
-          <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
+          <div className="mx-4 mt-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
             <p className="text-lg font-semibold text-green-700 dark:text-green-400">
               {tGame('completed')}
             </p>
           </div>
         )}
 
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Stats Panel */}
-          <StatsPanel />
+        {/* Desktop Layout: Board on left, Controls on right */}
+        <div className="hidden lg:flex h-full">
+          {/* Left side - Game Board */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="max-w-3xl mx-auto space-y-4">
+              <StatsPanel />
+              <SamuraiBoard />
+            </div>
+          </div>
 
-          {/* Game Board */}
-          <SamuraiBoard />
+          {/* Right side - Controls (Desktop only) */}
+          <div className="w-80 xl:w-96 border-l overflow-y-auto">
+            <ActionBar />
+          </div>
+        </div>
+
+        {/* Tablet Layout: Board on top, Controls on bottom */}
+        <div className="hidden md:block lg:hidden h-full overflow-y-auto">
+          <div className="container mx-auto px-4 py-6 space-y-6">
+            <StatsPanel />
+            <SamuraiBoard />
+            <ActionBar />
+          </div>
+        </div>
+
+        {/* Mobile Layout: Board with bottom controls */}
+        <div className="md:hidden h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+            <StatsPanel />
+            <SamuraiBoard />
+          </div>
+
+          {/* Mobile Number Pad */}
+          <div className="border-t">
+            <NumberPad showCandidates />
+          </div>
+
+          {/* Mobile Action Bar */}
+          <ActionBar />
         </div>
       </main>
-
-      {/* Mobile Number Pad */}
-      <div className="md:hidden">
-        <NumberPad showCandidates />
-      </div>
-
-      {/* Action Bar */}
-      <ActionBar />
     </div>
   );
 }

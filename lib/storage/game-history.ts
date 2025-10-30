@@ -11,7 +11,9 @@ export interface GameHistoryEntry {
 }
 
 const HISTORY_KEY = 'sudoku-game-history';
+const IN_PROGRESS_HISTORY_KEY = 'sudoku-in-progress-history';
 const MAX_HISTORY_SIZE = 100; // 最多保存100条历史记录
+const MAX_IN_PROGRESS_SIZE = 50; // 最多保存50条进行中的游戏
 
 /**
  * Get game history from localStorage
@@ -160,4 +162,70 @@ export function getDifficultyStats(difficulty: Difficulty): {
     bestTime,
     totalHintsUsed: totalHints,
   };
+}
+
+/**
+ * Save an in-progress game (not completed yet)
+ */
+export interface InProgressGame {
+  puzzle: Puzzle;
+  currentTime: number;
+  hintsUsed: number;
+  lastPlayed: string;
+  difficulty: Difficulty;
+}
+
+export function saveInProgressGame(game: InProgressGame): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const data = localStorage.getItem(IN_PROGRESS_HISTORY_KEY);
+    let history: InProgressGame[] = data ? JSON.parse(data) : [];
+
+    // Remove existing entry for this puzzle if exists
+    history = history.filter(g => g.puzzle.id !== game.puzzle.id);
+
+    // Add new entry at the beginning
+    history.unshift(game);
+
+    // Keep only the most recent MAX_IN_PROGRESS_SIZE entries
+    const trimmedHistory = history.slice(0, MAX_IN_PROGRESS_SIZE);
+
+    localStorage.setItem(IN_PROGRESS_HISTORY_KEY, JSON.stringify(trimmedHistory));
+  } catch (error) {
+    console.error('Failed to save in-progress game:', error);
+  }
+}
+
+/**
+ * Get all in-progress games
+ */
+export function getInProgressGames(): InProgressGame[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const data = localStorage.getItem(IN_PROGRESS_HISTORY_KEY);
+    if (!data) return [];
+
+    const history = JSON.parse(data) as InProgressGame[];
+    return Array.isArray(history) ? history : [];
+  } catch (error) {
+    console.error('Failed to load in-progress games:', error);
+    return [];
+  }
+}
+
+/**
+ * Remove an in-progress game (when completed or abandoned)
+ */
+export function removeInProgressGame(puzzleId: string): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const history = getInProgressGames();
+    const filtered = history.filter(g => g.puzzle.id !== puzzleId);
+    localStorage.setItem(IN_PROGRESS_HISTORY_KEY, JSON.stringify(filtered));
+  } catch (error) {
+    console.error('Failed to remove in-progress game:', error);
+  }
 }

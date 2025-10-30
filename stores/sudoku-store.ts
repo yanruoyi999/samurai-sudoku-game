@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { SudokuEngine } from '@/lib/sudoku/engine';
 import { GlobalPosition } from '@/lib/sudoku/coordinates';
 import { Puzzle, Move, GameStatus } from '@/lib/sudoku/types';
-import { saveGameToHistory } from '@/lib/storage/game-history';
+import { saveGameToHistory, saveInProgressGame, removeInProgressGame } from '@/lib/storage/game-history';
 
 interface SudokuStore {
   // Puzzle info
@@ -144,7 +144,7 @@ export const useSudokuStore = create<SudokuStore>()(
 
           set({ status: 'completed' });
 
-          // Save to history
+          // Save to completed history and remove from in-progress
           if (state.puzzle) {
             saveGameToHistory({
               puzzle: state.puzzle,
@@ -156,6 +156,25 @@ export const useSudokuStore = create<SudokuStore>()(
                 completedAt: new Date().toISOString(),
               },
               completedAt: new Date().toISOString(),
+              difficulty: state.puzzle.difficulty,
+            });
+
+            // Remove from in-progress games
+            removeInProgressGame(state.puzzle.id);
+          }
+        } else {
+          // Save progress for incomplete games (auto-save)
+          const state = get();
+          if (state.puzzle) {
+            const timeSpent = state.startTime
+              ? Math.floor((Date.now() - state.startTime) / 1000)
+              : state.elapsedTime;
+
+            saveInProgressGame({
+              puzzle: state.puzzle,
+              currentTime: timeSpent,
+              hintsUsed: state.hintsUsed,
+              lastPlayed: new Date().toISOString(),
               difficulty: state.puzzle.difficulty,
             });
           }
