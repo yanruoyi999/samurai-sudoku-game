@@ -31,7 +31,7 @@ export function ActionBar() {
   } = useSudokuStore();
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard' | 'evil'>('medium');
 
   const canUndo = historyIndex >= 0;
   const canRedo = historyIndex < history.length - 1;
@@ -143,6 +143,16 @@ export function ActionBar() {
               }`}
             >
               {tGame('difficulty.hard')}
+            </button>
+            <button
+              onClick={() => setSelectedDifficulty('evil')}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                selectedDifficulty === 'evil'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-secondary hover:bg-secondary/80'
+              }`}
+            >
+              {tGame('difficulty.evil')}
             </button>
           </div>
         </div>

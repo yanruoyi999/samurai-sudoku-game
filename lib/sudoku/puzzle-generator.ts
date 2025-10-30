@@ -90,15 +90,16 @@ function createPuzzleFromSolution(solution: number[][], cellsToRemove: number): 
 
 /**
  * 生成一个新的武士数独谜题
- * @param difficulty 难度：easy (简单), medium (中等), hard (困难)
+ * @param difficulty 难度：easy (简单), medium (中等), hard (困难), evil (极难)
  * @returns 完整的武士数独谜题
  */
-export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' = 'medium'): Puzzle {
+export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' | 'evil' = 'medium'): Puzzle {
   // 根据难度决定要移除的单元格数量
   const cellsToRemove = {
     easy: 35,      // 移除35个单元格（保留46个）
     medium: 45,    // 移除45个单元格（保留36个）
     hard: 55,      // 移除55个单元格（保留26个）
+    evil: 65,      // 移除65个单元格（保留16个）- Evil 难度！
   }[difficulty];
 
   // 为5个网格分别生成完整的解决方案
@@ -151,6 +152,7 @@ export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' = '
     easy: 20,
     medium: 35,
     hard: 60,
+    evil: 90,    // Evil 难度预计需要 90 分钟！
   }[difficulty];
 
   return {

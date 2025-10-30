@@ -114,6 +114,12 @@ export default async function ArchivePage({
               locale={locale}
               currentDifficulty={selectedDifficulty}
             />
+            <DifficultyFilter
+              difficulty="evil"
+              label={tGame('difficulty.evil')}
+              locale={locale}
+              currentDifficulty={selectedDifficulty}
+            />
           </div>
         </div>
 
@@ -251,6 +257,7 @@ function DifficultyBadge({ difficulty, tGame }: { difficulty: Difficulty; tGame:
     medium:
       'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
     hard: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    evil: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
   };
 
   return (

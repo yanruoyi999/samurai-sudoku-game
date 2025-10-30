@@ -12,6 +12,7 @@
       "easy": "简单",
       "medium": "中等",
       "hard": "困难",
+      "evil": "Evil 极难",
       "label": "难度"
     },
     "completed": "🎉 恭喜！您已完成这个谜题！",
@@ -58,7 +59,8 @@
       "all": "全部",
       "easy": "简单",
       "medium": "中等",
-      "hard": "困难"
+      "hard": "困难",
+      "evil": "Evil 极难"
     },
     "table": {
       "id": "谜题 ID",

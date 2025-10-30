@@ -43,6 +43,7 @@
       "easy": "Easy",
       "medium": "Medium",
       "hard": "Hard",
+      "evil": "Evil",
       "label": "Difficulty"
     },
     "completed": "🎉 Congratulations! You solved the puzzle!",
@@ -58,7 +59,8 @@
       "all": "All",
       "easy": "Easy",
       "medium": "Medium",
-      "hard": "Hard"
+      "hard": "Hard",
+      "evil": "Evil"
     },
     "table": {
       "id": "Puzzle ID",

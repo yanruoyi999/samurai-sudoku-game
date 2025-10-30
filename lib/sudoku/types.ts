@@ -3,7 +3,7 @@ import { GlobalPosition, LocalPosition } from './coordinates';
 /**
  * Difficulty levels for puzzles
  */
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'evil';
 
 /**
  * Single 9x9 grid data
