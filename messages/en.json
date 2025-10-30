@@ -36,6 +36,19 @@
       "box": "box"
     }
   },
+  "game": {
+    "title": "Samurai Sudoku",
+    "puzzle": "Puzzle",
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "label": "Difficulty"
+    },
+    "completed": "🎉 Congratulations! You solved the puzzle!",
+    "loadingPuzzle": "Loading puzzle...",
+    "puzzleNotFound": "Puzzle not found"
+  },
   "archive": {
     "title": "Puzzle Archive",
     "description": "Browse and play all available Samurai Sudoku puzzles",
@@ -65,12 +78,12 @@
     }
   },
   "metadata": {
-    "title": "Samurai Sudoku - Daily Puzzle Challenge",
-    "description": "Play Samurai Sudoku online. Daily puzzles with offline support, hints, and progress tracking. Challenge yourself with 5 interconnected 9×9 grids.",
-    "keywords": "sudoku, samurai sudoku, puzzle, brain game, logic game, daily puzzle, online sudoku, free sudoku",
+    "title": "Samurai Sudoku - Evil & Hard Puzzle Challenge",
+    "description": "Play Samurai Sudoku online with Evil difficulty. Daily evil sudoku puzzles, offline support, hints, and progress tracking. Challenge yourself with 5 interconnected 9×9 grids and extreme difficulty levels.",
+    "keywords": "sudoku, samurai sudoku, evil sudoku, sudoku evil, hard sudoku, expert sudoku, extreme sudoku, challenging sudoku, puzzle, brain game, logic game, daily puzzle, online sudoku, free sudoku",
     "og": {
-      "title": "Samurai Sudoku - Daily Puzzle Challenge",
-      "description": "Challenge yourself with daily Samurai Sudoku puzzles. Five 9×9 grids interconnected in perfect harmony."
+      "title": "Samurai Sudoku - Evil & Hard Daily Puzzle Challenge",
+      "description": "Challenge yourself with evil sudoku and extreme difficulty Samurai Sudoku puzzles. Five 9×9 grids interconnected for the ultimate brain challenge."
     }
   },
   "home": {
@@ -94,29 +107,34 @@
       "mobileDesc": "Seamless gameplay on any device with touch-friendly controls"
     },
     "seoSection": {
-      "title": "Why Samurai Sudoku Keeps Your Brain Sharp",
-      "description": "Samurai Sudoku links five classic Sudoku grids together, amplifying the logic required. Our platform helps you improve with:",
+      "title": "Master Evil Sudoku & Extreme Samurai Puzzles",
+      "description": "Samurai Sudoku links five classic Sudoku grids together, creating evil sudoku challenges that push your logic to the limit. Our platform helps you conquer even the hardest evil difficulty puzzles with:",
       "points": [
-        "Daily Samurai Sudoku puzzles generated and validated for unique solutions and balanced difficulty.",
-        "Interactive Samurai Sudoku board with conflict detection, candidate notes, and timer tracking for speed runs.",
-        "Strategy-driven hints and tutorials that explain Samurai Sudoku solving patterns step by step."
+        "Daily evil sudoku puzzles - Samurai Sudoku with extreme difficulty, generated and validated for unique solutions that challenge even expert solvers.",
+        "Interactive evil sudoku board with advanced conflict detection, candidate notes, and timer tracking. Perfect for mastering hard sudoku techniques.",
+        "Strategy-driven hints for evil sudoku - Learn advanced solving patterns including X-Wings, Swordfish, and cross-grid elimination chains specific to evil difficulty levels."
       ],
-      "cta": "Read more Samurai Sudoku strategies"
+      "cta": "Explore evil sudoku strategies and techniques",
+      "pointHeading": "Evil Sudoku Feature"
     },
     "faq": {
-      "title": "Samurai Sudoku FAQ",
+      "title": "Evil Sudoku & Samurai Sudoku FAQ",
       "items": [
         {
-          "question": "What is Samurai Sudoku?",
-          "answer": "Samurai Sudoku is a five-grid variant of classic Sudoku where overlapping regions link each puzzle together. You must satisfy the rules in every grid at once, creating a deeper logical challenge."
+          "question": "What is Evil Sudoku?",
+          "answer": "Evil sudoku refers to the highest difficulty level in sudoku puzzles. In our Samurai Sudoku game, evil difficulty combines extremely challenging puzzles across five interconnected 9×9 grids, requiring advanced techniques like X-Wings, Swordfish, and cross-grid logic chains. Evil sudoku puzzles have minimal given numbers and demand expert-level solving strategies."
         },
         {
-          "question": "How can I get better at Samurai Sudoku?",
-          "answer": "Focus on the overlapping zones first, track pencil marks, and use our guided hints to learn advanced Samurai Sudoku strategies such as cross-grid singles and elimination chains."
+          "question": "What is Samurai Sudoku?",
+          "answer": "Samurai Sudoku is a five-grid variant of classic Sudoku where overlapping regions link each puzzle together. You must satisfy the rules in every grid at once, creating a deeper logical challenge. At evil difficulty, it becomes one of the hardest sudoku challenges available."
+        },
+        {
+          "question": "How can I solve evil sudoku puzzles?",
+          "answer": "To master evil sudoku and hard Samurai Sudoku puzzles, focus on the overlapping zones first, systematically track pencil marks (candidate numbers), and use our guided hints to learn advanced evil sudoku strategies including naked pairs, hidden triples, X-Wings, and cross-grid elimination chains. Start with easier difficulties and progressively work up to evil sudoku levels."
         },
         {
           "question": "Is Samurai Sudoku harder than normal Sudoku?",
-          "answer": "Yes. Samurai Sudoku multiplies the search space with five interconnected grids. We grade each puzzle and offer easy, medium, and hard Samurai Sudoku levels so you can improve gradually."
+          "answer": "Yes. Samurai Sudoku multiplies the search space with five interconnected grids. We grade each puzzle and offer easy, medium, hard, and evil Samurai Sudoku difficulty levels. Evil sudoku represents the ultimate challenge for expert solvers."
         }
       ]
     }
