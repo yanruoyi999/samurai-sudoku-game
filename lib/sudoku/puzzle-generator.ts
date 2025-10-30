@@ -102,46 +102,107 @@ export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' | '
     evil: 65,      // 移除65个单元格（保留16个）- Evil 难度！
   }[difficulty];
 
-  // 为5个网格分别生成完整的解决方案
+  // 为角落的4个网格生成完整的解决方案
   const solutions: number[][][] = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 4; i++) {
     solutions.push(generateCompleteSudoku());
   }
 
-  // 处理重叠区域 - 使中心网格的重叠区域与其他网格一致
+  // 创建中心网格（Grid 2），其四个角落来自其他网格的重叠区域
+  const centerGrid: number[][] = Array(9).fill(0).map(() => Array(9).fill(0));
+
   // Grid 0 (Top-Left) 与 Grid 2 (Center) 的重叠：Grid 0 的右下角 = Grid 2 的左上角
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
-      solutions[2][i][j] = solutions[0][6 + i][6 + j];
+      centerGrid[i][j] = solutions[0][6 + i][6 + j];
     }
   }
 
   // Grid 1 (Top-Right) 与 Grid 2 (Center) 的重叠：Grid 1 的左下角 = Grid 2 的右上角
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
-      solutions[2][i][6 + j] = solutions[1][6 + i][j];
+      centerGrid[i][6 + j] = solutions[1][6 + i][j];
     }
   }
 
   // Grid 3 (Bottom-Left) 与 Grid 2 (Center) 的重叠：Grid 3 的右上角 = Grid 2 的左下角
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
-      solutions[2][6 + i][j] = solutions[3][i][6 + j];
+      centerGrid[6 + i][j] = solutions[2][i][6 + j];
     }
   }
 
   // Grid 4 (Bottom-Right) 与 Grid 2 (Center) 的重叠：Grid 4 的左上角 = Grid 2 的右下角
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
-      solutions[2][6 + i][6 + j] = solutions[4][i][j];
+      centerGrid[6 + i][6 + j] = solutions[3][i][j];
     }
   }
 
+  // 完成中心网格的剩余部分（中心的5个单元格）
+  // 使用回溯算法填充
+  function fillCenterGrid(): boolean {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (centerGrid[row][col] === 0) {
+          const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          shuffle(numbers);
+
+          for (const num of numbers) {
+            if (isValidInGrid(centerGrid, row, col, num)) {
+              centerGrid[row][col] = num;
+              if (fillCenterGrid()) return true;
+              centerGrid[row][col] = 0;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function isValidInGrid(grid: number[][], row: number, col: number, num: number): boolean {
+    // 检查行
+    for (let i = 0; i < 9; i++) {
+      if (grid[row][i] === num) return false;
+    }
+
+    // 检查列
+    for (let i = 0; i < 9; i++) {
+      if (grid[i][col] === num) return false;
+    }
+
+    // 检查3x3方块
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (grid[boxRow + i][boxCol + j] === num) return false;
+      }
+    }
+
+    return true;
+  }
+
+  fillCenterGrid();
+
+  // 将中心网格插入到solutions数组中
+  // solutions[0] = Grid 0, solutions[1] = Grid 1, solutions[2] = Grid 3, solutions[3] = Grid 4
+  // 我们需要重新排列为正确的顺序
+  const finalSolutions = [
+    solutions[0],  // Grid 0 (Top-Left)
+    solutions[1],  // Grid 1 (Top-Right)
+    centerGrid,    // Grid 2 (Center)
+    solutions[2],  // Grid 3 (Bottom-Left)
+    solutions[3],  // Grid 4 (Bottom-Right)
+  ];
+
   // 为每个网格创建谜题
-  const grids: GridData[] = solutions.map(solution => ({
+  const grids = finalSolutions.map(solution => ({
     initial: createPuzzleFromSolution(solution, cellsToRemove),
     solution: solution,
-  }));
+  })) as [GridData, GridData, GridData, GridData, GridData];
 
   // 生成谜题ID
   const now = new Date();

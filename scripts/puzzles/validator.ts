@@ -2,7 +2,7 @@
 
 import { Puzzle, GridData } from '@/lib/sudoku/types';
 import { SudokuEngine } from '@/lib/sudoku/engine';
-import { GlobalPosition, globalToLocal, localToGlobal } from '@/lib/sudoku/coordinates';
+import { GlobalPosition, globalToLocal, localToGlobal, getOverlappingCell } from '@/lib/sudoku/coordinates';
 
 /**
  * Validation result
@@ -105,22 +105,19 @@ export function validatePuzzle(puzzle: Puzzle): ValidationResult {
       const grid = solution[gridIdx];
       for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
-          const global = localToGlobal({ grid: gridIdx as 0 | 1 | 2 | 3 | 4, row, col });
-          if (global.length === 0) continue;
+          const localPos = { grid: gridIdx as 0 | 1 | 2 | 3 | 4, row, col };
+          const global = localToGlobal(localPos);
 
-          const pos = global[0];
-          const globalPos = { row: pos.row, col: pos.col };
-
-          // For overlap cells, check consistency
-          if (global.length > 1) {
+          // For overlap cells, check consistency with the overlapping cell
+          const overlapping = getOverlappingCell(localPos);
+          if (overlapping) {
             const val1 = grid.solution[row][col];
-            const pos2 = global[1];
-            const grid2 = solution[pos2.grid];
-            const val2 = grid2.solution[pos2.row][pos2.col];
+            const grid2 = solution[overlapping.grid];
+            const val2 = grid2.solution[overlapping.row][overlapping.col];
 
             if (val1 !== val2) {
               result.isValid = false;
-              result.errors.push(`Overlap cell inconsistency at grid ${gridIdx} (${row},${col})`);
+              result.errors.push(`Overlap cell inconsistency at grid ${gridIdx} (${row},${col}): ${val1} !== ${val2}`);
             }
           }
         }
