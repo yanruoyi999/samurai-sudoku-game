@@ -1,11 +1,4 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: 'swap',
-  fallback: ['system-ui', 'arial'],
-});
 
 export default function RootLayout({
   children,
@@ -23,7 +16,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="武士数独" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className="font-sans">{children}</body>
     </html>
   );
 }

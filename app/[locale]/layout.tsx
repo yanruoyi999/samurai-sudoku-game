@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import { ThemeProvider } from "@/components/theme-provider";
 import { InstallPrompt } from "@/components/InstallPrompt";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: 'swap',
-  preload: true,
-  fallback: ['system-ui', 'arial'],
-  variable: '--font-inter',
-});
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -77,7 +68,7 @@ export default async function LocaleLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <div className={inter.className}>
+        <div className="font-sans">
           {children}
           <InstallPrompt />
         </div>
