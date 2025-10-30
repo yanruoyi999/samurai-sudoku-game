@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
 import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
 import { useTranslations } from 'next-intl';
+import { getGameHistory, getInProgressGames, type GameHistoryEntry } from '@/lib/storage/game-history';
+import Link from 'next/link';
 
 export function ActionBar() {
   const t = useTranslations('actions');
@@ -32,6 +34,23 @@ export function ActionBar() {
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard' | 'evil'>('medium');
+  const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
+  const [inProgressGames, setInProgressGames] = useState<any[]>([]);
+
+  // Load game history
+  useEffect(() => {
+    const loadHistory = () => {
+      const completed = getGameHistory();
+      const inProgress = getInProgressGames();
+      setGameHistory(completed.slice(0, 5)); // Show last 5 completed games
+      setInProgressGames(inProgress.slice(0, 3)); // Show last 3 in-progress games
+    };
+
+    loadHistory();
+    // Refresh history every 5 seconds to pick up new saves
+    const interval = setInterval(loadHistory, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const canUndo = historyIndex >= 0;
   const canRedo = historyIndex < history.length - 1;
@@ -231,6 +250,104 @@ export function ActionBar() {
               🔄 {t('reset')}
             </button>
           </div>
+        </div>
+
+        {/* Keyboard Navigation Help */}
+        <div className="space-y-2 pt-4 border-t">
+          <h3 className="text-sm font-semibold">⌨️ 键盘操作</h3>
+          <div className="text-xs space-y-1 text-muted-foreground">
+            <div className="flex items-center justify-between">
+              <span>方向键 ←↑↓→</span>
+              <span className="text-xs opacity-75">导航</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>数字键 1-9</span>
+              <span className="text-xs opacity-75">填入数字</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Backspace/Delete</span>
+              <span className="text-xs opacity-75">清除</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Ctrl+Z / Ctrl+Y</span>
+              <span className="text-xs opacity-75">撤销/重做</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Game History */}
+        <div className="space-y-2 pt-4 border-t">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold">📊 游戏记录</h3>
+            <Link
+              href="/games/samurai/archive"
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              查看全部
+            </Link>
+          </div>
+
+          {/* In Progress Games */}
+          {inProgressGames.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">进行中:</p>
+              {inProgressGames.map((game, idx) => (
+                <div
+                  key={idx}
+                  className="p-2 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded text-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium capitalize">{game.difficulty}</span>
+                    <span className="text-muted-foreground">
+                      {Math.floor(game.currentTime / 60)}:{(game.currentTime % 60).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                  <div className="text-muted-foreground text-[10px] mt-1">
+                    {new Date(game.lastPlayed).toLocaleDateString('zh-CN', {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Completed Games */}
+          {gameHistory.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">已完成:</p>
+              {gameHistory.map((game, idx) => (
+                <div
+                  key={idx}
+                  className="p-2 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded text-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium capitalize">{game.difficulty}</span>
+                    <span className="text-muted-foreground">
+                      {Math.floor(game.stats.timeSpent / 60)}:{(game.stats.timeSpent % 60).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                  <div className="text-muted-foreground text-[10px] mt-1">
+                    ✓ {new Date(game.completedAt).toLocaleDateString('zh-CN', {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {gameHistory.length === 0 && inProgressGames.length === 0 && (
+            <div className="p-3 text-xs text-center text-muted-foreground bg-secondary/50 rounded">
+              暂无游戏记录
+            </div>
+          )}
         </div>
       </div>
 
