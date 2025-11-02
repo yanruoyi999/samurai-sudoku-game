@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
-import { getRandomPuzzleFromPool } from "@/lib/sudoku/puzzle-pool";
+import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
 import { useTranslations, useLocale } from 'next-intl';
 import { getGameHistory, getInProgressGames, type GameHistoryEntry } from '@/lib/storage/game-history';
 import Link from 'next/link';
@@ -73,13 +73,12 @@ export function ActionBar() {
   const handleNewGame = () => {
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       try {
-        // Use pre-generated puzzle pool - instant loading!
-        const newPuzzle = getRandomPuzzleFromPool(selectedDifficulty);
+        const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
         loadPuzzle(newPuzzle);
         setHintMessage(null);
       } catch (error) {
-        console.error('Failed to load puzzle:', error);
-        alert('Failed to load a new puzzle. Please try again.');
+        console.error('Failed to generate puzzle:', error);
+        alert('Failed to generate a new puzzle. Please try again.');
       }
     }
   };
