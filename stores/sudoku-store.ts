@@ -5,13 +5,6 @@ import { GlobalPosition } from '@/lib/sudoku/coordinates';
 import { Puzzle, Move, GameStatus } from '@/lib/sudoku/types';
 import { saveGameToHistory, saveInProgressGame, removeInProgressGame } from '@/lib/storage/game-history';
 
-// Debounce helper to prevent excessive localStorage writes
-let saveTimeout: NodeJS.Timeout | null = null;
-const debouncedSave = (fn: () => void, delay: number = 1000) => {
-  if (saveTimeout) clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(fn, delay);
-};
-
 interface SudokuStore {
   // Puzzle info
   puzzleId: string | null;
@@ -93,10 +86,8 @@ export const useSudokuStore = create<SudokuStore>()(
       // Load puzzle
       loadPuzzle: (puzzle) => {
         const previous = get();
-
-        // Defer cleanup to avoid blocking UI
         if (previous.puzzle?.id) {
-          setTimeout(() => removeInProgressGame(previous.puzzle.id), 100);
+          removeInProgressGame(previous.puzzle.id);
         }
 
         const engine = new SudokuEngine(puzzle);
@@ -119,8 +110,13 @@ export const useSudokuStore = create<SudokuStore>()(
           candidates: new Map(),
         });
 
-        // Defer save to avoid blocking UI - save after first move instead
-        // saveInProgressGame will be called on first setCell
+        saveInProgressGame({
+          puzzle,
+          currentTime: 0,
+          hintsUsed: 0,
+          lastPlayed: new Date().toISOString(),
+          difficulty: puzzle.difficulty,
+        });
       },
 
       // Set cell value
@@ -161,47 +157,39 @@ export const useSudokuStore = create<SudokuStore>()(
 
           set({ status: 'completed' });
 
-          // Defer save to avoid blocking completion celebration
+          // Save to completed history and remove from in-progress
           if (state.puzzle) {
-            const completedPuzzle = state.puzzle;
-            setTimeout(() => {
-              saveGameToHistory({
-                puzzle: completedPuzzle,
-                stats: {
-                  puzzleId: completedPuzzle.id,
-                  timeSpent,
-                  hintsUsed: state.hintsUsed,
-                  mistakesMade: 0,
-                  completedAt: new Date().toISOString(),
-                },
+            saveGameToHistory({
+              puzzle: state.puzzle,
+              stats: {
+                puzzleId: state.puzzle.id,
+                timeSpent,
+                hintsUsed: state.hintsUsed,
+                mistakesMade: 0, // TODO: track mistakes
                 completedAt: new Date().toISOString(),
-                difficulty: completedPuzzle.difficulty,
-              });
+              },
+              completedAt: new Date().toISOString(),
+              difficulty: state.puzzle.difficulty,
+            });
 
-              // Remove from in-progress games
-              removeInProgressGame(completedPuzzle.id);
-            }, 500);
+            // Remove from in-progress games
+            removeInProgressGame(state.puzzle.id);
           }
         } else {
-          // Debounced save to avoid blocking UI on every move
+          // Save progress for incomplete games (auto-save)
           const state = get();
           if (state.puzzle) {
-            debouncedSave(() => {
-              const currentState = get();
-              if (currentState.puzzle) {
-                const timeSpent = currentState.startTime
-                  ? Math.floor((Date.now() - currentState.startTime) / 1000)
-                  : currentState.elapsedTime;
+            const timeSpent = state.startTime
+              ? Math.floor((Date.now() - state.startTime) / 1000)
+              : state.elapsedTime;
 
-                saveInProgressGame({
-                  puzzle: currentState.puzzle,
-                  currentTime: timeSpent,
-                  hintsUsed: currentState.hintsUsed,
-                  lastPlayed: new Date().toISOString(),
-                  difficulty: currentState.puzzle.difficulty,
-                });
-              }
-            }, 2000); // Wait 2 seconds after last move before saving
+            saveInProgressGame({
+              puzzle: state.puzzle,
+              currentTime: timeSpent,
+              hintsUsed: state.hintsUsed,
+              lastPlayed: new Date().toISOString(),
+              difficulty: state.puzzle.difficulty,
+            });
           }
         }
       },
@@ -346,25 +334,25 @@ export const useSudokuStore = create<SudokuStore>()(
     {
       name: 'sudoku-progress',
       storage: createJSONStorage(() => localStorage),
-      // Only persist minimal necessary fields to avoid blocking
+      // Only persist necessary fields
       partialize: (state) => ({
         puzzleId: state.puzzleId,
         difficulty: state.difficulty,
-        // Store only essential puzzle data, not full grids
-        puzzle: state.puzzle ? {
-          id: state.puzzle.id,
-          difficulty: state.puzzle.difficulty,
-          metadata: state.puzzle.metadata,
-          // Don't store full grids - they're huge!
-        } : null,
-        // Store minimal board state
+        puzzle: state.puzzle,
+        board: state.board,
+        initial: state.initial,
+        candidates: Array.from(state.candidates.entries()).map(([k, v]) => [
+          k,
+          Array.from(v),
+        ]),
         elapsedTime: state.elapsedTime,
+        history: state.history,
+        historyIndex: state.historyIndex,
         hintsUsed: state.hintsUsed,
         status: state.status,
         showCandidates: state.showCandidates,
         showConflicts: state.showConflicts,
         isPaused: state.isPaused,
-        // Don't persist: board, initial, candidates, history (too large!)
       }),
       // Restore candidates from serialized format
       onRehydrateStorage: () => (state) => {
