@@ -62,9 +62,9 @@ export default function SamuraiGamePage() {
       <header className="border-b px-4 py-3 flex items-center justify-between flex-wrap gap-2">
         <Link
           href={`/${locale}`}
-          className="text-sm text-muted-foreground hover:text-foreground"
+          className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground border px-3 py-1 rounded-md transition-colors"
         >
-          {t('backToHome')}
+          ← {t('backToHome')}
         </Link>
 
         <div className="flex items-center gap-2 md:gap-4 flex-wrap">

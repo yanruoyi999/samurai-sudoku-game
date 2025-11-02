@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
 import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { getGameHistory, getInProgressGames, type GameHistoryEntry } from '@/lib/storage/game-history';
 import Link from 'next/link';
 
@@ -13,6 +13,7 @@ export function ActionBar() {
   const tStats = useTranslations('stats');
   const tHints = useTranslations('hints');
   const tGame = useTranslations('game');
+  const locale = useLocale();
 
   const {
     undo,
@@ -30,12 +31,14 @@ export function ActionBar() {
     incrementHints,
     selectCell,
     loadPuzzle,
+    difficulty,
   } = useSudokuStore();
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard' | 'evil'>('medium');
   const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
   const [inProgressGames, setInProgressGames] = useState<any[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Load game history
   useEffect(() => {
@@ -52,6 +55,12 @@ export function ActionBar() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (difficulty && ['easy', 'medium', 'hard', 'evil'].includes(difficulty as any)) {
+      setSelectedDifficulty(difficulty as 'easy' | 'medium' | 'hard' | 'evil');
+    }
+  }, [difficulty]);
+
   const canUndo = historyIndex >= 0;
   const canRedo = historyIndex < history.length - 1;
 
@@ -61,15 +70,35 @@ export function ActionBar() {
     }
   };
 
-  const handleNewGame = () => {
+  const handleNewGame = async () => {
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       try {
-        const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
+        setIsGenerating(true);
+        setHintMessage('正在生成谜题，请稍候...');
+
+        // Use setTimeout to allow UI to update before heavy computation
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+        // Run generation in next event loop to prevent blocking
+        const newPuzzle = await new Promise<ReturnType<typeof generateSamuraiPuzzle>>((resolve) => {
+          setTimeout(() => {
+            try {
+              const puzzle = generateSamuraiPuzzle(selectedDifficulty);
+              resolve(puzzle);
+            } catch (err) {
+              throw err;
+            }
+          }, 10);
+        });
+
         loadPuzzle(newPuzzle);
         setHintMessage(null);
       } catch (error) {
         console.error('Failed to generate puzzle:', error);
         alert('Failed to generate a new puzzle. Please try again.');
+        setHintMessage(null);
+      } finally {
+        setIsGenerating(false);
       }
     }
   };
@@ -182,10 +211,18 @@ export function ActionBar() {
 
           <button
             onClick={handleNewGame}
-            className="w-full px-4 py-3 text-sm font-medium rounded-md border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+            disabled={isGenerating}
+            className="w-full px-4 py-3 text-sm font-medium rounded-md border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-60 disabled:cursor-wait"
           >
-            ✨ {t('newGame')}
+            {isGenerating ? '…' : '✨'} {t('newGame')}
           </button>
+
+          <Link
+            href={`/${locale}`}
+            className="block w-full px-4 py-2 text-sm font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-colors text-center"
+          >
+            {t('backHome') ?? '← Back to home'}
+          </Link>
 
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -452,10 +489,17 @@ export function ActionBar() {
             </button>
             <button
               onClick={handleNewGame}
-              className="px-3 py-2 text-xs font-medium rounded-md border border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors whitespace-nowrap"
+              disabled={isGenerating}
+              className="px-3 py-2 text-xs font-medium rounded-md border border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors whitespace-nowrap disabled:opacity-60 disabled:cursor-wait"
             >
-              ✨ {t('newGame')}
+              {isGenerating ? '…' : '✨'} {t('newGame')}
             </button>
+            <Link
+              href={`/${locale}`}
+              className="px-3 py-2 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-colors whitespace-nowrap"
+            >
+              {t('backHome') ?? '← Back to home'}
+            </Link>
           </div>
         </div>
       </div>

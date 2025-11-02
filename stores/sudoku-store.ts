@@ -85,6 +85,11 @@ export const useSudokuStore = create<SudokuStore>()(
 
       // Load puzzle
       loadPuzzle: (puzzle) => {
+        const previous = get();
+        if (previous.puzzle?.id) {
+          removeInProgressGame(previous.puzzle.id);
+        }
+
         const engine = new SudokuEngine(puzzle);
 
         set({
@@ -103,6 +108,14 @@ export const useSudokuStore = create<SudokuStore>()(
           hintsUsed: 0,
           selectedCell: null,
           candidates: new Map(),
+        });
+
+        saveInProgressGame({
+          puzzle,
+          currentTime: 0,
+          hintsUsed: 0,
+          lastPlayed: new Date().toISOString(),
+          difficulty: puzzle.difficulty,
         });
       },
 

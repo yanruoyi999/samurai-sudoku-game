@@ -24,7 +24,8 @@
     "newGameConfirm": "Start a new puzzle? Current progress will be lost.",
     "resetConfirm": "Are you sure you want to reset the puzzle? All progress will be lost.",
     "pause": "Pause",
-    "resume": "Resume"
+    "resume": "Resume",
+    "backHome": "← Back to home"
   },
   "hints": {
     "noHint": "No hints available. Try using the undo button or clearing some cells.",
