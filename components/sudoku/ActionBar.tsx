@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
-import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
+import { getRandomPuzzleFromPool } from "@/lib/sudoku/puzzle-pool";
 import { useTranslations, useLocale } from 'next-intl';
 import { getGameHistory, getInProgressGames, type GameHistoryEntry } from '@/lib/storage/game-history';
 import Link from 'next/link';
@@ -70,35 +70,16 @@ export function ActionBar() {
     }
   };
 
-  const handleNewGame = async () => {
+  const handleNewGame = () => {
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       try {
-        setIsGenerating(true);
-        setHintMessage('正在生成谜题，请稍候...');
-
-        // Use setTimeout to allow UI to update before heavy computation
-        await new Promise<void>((resolve) => setTimeout(resolve, 100));
-
-        // Run generation in next event loop to prevent blocking
-        const newPuzzle = await new Promise<ReturnType<typeof generateSamuraiPuzzle>>((resolve) => {
-          setTimeout(() => {
-            try {
-              const puzzle = generateSamuraiPuzzle(selectedDifficulty);
-              resolve(puzzle);
-            } catch (err) {
-              throw err;
-            }
-          }, 10);
-        });
-
+        // Use pre-generated puzzle pool - instant loading!
+        const newPuzzle = getRandomPuzzleFromPool(selectedDifficulty);
         loadPuzzle(newPuzzle);
         setHintMessage(null);
       } catch (error) {
-        console.error('Failed to generate puzzle:', error);
-        alert('Failed to generate a new puzzle. Please try again.');
-        setHintMessage(null);
-      } finally {
-        setIsGenerating(false);
+        console.error('Failed to load puzzle:', error);
+        alert('Failed to load a new puzzle. Please try again.');
       }
     }
   };
