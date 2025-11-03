@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
 import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
@@ -39,6 +39,7 @@ export function ActionBar() {
   const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
   const [inProgressGames, setInProgressGames] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   // Load game history
   useEffect(() => {
@@ -71,25 +72,30 @@ export function ActionBar() {
   };
 
   const handleNewGame = () => {
-    if (isGenerating) return; // Prevent rapid clicks
+    if (isGenerating || isPending) return; // Prevent rapid clicks
 
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       setIsGenerating(true);
 
-      // Use setTimeout to ensure UI updates before heavy computation
-      setTimeout(() => {
-        try {
-          const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
-          loadPuzzle(newPuzzle);
-          setHintMessage(null);
-        } catch (error) {
-          console.error('Failed to generate puzzle:', error);
-          alert('Failed to generate a new puzzle. Please try again.');
-        } finally {
-          // Small delay to ensure state updates complete
-          setTimeout(() => setIsGenerating(false), 100);
-        }
-      }, 10);
+      // Generate puzzle immediately (it's fast now)
+      const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
+
+      // Use startTransition to mark this as a non-urgent update
+      startTransition(() => {
+        // Wait for next frame to ensure DOM is stable
+        requestAnimationFrame(() => {
+          try {
+            loadPuzzle(newPuzzle);
+            setHintMessage(null);
+          } catch (error) {
+            console.error('Failed to load puzzle:', error);
+            alert('Failed to load the new puzzle. Please try again.');
+          } finally {
+            // Wait for state to settle before allowing new games
+            setTimeout(() => setIsGenerating(false), 200);
+          }
+        });
+      });
     }
   };
 

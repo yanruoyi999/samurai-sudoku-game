@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SAMPLE_PUZZLE } from "@/lib/sudoku/sample-puzzle";
@@ -36,7 +36,21 @@ export default function SamuraiGamePage() {
   const tGame = useTranslations('game');
   const locale = useLocale();
 
-  const { puzzleId, loadPuzzle, status } = useSudokuStore();
+  const { puzzleId, loadPuzzle, status, puzzle } = useSudokuStore();
+  const [prevPuzzleId, setPrevPuzzleId] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Detect puzzle changes and show loading overlay
+  useEffect(() => {
+    if (puzzleId && puzzleId !== prevPuzzleId) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setPrevPuzzleId(puzzleId);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [puzzleId, prevPuzzleId]);
 
   useEffect(() => {
     // Load sample puzzle if no puzzle loaded
@@ -57,7 +71,17 @@ export default function SamuraiGamePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Loading Overlay - Prevents interaction during puzzle loading */}
+      {isTransitioning && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
+            <p className="text-lg font-medium">{tGame('loadingPuzzle')}</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b px-4 py-3 flex items-center justify-between flex-wrap gap-2">
         <Link
