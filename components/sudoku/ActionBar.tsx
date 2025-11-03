@@ -71,15 +71,25 @@ export function ActionBar() {
   };
 
   const handleNewGame = () => {
+    if (isGenerating) return; // Prevent rapid clicks
+
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
-      try {
-        const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
-        loadPuzzle(newPuzzle);
-        setHintMessage(null);
-      } catch (error) {
-        console.error('Failed to generate puzzle:', error);
-        alert('Failed to generate a new puzzle. Please try again.');
-      }
+      setIsGenerating(true);
+
+      // Use setTimeout to ensure UI updates before heavy computation
+      setTimeout(() => {
+        try {
+          const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
+          loadPuzzle(newPuzzle);
+          setHintMessage(null);
+        } catch (error) {
+          console.error('Failed to generate puzzle:', error);
+          alert('Failed to generate a new puzzle. Please try again.');
+        } finally {
+          // Small delay to ensure state updates complete
+          setTimeout(() => setIsGenerating(false), 100);
+        }
+      }, 10);
     }
   };
 

@@ -94,7 +94,7 @@ export default function SamuraiGamePage() {
           <div className="flex-1 overflow-y-auto p-4">
             <div className="max-w-3xl mx-auto space-y-4">
               <StatsPanel />
-              <SamuraiBoard />
+              <SamuraiBoard key={puzzleId} />
             </div>
           </div>
 
@@ -108,7 +108,7 @@ export default function SamuraiGamePage() {
         <div className="hidden md:block lg:hidden h-full overflow-y-auto">
           <div className="container mx-auto px-4 py-6 space-y-6">
             <StatsPanel />
-            <SamuraiBoard />
+            <SamuraiBoard key={puzzleId} />
             <ActionBar />
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function SamuraiGamePage() {
         <div className="md:hidden h-full flex flex-col">
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
             <StatsPanel />
-            <SamuraiBoard />
+            <SamuraiBoard key={puzzleId} />
           </div>
 
           {/* Mobile Number Pad */}
