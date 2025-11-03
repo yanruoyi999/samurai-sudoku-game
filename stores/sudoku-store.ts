@@ -87,10 +87,9 @@ export const useSudokuStore = create<SudokuStore>()(
       loadPuzzle: (puzzle) => {
         const previous = get();
 
-        // Async cleanup to avoid blocking
+        // Remove previous in-progress game
         if (previous.puzzle?.id) {
-          const oldId = previous.puzzle.id;
-          requestIdleCallback(() => removeInProgressGame(oldId), { timeout: 1000 });
+          removeInProgressGame(previous.puzzle.id);
         }
 
         const engine = new SudokuEngine(puzzle);
@@ -113,16 +112,14 @@ export const useSudokuStore = create<SudokuStore>()(
           candidates: new Map(),
         });
 
-        // Async save to avoid blocking
-        requestIdleCallback(() => {
-          saveInProgressGame({
-            puzzle,
-            currentTime: 0,
-            hintsUsed: 0,
-            lastPlayed: new Date().toISOString(),
-            difficulty: puzzle.difficulty,
-          });
-        }, { timeout: 1000 });
+        // Save new in-progress game
+        saveInProgressGame({
+          puzzle,
+          currentTime: 0,
+          hintsUsed: 0,
+          lastPlayed: new Date().toISOString(),
+          difficulty: puzzle.difficulty,
+        });
       },
 
       // Set cell value
