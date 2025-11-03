@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { SudokuEngine } from '@/lib/sudoku/engine';
 import { GlobalPosition } from '@/lib/sudoku/coordinates';
 import { Puzzle, Move, GameStatus } from '@/lib/sudoku/types';
-import { saveGameToHistory, saveInProgressGame, removeInProgressGame } from '@/lib/storage/game-history';
+import { saveGameToHistory } from '@/lib/storage/game-history';
 
 interface SudokuStore {
   // Puzzle info
@@ -85,13 +85,6 @@ export const useSudokuStore = create<SudokuStore>()(
 
       // Load puzzle
       loadPuzzle: (puzzle) => {
-        const previous = get();
-
-        // Remove previous in-progress game
-        if (previous.puzzle?.id) {
-          removeInProgressGame(previous.puzzle.id);
-        }
-
         const engine = new SudokuEngine(puzzle);
 
         set({
@@ -112,14 +105,8 @@ export const useSudokuStore = create<SudokuStore>()(
           candidates: new Map(),
         });
 
-        // Save new in-progress game
-        saveInProgressGame({
-          puzzle,
-          currentTime: 0,
-          hintsUsed: 0,
-          lastPlayed: new Date().toISOString(),
-          difficulty: puzzle.difficulty,
-        });
+        // Note: Zustand persist middleware will automatically save the state
+        // No need to manually call saveInProgressGame anymore
       },
 
       // Set cell value
@@ -160,7 +147,7 @@ export const useSudokuStore = create<SudokuStore>()(
 
           set({ status: 'completed' });
 
-          // Save to completed history and remove from in-progress
+          // Save to completed history
           if (state.puzzle) {
             saveGameToHistory({
               puzzle: state.puzzle,
@@ -174,27 +161,10 @@ export const useSudokuStore = create<SudokuStore>()(
               completedAt: new Date().toISOString(),
               difficulty: state.puzzle.difficulty,
             });
-
-            // Remove from in-progress games
-            removeInProgressGame(state.puzzle.id);
-          }
-        } else {
-          // Save progress for incomplete games (auto-save)
-          const state = get();
-          if (state.puzzle) {
-            const timeSpent = state.startTime
-              ? Math.floor((Date.now() - state.startTime) / 1000)
-              : state.elapsedTime;
-
-            saveInProgressGame({
-              puzzle: state.puzzle,
-              currentTime: timeSpent,
-              hintsUsed: state.hintsUsed,
-              lastPlayed: new Date().toISOString(),
-              difficulty: state.puzzle.difficulty,
-            });
           }
         }
+        // Note: Zustand persist automatically saves progress after each move
+        // No need to manually save to localStorage on every cell change
       },
 
       // Clear cell
@@ -336,12 +306,52 @@ export const useSudokuStore = create<SudokuStore>()(
     }),
     {
       name: 'sudoku-progress',
-      storage: createJSONStorage(() => localStorage),
-      // Only persist necessary fields
+      storage: createJSONStorage(() => ({
+        getItem: (name) => {
+          try {
+            return localStorage.getItem(name);
+          } catch (error) {
+            console.error('Failed to read from localStorage:', error);
+            return null;
+          }
+        },
+        setItem: (name, value) => {
+          try {
+            localStorage.setItem(name, value);
+          } catch (error) {
+            if (error instanceof Error && error.name === 'QuotaExceededError') {
+              console.warn('localStorage quota exceeded. Clearing old data...');
+              // Clear old puzzle cache to free up space
+              try {
+                const keys = Object.keys(localStorage).filter(
+                  (k) => k.startsWith('puzzle:') || k.startsWith('sudoku-in-progress')
+                );
+                keys.forEach((key) => localStorage.removeItem(key));
+                // Try again after clearing
+                localStorage.setItem(name, value);
+              } catch (retryError) {
+                console.error('Failed to save even after clearing:', retryError);
+              }
+            } else {
+              console.error('Failed to write to localStorage:', error);
+            }
+          }
+        },
+        removeItem: (name) => {
+          try {
+            localStorage.removeItem(name);
+          } catch (error) {
+            console.error('Failed to remove from localStorage:', error);
+          }
+        },
+      })),
+      // Only persist necessary fields (exclude large puzzle solutions)
       partialize: (state) => ({
         puzzleId: state.puzzleId,
         difficulty: state.difficulty,
-        puzzle: state.puzzle,
+        // Only save puzzle metadata and initial values, not solutions
+        puzzleInitial: state.puzzle ? state.puzzle.grids.map(g => g.initial) : null,
+        puzzleMetadata: state.puzzle?.metadata,
         board: state.board,
         initial: state.initial,
         candidates: Array.from(state.candidates.entries()).map(([k, v]) => [
@@ -371,18 +381,34 @@ export const useSudokuStore = create<SudokuStore>()(
           state.candidates = new Map();
         }
 
-        if (state.puzzle) {
-          const engine = new SudokuEngine(state.puzzle as Puzzle);
+        // Reconstruct puzzle from saved initial values (without solutions to save space)
+        const stateAny = state as any;
+        if (stateAny.puzzleInitial && stateAny.puzzleMetadata) {
+          const grids = stateAny.puzzleInitial.map((initial: number[][]) => ({
+            initial,
+            solution: [] as number[][], // Empty solution to save localStorage space
+          }));
+
+          const puzzle: Puzzle = {
+            id: state.puzzleId || `restored-${Date.now()}`,
+            difficulty: (state.difficulty || 'medium') as any,
+            grids: grids as any,
+            metadata: stateAny.puzzleMetadata,
+          };
+
+          const engine = new SudokuEngine(puzzle);
 
           if (state.board) {
             engine.loadState(state.board as number[][]);
           }
 
+          (state as any).puzzle = puzzle;
           state.engine = engine;
           state.board = engine.getBoard();
           state.initial = engine.getInitial();
         } else {
           state.engine = null;
+          (state as any).puzzle = null;
         }
 
         state.showCandidates = state.showCandidates ?? true;
