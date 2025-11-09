@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Script from "next/script";
 import { getLocale, getTranslations, getMessages } from 'next-intl/server';
 
 export default async function HomePage() {
@@ -41,6 +42,7 @@ export default async function HomePage() {
   };
 
   return (
+    <>
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
@@ -151,12 +153,15 @@ export default async function HomePage() {
       <footer className="py-8 px-4 border-t text-center text-sm text-muted-foreground">
         <p>{t('footer')}</p>
       </footer>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
     </main>
+
+    <Script
+      id="faq-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      strategy="afterInteractive"
+    />
+    </>
   );
 }
 
