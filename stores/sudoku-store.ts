@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import { SudokuEngine } from '@/lib/sudoku/engine';
 import { GlobalPosition } from '@/lib/sudoku/coordinates';
 import { Puzzle, Move, GameStatus } from '@/lib/sudoku/types';
@@ -59,9 +58,7 @@ const createEmptyBoard = () =>
     .fill(0)
     .map(() => Array(21).fill(0));
 
-export const useSudokuStore = create<SudokuStore>()(
-  persist(
-    (set, get) => ({
+export const useSudokuStore = create<SudokuStore>()((set, get) => ({
       // Initial state
       puzzleId: null,
       difficulty: null,
@@ -303,125 +300,5 @@ export const useSudokuStore = create<SudokuStore>()(
             .forEach((key) => localStorage.removeItem(key));
         }
       },
-    }),
-    {
-      name: 'sudoku-progress',
-      storage: createJSONStorage(() => ({
-        getItem: (name) => {
-          try {
-            return localStorage.getItem(name);
-          } catch (error) {
-            console.error('Failed to read from localStorage:', error);
-            return null;
-          }
-        },
-        setItem: (name, value) => {
-          try {
-            localStorage.setItem(name, value);
-          } catch (error) {
-            if (error instanceof Error && error.name === 'QuotaExceededError') {
-              console.warn('localStorage quota exceeded. Clearing old data...');
-              // Clear old puzzle cache to free up space
-              try {
-                const keys = Object.keys(localStorage).filter(
-                  (k) => k.startsWith('puzzle:') || k.startsWith('sudoku-in-progress')
-                );
-                keys.forEach((key) => localStorage.removeItem(key));
-                // Try again after clearing
-                localStorage.setItem(name, value);
-              } catch (retryError) {
-                console.error('Failed to save even after clearing:', retryError);
-              }
-            } else {
-              console.error('Failed to write to localStorage:', error);
-            }
-          }
-        },
-        removeItem: (name) => {
-          try {
-            localStorage.removeItem(name);
-          } catch (error) {
-            console.error('Failed to remove from localStorage:', error);
-          }
-        },
-      })),
-      // Only persist necessary fields (exclude large puzzle solutions)
-      partialize: (state) => ({
-        puzzleId: state.puzzleId,
-        difficulty: state.difficulty,
-        // Only save puzzle metadata and initial values, not solutions
-        puzzleInitial: state.puzzle ? state.puzzle.grids.map(g => g.initial) : null,
-        puzzleMetadata: state.puzzle?.metadata,
-        board: state.board,
-        initial: state.initial,
-        candidates: Array.from(state.candidates.entries()).map(([k, v]) => [
-          k,
-          Array.from(v),
-        ]),
-        elapsedTime: state.elapsedTime,
-        history: state.history,
-        historyIndex: state.historyIndex,
-        hintsUsed: state.hintsUsed,
-        status: state.status,
-        showCandidates: state.showCandidates,
-        showConflicts: state.showConflicts,
-        isPaused: state.isPaused,
-      }),
-      // Restore candidates from serialized format
-      onRehydrateStorage: () => (state) => {
-        if (!state) {
-          return;
-        }
-
-        if (state.candidates && Array.isArray(state.candidates)) {
-          state.candidates = new Map(
-            (state.candidates as any[]).map(([k, v]) => [k, new Set(v)])
-          ) as unknown as Map<string, Set<number>>;
-        } else {
-          state.candidates = new Map();
-        }
-
-        // Reconstruct puzzle from saved initial values (without solutions to save space)
-        const stateAny = state as any;
-        if (stateAny.puzzleInitial && stateAny.puzzleMetadata) {
-          const grids = stateAny.puzzleInitial.map((initial: number[][]) => ({
-            initial,
-            solution: [] as number[][], // Empty solution to save localStorage space
-          }));
-
-          const puzzle: Puzzle = {
-            id: state.puzzleId || `restored-${Date.now()}`,
-            difficulty: (state.difficulty || 'medium') as any,
-            grids: grids as any,
-            metadata: stateAny.puzzleMetadata,
-          };
-
-          const engine = new SudokuEngine(puzzle);
-
-          if (state.board) {
-            engine.loadState(state.board as number[][]);
-          }
-
-          (state as any).puzzle = puzzle;
-          state.engine = engine;
-          state.board = engine.getBoard();
-          state.initial = engine.getInitial();
-        } else {
-          state.engine = null;
-          (state as any).puzzle = null;
-        }
-
-        state.showCandidates = state.showCandidates ?? true;
-        state.showConflicts = state.showConflicts ?? true;
-        state.isPaused = state.isPaused ?? false;
-
-        if (state.status === 'playing' && !state.isPaused) {
-          const elapsed = state.elapsedTime ?? 0;
-          state.startTime = Date.now() - elapsed * 1000;
-        } else {
-          state.startTime = null;
-        }
-      },
-    }
-  )
+    })
 );
