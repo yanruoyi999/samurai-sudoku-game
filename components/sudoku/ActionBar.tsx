@@ -287,23 +287,23 @@ export function ActionBar() {
 
         {/* Keyboard Navigation Help */}
         <div className="space-y-2 pt-4 border-t">
-          <h3 className="text-sm font-semibold">⌨️ 键盘操作</h3>
+          <h3 className="text-sm font-semibold">⌨️ Keyboard Controls</h3>
           <div className="text-xs space-y-1 text-muted-foreground">
             <div className="flex items-center justify-between">
-              <span>方向键 ←↑↓→</span>
-              <span className="text-xs opacity-75">导航</span>
+              <span>Arrow Keys ←↑↓→</span>
+              <span className="text-xs opacity-75">Navigate</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>数字键 1-9</span>
-              <span className="text-xs opacity-75">填入数字</span>
+              <span>Number Keys 1-9</span>
+              <span className="text-xs opacity-75">Enter Number</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Backspace/Delete</span>
-              <span className="text-xs opacity-75">清除</span>
+              <span className="text-xs opacity-75">Clear</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Ctrl+Z / Ctrl+Y</span>
-              <span className="text-xs opacity-75">撤销/重做</span>
+              <span className="text-xs opacity-75">Undo/Redo</span>
             </div>
           </div>
         </div>
@@ -311,19 +311,19 @@ export function ActionBar() {
         {/* Game History */}
         <div className="space-y-2 pt-4 border-t">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">📊 游戏记录</h3>
+            <h3 className="text-sm font-semibold">📊 Game History</h3>
             <Link
               href="/games/samurai/archive"
               className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
             >
-              查看全部
+              View All
             </Link>
           </div>
 
           {/* In Progress Games */}
           {inProgressGames.length > 0 && (
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">进行中:</p>
+              <p className="text-xs text-muted-foreground">In Progress:</p>
               {inProgressGames.map((game, idx) => (
                 <div
                   key={idx}
@@ -351,7 +351,7 @@ export function ActionBar() {
           {/* Completed Games */}
           {gameHistory.length > 0 && (
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">已完成:</p>
+              <p className="text-xs text-muted-foreground">Completed:</p>
               {gameHistory.map((game, idx) => (
                 <div
                   key={idx}
@@ -378,7 +378,7 @@ export function ActionBar() {
 
           {gameHistory.length === 0 && inProgressGames.length === 0 && (
             <div className="p-3 text-xs text-center text-muted-foreground bg-secondary/50 rounded">
-              暂无游戏记录
+              No game history yet
             </div>
           )}
         </div>
