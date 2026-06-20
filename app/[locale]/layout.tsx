@@ -6,6 +6,7 @@ import { locales } from '@/i18n';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { ThemeProvider } from "@/components/theme-provider";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { TypeformFeedbackButton } from "@/components/feedback/TypeformFeedbackButton";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -82,6 +83,7 @@ export default async function LocaleLayout({
         <div className="font-sans">
           {children}
           <InstallPrompt />
+          <TypeformFeedbackButton locale={locale} />
         </div>
       </ThemeProvider>
     </NextIntlClientProvider>

@@ -55,12 +55,12 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   }, [puzzleId, prevPuzzleId]);
 
   useEffect(() => {
-    if (!puzzleId) {
+    if (puzzleId !== initialPuzzle.id) {
       loadPuzzle(initialPuzzle);
     }
   }, [puzzleId, initialPuzzle, loadPuzzle]);
 
-  if (!puzzleId) {
+  if (puzzleId !== initialPuzzle.id) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -87,7 +87,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
           href={`/${locale}`}
           className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground border px-3 py-1 rounded-md transition-colors"
         >
-          ← {t('backToHome')}
+          {t('backToHome')}
         </Link>
 
         <div className="flex items-center gap-2 md:gap-4 flex-wrap">
@@ -103,8 +103,8 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
 
       <main className="flex-1 overflow-hidden">
         {status === "completed" && (
-          <div className="mx-4 mt-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
-            <p className="text-lg font-semibold text-green-700 dark:text-green-400">
+          <div className="mx-4 mt-4 p-4 bg-primary/10 border border-primary/40 rounded-lg text-center">
+            <p className="text-lg font-semibold text-primary">
               {tGame('completed')}
             </p>
           </div>
@@ -119,6 +119,9 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
           </div>
 
           <div className="w-80 xl:w-96 border-l overflow-y-auto">
+            <div className="border-b">
+              <NumberPad showCandidates />
+            </div>
             <ActionBar />
           </div>
         </div>
@@ -127,6 +130,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
           <div className="container mx-auto px-4 py-6 space-y-6">
             <StatsPanel />
             <SamuraiBoard key={puzzleId} />
+            <NumberPad showCandidates />
             <ActionBar />
           </div>
         </div>

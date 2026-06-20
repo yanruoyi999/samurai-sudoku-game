@@ -79,14 +79,14 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
 
       <main className="flex-1 container mx-auto px-4 py-8">
         {status === "completed" && (
-          <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
-            <p className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">
+          <div className="mb-4 p-4 bg-primary/10 border border-primary/40 rounded-lg text-center">
+            <p className="text-lg font-semibold text-primary mb-2">
               {t('completed')}
             </p>
             <div className="flex gap-4 justify-center mt-4">
               <Link
                 href={`/${locale}/games/samurai/archive`}
-                className="px-4 py-2 border border-green-600 text-green-700 dark:text-green-400 rounded hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors"
+                className="px-4 py-2 border border-primary/50 text-primary rounded hover:bg-primary/10 transition-colors"
               >
                 {tArchive('browseMore')}
               </Link>
@@ -96,6 +96,9 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
 
         <div className="max-w-4xl mx-auto">
           <SamuraiBoard />
+          <div className="hidden md:block mt-6">
+            <NumberPad showCandidates />
+          </div>
         </div>
       </main>
 
@@ -107,4 +110,3 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
     </div>
   );
 }
-

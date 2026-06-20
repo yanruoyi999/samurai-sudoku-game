@@ -3,6 +3,7 @@ import { Fraunces } from "next/font/google";
 import { headers } from "next/headers";
 import { locales } from "@/i18n";
 import { getSiteBaseUrl } from "@/lib/site-url";
+import { ClarityConsent } from "@/components/analytics/ClarityConsent";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -54,14 +55,17 @@ export default function RootLayout({
     <html lang={htmlLang} className={fraunces.variable} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#f0eadf" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="武士数独" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        {children}
+        <ClarityConsent locale={htmlLang} />
+      </body>
     </html>
   );
 }

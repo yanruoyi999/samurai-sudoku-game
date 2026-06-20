@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '', changeFrequency: 'daily' as const, priority: 1 },
     { path: '/games/samurai', changeFrequency: 'daily' as const, priority: 0.9 },
     { path: '/games/samurai/archive', changeFrequency: 'weekly' as const, priority: 0.85 },
+    { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
   ];
   const index = await getPuzzleIndex();
   const entries: MetadataRoute.Sitemap = [];

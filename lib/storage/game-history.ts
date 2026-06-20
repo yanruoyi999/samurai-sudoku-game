@@ -1,4 +1,4 @@
-import { Puzzle, PuzzleStats, Difficulty } from '@/lib/sudoku/types';
+import { Puzzle, PuzzleStats, Difficulty, Move, GameStatus } from '@/lib/sudoku/types';
 
 /**
  * Game history entry stored in localStorage
@@ -173,6 +173,13 @@ export interface InProgressGame {
   hintsUsed: number;
   lastPlayed: string;
   difficulty: Difficulty;
+  board?: number[][];
+  history?: Move[];
+  historyIndex?: number;
+  status?: GameStatus;
+  candidates?: Array<[string, number[]]>;
+  mistakesMade?: number;
+  savedAt?: string;
 }
 
 export function saveInProgressGame(game: InProgressGame): void {

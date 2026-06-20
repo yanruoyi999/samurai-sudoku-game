@@ -151,6 +151,9 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t text-center text-sm text-muted-foreground">
         <p>{t('footer')}</p>
+        <Link href={`/${locale}/privacy`} className="mt-2 inline-flex text-primary hover:text-primary/80">
+          {t('privacy')}
+        </Link>
       </footer>
     </main>
 

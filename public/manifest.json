@@ -4,8 +4,8 @@
   "description": "在线武士数独游戏，支持离线游玩，智能提示系统，双语界面",
   "start_url": "/en",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#f0eadf",
+  "theme_color": "#f0eadf",
   "orientation": "portrait-primary",
   "icons": [
     {
