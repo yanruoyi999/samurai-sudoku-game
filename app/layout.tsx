@@ -1,12 +1,57 @@
+import type { Metadata } from "next";
+import { Fraunces } from "next/font/google";
+import { headers } from "next/headers";
+import { locales } from "@/i18n";
+import { getSiteBaseUrl } from "@/lib/site-url";
 import "./globals.css";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-display",
+});
+
+const siteBaseUrl = getSiteBaseUrl();
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteBaseUrl),
+  applicationName: "Samurai Sudoku",
+  icons: {
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icon-192x192.png", sizes: "192x192", type: "image/png" }],
+  },
+  openGraph: {
+    siteName: "Samurai Sudoku",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Samurai Sudoku online puzzle board",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og-image.png"],
+  },
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const requestedLocale = headers().get("x-next-intl-locale");
+  const htmlLang = locales.find((locale) => locale === requestedLocale) ?? "en";
+
   return (
-    <html lang="en">
+    <html lang={htmlLang} className={fraunces.variable} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />

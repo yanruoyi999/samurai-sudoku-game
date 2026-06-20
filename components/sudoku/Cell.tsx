@@ -42,8 +42,19 @@ export function Cell({
       type="button"
     >
       {value ? (
-        // Display main value
-        <span className="text-lg md:text-xl font-medium">{value}</span>
+        // Display main value — given clues in ink, player entries in vermilion/maple
+        <span
+          className={cn(
+            "text-lg md:text-xl tabular leading-none",
+            hasConflict
+              ? "text-destructive font-semibold"
+              : isInitial
+              ? "sudoku-num-given"
+              : "sudoku-num-entered"
+          )}
+        >
+          {value}
+        </span>
       ) : displayCandidates ? (
         // Display candidates in a 3x3 grid
         <div className="grid grid-cols-3 gap-0 w-full h-full p-0.5 text-[0.5rem] md:text-xs">

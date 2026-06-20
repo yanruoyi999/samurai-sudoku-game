@@ -97,8 +97,6 @@ export function validatePuzzle(puzzle: Puzzle): ValidationResult {
   try {
     const engine = new SudokuEngine(puzzle);
     const solution = puzzle.grids;
-
-    // Load the solution
     const solutionBoard: number[][] = Array(21).fill(0).map(() => Array(21).fill(0));
 
     for (let gridIdx = 0; gridIdx < 5; gridIdx++) {
@@ -107,6 +105,16 @@ export function validatePuzzle(puzzle: Puzzle): ValidationResult {
         for (let col = 0; col < 9; col++) {
           const localPos = { grid: gridIdx as 0 | 1 | 2 | 3 | 4, row, col };
           const global = localToGlobal(localPos);
+          const solutionValue = grid.solution[row][col];
+
+          if (solutionBoard[global.row][global.col] !== 0 && solutionBoard[global.row][global.col] !== solutionValue) {
+            result.isValid = false;
+            result.errors.push(
+              `Global solution inconsistency at (${global.row},${global.col}): ${solutionBoard[global.row][global.col]} !== ${solutionValue}`,
+            );
+          }
+
+          solutionBoard[global.row][global.col] = solutionValue;
 
           // For overlap cells, check consistency with the overlapping cell
           const overlapping = getOverlappingCell(localPos);

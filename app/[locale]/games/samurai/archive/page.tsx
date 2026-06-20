@@ -1,7 +1,24 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { Difficulty } from '@/lib/sudoku/types';
 import { getTranslations } from 'next-intl/server';
 import { GameHistoryArchive } from '@/components/GameHistoryArchive';
+import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const isZh = params.locale === 'zh';
+
+  return {
+    title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
+    description: isZh
+      ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
+      : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+  };
+}
 
 export default async function ArchivePage({
   params,
@@ -14,8 +31,24 @@ export default async function ArchivePage({
   const tCommon = await getTranslations('common');
   const tGame = await getTranslations('game');
 
-  const selectedDifficulty = searchParams.difficulty as Difficulty | undefined;
+  const selectedDifficulty = isPuzzleDifficulty(searchParams.difficulty)
+    ? searchParams.difficulty
+    : undefined;
   const locale = params.locale;
+  const currentPage = Number.isInteger(Number(searchParams.page)) && Number(searchParams.page) > 0
+    ? Number(searchParams.page)
+    : 1;
+  const pageSize = 24;
+  const index = await getPuzzleIndex();
+  const filteredPuzzles = selectedDifficulty
+    ? index.puzzles.filter((puzzle) => puzzle.difficulty === selectedDifficulty)
+    : index.puzzles;
+  const totalPages = Math.max(1, Math.ceil(filteredPuzzles.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+  const visiblePuzzles = filteredPuzzles.slice(pageStart, pageStart + pageSize);
+  const showingStart = filteredPuzzles.length === 0 ? 0 : pageStart + 1;
+  const showingEnd = Math.min(pageStart + visiblePuzzles.length, filteredPuzzles.length);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -31,7 +64,7 @@ export default async function ArchivePage({
             </Link>
             <h1 className="text-2xl font-bold">{t('title')}</h1>
             <p className="text-sm text-muted-foreground">
-              Your game history
+              {t('description')}
             </p>
           </div>
 
@@ -83,11 +116,132 @@ export default async function ArchivePage({
           </div>
         </div>
 
-        {/* Game History Archive - Client Component */}
-        <GameHistoryArchive selectedDifficulty={selectedDifficulty} />
+        <section className="rounded-lg border bg-card overflow-hidden">
+          <div className="border-b px-4 py-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-semibold">
+                {locale === 'zh' ? '公开题库' : 'Public puzzle library'}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {t('pagination.showing', {
+                  start: showingStart,
+                  end: showingEnd,
+                  total: filteredPuzzles.length,
+                })}
+              </p>
+            </div>
+          </div>
+
+          {visiblePuzzles.length === 0 ? (
+            <div className="px-4 py-10 text-center text-muted-foreground">
+              {t('noResults')}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50 text-left">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">{t('table.id')}</th>
+                    <th className="px-4 py-3 font-medium">{t('table.difficulty')}</th>
+                    <th className="px-4 py-3 font-medium">{t('table.estimatedTime')}</th>
+                    <th className="px-4 py-3 font-medium">{t('table.tags')}</th>
+                    <th className="px-4 py-3 font-medium text-right">{t('table.action')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visiblePuzzles.map((puzzle) => (
+                    <tr key={puzzle.id} className="border-t">
+                      <td className="px-4 py-3 font-medium">
+                        <Link
+                          href={`/${locale}/games/samurai/${puzzle.id}`}
+                          className="hover:text-primary"
+                        >
+                          {puzzle.id}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3">
+                        {tGame(`difficulty.${puzzle.difficulty}`)}
+                      </td>
+                      <td className="px-4 py-3">
+                        {puzzle.estimatedTime} min
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-1">
+                          {puzzle.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          href={`/${locale}/games/samurai/${puzzle.id}`}
+                          className="inline-flex rounded-md bg-primary px-3 py-1 text-primary-foreground hover:bg-primary/90"
+                        >
+                          {t('play')}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {totalPages > 1 ? (
+            <nav className="flex items-center justify-between border-t px-4 py-3 text-sm">
+              {safePage > 1 ? (
+                <Link
+                  href={buildArchiveHref(locale, selectedDifficulty, safePage - 1)}
+                  className="rounded border px-3 py-1 hover:bg-accent"
+                >
+                  {t('pagination.previous')}
+                </Link>
+              ) : (
+                <span className="rounded border px-3 py-1 text-muted-foreground opacity-50">
+                  {t('pagination.previous')}
+                </span>
+              )}
+              <span className="text-muted-foreground">
+                {t('pagination.page')} {safePage} {t('pagination.of')} {totalPages}
+              </span>
+              {safePage < totalPages ? (
+                <Link
+                  href={buildArchiveHref(locale, selectedDifficulty, safePage + 1)}
+                  className="rounded border px-3 py-1 hover:bg-accent"
+                >
+                  {t('pagination.next')}
+                </Link>
+              ) : (
+                <span className="rounded border px-3 py-1 text-muted-foreground opacity-50">
+                  {t('pagination.next')}
+                </span>
+              )}
+            </nav>
+          ) : null}
+        </section>
+
+        <section className="mt-10">
+          <h2 className="mb-3 text-lg font-semibold">
+            {locale === 'zh' ? '我的本地完成记录' : 'My local completion history'}
+          </h2>
+          <GameHistoryArchive selectedDifficulty={selectedDifficulty} />
+        </section>
       </main>
     </div>
   );
+}
+
+function buildArchiveHref(locale: string, difficulty: Difficulty | undefined, page: number) {
+  const params = new URLSearchParams();
+  if (difficulty) params.set('difficulty', difficulty);
+  if (page > 1) params.set('page', String(page));
+  const query = params.toString();
+  return `/${locale}/games/samurai/archive${query ? `?${query}` : ''}`;
 }
 
 function DifficultyFilter({

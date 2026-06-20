@@ -49,7 +49,11 @@
     },
     "completed": "🎉 Congratulations! You solved the puzzle!",
     "loadingPuzzle": "Loading puzzle...",
-    "puzzleNotFound": "Puzzle not found"
+    "puzzleNotFound": "Puzzle not found",
+    "hintTapCell": "Tap a cell and use the number pad below to fill it",
+    "hintKeyboard": "Use arrow keys to navigate, 1-9 to fill, Backspace to clear",
+    "selectCellPrompt": "Select a cell to enter a number",
+    "possibleValues": "Possible: {values}"
   },
   "archive": {
     "title": "Puzzle Archive",

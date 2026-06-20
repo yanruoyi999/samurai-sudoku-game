@@ -2,7 +2,7 @@
   "name": "武士数独 - Samurai Sudoku",
   "short_name": "武士数独",
   "description": "在线武士数独游戏，支持离线游玩，智能提示系统，双语界面",
-  "start_url": "/",
+  "start_url": "/en",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
@@ -53,14 +53,14 @@
       "name": "新游戏",
       "short_name": "新游戏",
       "description": "开始新的武士数独游戏",
-      "url": "/games/samurai",
+      "url": "/en/games/samurai",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "谜题归档",
       "short_name": "归档",
       "description": "浏览历史谜题",
-      "url": "/games/samurai/archive",
+      "url": "/en/games/samurai/archive",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ],

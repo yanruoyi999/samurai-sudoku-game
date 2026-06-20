@@ -17,7 +17,11 @@
     },
     "completed": "🎉 恭喜！您已完成这个谜题！",
     "loadingPuzzle": "加载谜题中",
-    "puzzleNotFound": "未找到谜题"
+    "puzzleNotFound": "未找到谜题",
+    "hintTapCell": "点击格子，用下方数字键盘填入",
+    "hintKeyboard": "方向键移动，1-9 填入，退格键清除",
+    "selectCellPrompt": "先选中一个格子，再输入数字",
+    "possibleValues": "可填：{values}"
   },
   "stats": {
     "time": "时间",
@@ -38,7 +42,8 @@
     "newGameConfirm": "开始新游戏？当前进度将丢失。",
     "resetConfirm": "确定重置谜题？所有进度将丢失。",
     "pause": "暂停",
-    "resume": "继续"
+    "resume": "继续",
+    "backHome": "← 返回首页"
   },
   "hints": {
     "noHint": "没有可用的提示。尝试使用撤销按钮或清除一些单元格。",

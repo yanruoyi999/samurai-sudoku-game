@@ -5,8 +5,6 @@ import { getLocale, getTranslations, getMessages } from 'next-intl/server';
 export default async function HomePage() {
   const locale = await getLocale();
   const t = await getTranslations('home');
-  const tGame = await getTranslations('game');
-  const tArchive = await getTranslations('archive');
 
   const messages = await getMessages({ locale });
   const homeMessages = (messages as any)?.home ?? {};
@@ -25,8 +23,6 @@ export default async function HomePage() {
     typeof seoSection.pointHeading === 'string'
       ? seoSection.pointHeading
       : t('seoSection.title');
-  const heroTitle: string =
-    typeof homeMessages.title === 'string' ? homeMessages.title : tGame('title');
 
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -45,10 +41,13 @@ export default async function HomePage() {
     <>
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="flex-1 flex items-center justify-center px-4 py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      <section className="flex-1 flex items-center justify-center px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-          {heroTitle}
+        <p className="text-sm md:text-base font-medium tracking-[0.25em] uppercase text-primary">
+          {locale === 'zh' ? '每日逻辑挑战' : 'Daily logic challenge'}
+        </p>
+        <h1 className="font-display text-6xl md:text-8xl font-semibold tracking-tight leading-[0.95]">
+          Samurai Sudoku
         </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
@@ -175,7 +174,7 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="p-6 rounded-lg border bg-card hover:shadow-md transition-shadow">
+    <div className="p-6 rounded-lg border bg-secondary/40 hover:shadow-md transition-shadow">
       <div className="text-4xl mb-4">{icon}</div>
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground">{description}</p>

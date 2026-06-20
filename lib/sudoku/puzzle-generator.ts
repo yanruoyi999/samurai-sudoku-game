@@ -1,64 +1,5 @@
 import { Puzzle, GridData } from './types';
 
-/**
- * 简单的数独谜题生成器
- * 生成一个完整的数独解决方案，然后移除一些数字作为谜题
- */
-
-// 生成一个完整的9x9数独网格
-function generateCompleteSudoku(): number[][] {
-  const grid: number[][] = Array(9).fill(0).map(() => Array(9).fill(0));
-
-  // 使用回溯算法填充网格
-  function isValid(row: number, col: number, num: number): boolean {
-    // 检查行
-    for (let i = 0; i < 9; i++) {
-      if (grid[row][i] === num) return false;
-    }
-
-    // 检查列
-    for (let i = 0; i < 9; i++) {
-      if (grid[i][col] === num) return false;
-    }
-
-    // 检查3x3方块
-    const boxRow = Math.floor(row / 3) * 3;
-    const boxCol = Math.floor(col / 3) * 3;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (grid[boxRow + i][boxCol + j] === num) return false;
-      }
-    }
-
-    return true;
-  }
-
-  function solve(): boolean {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (grid[row][col] === 0) {
-          // 随机顺序尝试数字1-9
-          const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-          shuffle(numbers);
-
-          for (const num of numbers) {
-            if (isValid(row, col, num)) {
-              grid[row][col] = num;
-              if (solve()) return true;
-              grid[row][col] = 0;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  solve();
-  return grid;
-}
-
 // Fisher-Yates 洗牌算法
 function shuffle<T>(array: T[]): void {
   for (let i = array.length - 1; i > 0; i--) {
@@ -88,15 +29,45 @@ function createPuzzleFromSolution(solution: number[][], cellsToRemove: number): 
   return puzzle;
 }
 
+function createBaseSolution(): number[][] {
+  return Array.from({ length: 9 }, (_, row) =>
+    Array.from({ length: 9 }, (_, col) => ((row * 3 + Math.floor(row / 3) + col) % 9) + 1),
+  );
+}
+
+function transformBandsAndStacks(
+  solution: number[][],
+  bandOrder: [number, number, number],
+  stackOrder: [number, number, number],
+): number[][] {
+  const rows = bandOrder.flatMap((band) => [band * 3, band * 3 + 1, band * 3 + 2]);
+  const cols = stackOrder.flatMap((stack) => [stack * 3, stack * 3 + 1, stack * 3 + 2]);
+
+  return rows.map((row) => cols.map((col) => solution[row][col]));
+}
+
+function buildSamuraiSolutions(): [number[][], number[][], number[][], number[][], number[][]] {
+  const center = createBaseSolution();
+
+  return [
+    // Grid 0 bottom-right = center top-left
+    transformBandsAndStacks(center, [1, 2, 0], [1, 2, 0]),
+    // Grid 1 bottom-left = center top-right
+    transformBandsAndStacks(center, [1, 2, 0], [2, 0, 1]),
+    center,
+    // Grid 3 top-right = center bottom-left
+    transformBandsAndStacks(center, [2, 0, 1], [1, 2, 0]),
+    // Grid 4 top-left = center bottom-right
+    transformBandsAndStacks(center, [2, 0, 1], [2, 0, 1]),
+  ];
+}
+
 /**
  * 生成一个新的武士数独谜题
  * @param difficulty 难度：easy (简单), medium (中等), hard (困难), evil (极难)
  * @returns 完整的武士数独谜题
  */
 export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' | 'evil' = 'medium'): Puzzle {
-  // TEMPORARY FIX: Use pre-generated base and modify for difficulty
-  // The full backtracking algorithm is too slow and can hang
-
   // 根据难度决定要移除的单元格数量
   const cellsToRemove = {
     easy: 35,      // 移除35个单元格（保留46个）
@@ -105,79 +76,7 @@ export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' | '
     evil: 65,      // 移除65个单元格（保留16个）- Evil 难度！
   }[difficulty];
 
-  // Use simple pre-generated solutions instead of expensive backtracking
-  const baseSolution = [
-    [5, 3, 4, 6, 7, 8, 9, 1, 2],
-    [6, 7, 2, 1, 9, 5, 3, 4, 8],
-    [1, 9, 8, 3, 4, 2, 5, 6, 7],
-    [8, 5, 9, 7, 6, 1, 4, 2, 3],
-    [4, 2, 6, 8, 5, 3, 7, 9, 1],
-    [7, 1, 3, 9, 2, 4, 8, 5, 6],
-    [9, 6, 1, 5, 3, 7, 2, 8, 4],
-    [2, 8, 7, 4, 1, 9, 6, 3, 5],
-    [3, 4, 5, 2, 8, 6, 1, 7, 9],
-  ];
-
-  // Create 4 corner grids with slight variations
-  const solutions: number[][][] = [];
-  for (let i = 0; i < 4; i++) {
-    // Simple permutation for variety
-    const rotated = baseSolution.map(row => [...row]);
-    solutions.push(rotated);
-  }
-
-  // 创建中心网格（Grid 2），其四个角落来自其他网格的重叠区域
-  const centerGrid: number[][] = Array(9).fill(0).map(() => Array(9).fill(0));
-
-  // Grid 0 (Top-Left) 与 Grid 2 (Center) 的重叠：Grid 0 的右下角 = Grid 2 的左上角
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      centerGrid[i][j] = solutions[0][6 + i][6 + j];
-    }
-  }
-
-  // Grid 1 (Top-Right) 与 Grid 2 (Center) 的重叠：Grid 1 的左下角 = Grid 2 的右上角
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      centerGrid[i][6 + j] = solutions[1][6 + i][j];
-    }
-  }
-
-  // Grid 3 (Bottom-Left) 与 Grid 2 (Center) 的重叠：Grid 3 的右上角 = Grid 2 的左下角
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      centerGrid[6 + i][j] = solutions[2][i][6 + j];
-    }
-  }
-
-  // Grid 4 (Bottom-Right) 与 Grid 2 (Center) 的重叠：Grid 4 的左上角 = Grid 2 的右下角
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      centerGrid[6 + i][6 + j] = solutions[3][i][j];
-    }
-  }
-
-  // Fill remaining center grid cells with simple pattern
-  // Just complete it with valid numbers without expensive backtracking
-  for (let row = 0; row < 9; row++) {
-    for (let col = 0; col < 9; col++) {
-      if (centerGrid[row][col] === 0) {
-        // Simple sequential fill
-        centerGrid[row][col] = ((row + col) % 9) + 1;
-      }
-    }
-  }
-
-  // 将中心网格插入到solutions数组中
-  // solutions[0] = Grid 0, solutions[1] = Grid 1, solutions[2] = Grid 3, solutions[3] = Grid 4
-  // 我们需要重新排列为正确的顺序
-  const finalSolutions = [
-    solutions[0],  // Grid 0 (Top-Left)
-    solutions[1],  // Grid 1 (Top-Right)
-    centerGrid,    // Grid 2 (Center)
-    solutions[2],  // Grid 3 (Bottom-Left)
-    solutions[3],  // Grid 4 (Bottom-Right)
-  ];
+  const finalSolutions = buildSamuraiSolutions();
 
   // 为每个网格创建谜题
   const grids = finalSolutions.map(solution => ({

@@ -1,158 +1,34 @@
-"use client";
+import type { Metadata } from 'next';
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import { useSudokuStore } from "@/stores/sudoku-store";
-import { SAMPLE_PUZZLE } from "@/lib/sudoku/sample-puzzle";
-import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
-import { useLocale, useTranslations } from 'next-intl';
-import Link from "next/link";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
+import { getPuzzle, getPuzzleIndex } from '@/lib/puzzles';
+import SamuraiGameClient from './SamuraiGameClient';
 
-// Dynamic imports for heavy components with loading skeletons
-const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
-  loading: () => <BoardSkeleton />,
-  ssr: false
-});
+interface SamuraiGamePageProps {
+  params: { locale: string };
+}
 
-const ActionBar = dynamic(() => import("@/components/sudoku/ActionBar").then(mod => ({ default: mod.ActionBar })), {
-  loading: () => <ActionBarSkeleton />,
-  ssr: false
-});
+export function generateMetadata({ params }: SamuraiGamePageProps): Metadata {
+  const isZh = params.locale === 'zh';
 
-const NumberPad = dynamic(() => import("@/components/sudoku/NumberPad").then(mod => ({ default: mod.NumberPad })), {
-  loading: () => <NumberPadSkeleton />,
-  ssr: false
-});
+  return {
+    title: isZh ? '在线武士数独 - 每日逻辑谜题' : 'Play Samurai Sudoku Online - Daily Logic Puzzle',
+    description: isZh
+      ? '在线游玩武士数独，挑战五个互相重叠的 9x9 网格，支持候选标记、提示、计时和本地进度记录。'
+      : 'Play Samurai Sudoku online across five overlapping 9x9 grids with notes, hints, timer, and local progress tracking.',
+    keywords: isZh
+      ? ['武士数独', '在线数独', '每日数独', 'Evil 数独', '逻辑游戏']
+      : ['samurai sudoku', 'online sudoku', 'daily sudoku', 'evil sudoku', 'logic game'],
+  };
+}
 
-const StatsPanel = dynamic(() => import("@/components/sudoku/StatsPanel").then(mod => ({ default: mod.StatsPanel })), {
-  loading: () => <StatsPanelSkeleton />,
-  ssr: false
-});
+export default async function SamuraiGamePage() {
+  const index = await getPuzzleIndex();
+  const latest = index.puzzles[0];
+  const puzzle = latest ? await getPuzzle(latest.id) : null;
 
-export default function SamuraiGamePage() {
-  const t = useTranslations('common');
-  const tGame = useTranslations('game');
-  const locale = useLocale();
-
-  const { puzzleId, loadPuzzle, status, puzzle } = useSudokuStore();
-  const [prevPuzzleId, setPrevPuzzleId] = useState<string | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Detect puzzle changes and show loading overlay
-  useEffect(() => {
-    if (puzzleId && puzzleId !== prevPuzzleId) {
-      setIsTransitioning(true);
-      const timer = setTimeout(() => {
-        setIsTransitioning(false);
-        setPrevPuzzleId(puzzleId);
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [puzzleId, prevPuzzleId]);
-
-  useEffect(() => {
-    // Load sample puzzle if no puzzle loaded
-    if (!puzzleId) {
-      loadPuzzle(SAMPLE_PUZZLE);
-    }
-  }, [puzzleId, loadPuzzle]);
-
-  if (!puzzleId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{tGame('loadingPuzzle')}</p>
-        </div>
-      </div>
-    );
+  if (!puzzle) {
+    throw new Error('No Samurai Sudoku puzzle is available. Run pnpm generate-puzzles first.');
   }
 
-  return (
-    <div className="min-h-screen flex flex-col relative">
-      {/* Loading Overlay - Prevents interaction during puzzle loading */}
-      {isTransitioning && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
-            <p className="text-lg font-medium">{tGame('loadingPuzzle')}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <header className="border-b px-4 py-3 flex items-center justify-between flex-wrap gap-2">
-        <Link
-          href={`/${locale}`}
-          className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground border px-3 py-1 rounded-md transition-colors"
-        >
-          ← {t('backToHome')}
-        </Link>
-
-        <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-          <LanguageSwitcher />
-          <TimerDisplay />
-
-          <div className="text-sm">
-            <span className="text-muted-foreground">{tGame('puzzle')}: </span>
-            <span className="font-semibold">{puzzleId}</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Game Area - Responsive Layout */}
-      <main className="flex-1 overflow-hidden">
-        {status === "completed" && (
-          <div className="mx-4 mt-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
-            <p className="text-lg font-semibold text-green-700 dark:text-green-400">
-              {tGame('completed')}
-            </p>
-          </div>
-        )}
-
-        {/* Desktop Layout: Board on left, Controls on right */}
-        <div className="hidden lg:flex h-full">
-          {/* Left side - Game Board */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="max-w-3xl mx-auto space-y-4">
-              <StatsPanel />
-              <SamuraiBoard key={puzzleId} />
-            </div>
-          </div>
-
-          {/* Right side - Controls (Desktop only) */}
-          <div className="w-80 xl:w-96 border-l overflow-y-auto">
-            <ActionBar />
-          </div>
-        </div>
-
-        {/* Tablet Layout: Board on top, Controls on bottom */}
-        <div className="hidden md:block lg:hidden h-full overflow-y-auto">
-          <div className="container mx-auto px-4 py-6 space-y-6">
-            <StatsPanel />
-            <SamuraiBoard key={puzzleId} />
-            <ActionBar />
-          </div>
-        </div>
-
-        {/* Mobile Layout: Board with bottom controls */}
-        <div className="md:hidden h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-            <StatsPanel />
-            <SamuraiBoard key={puzzleId} />
-          </div>
-
-          {/* Mobile Number Pad */}
-          <div className="border-t">
-            <NumberPad showCandidates />
-          </div>
-
-          {/* Mobile Action Bar */}
-          <ActionBar />
-        </div>
-      </main>
-    </div>
-  );
+  return <SamuraiGameClient initialPuzzle={puzzle} />;
 }

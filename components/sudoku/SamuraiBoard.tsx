@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { GlobalPosition, globalToLocal, getAffectedCells, positionsEqual } from "@/lib/sudoku/coordinates";
 import { Cell } from "./Cell";
 
 export function SamuraiBoard() {
+  const t = useTranslations("game");
   const {
     board,
     initial,
@@ -101,10 +103,20 @@ export function SamuraiBoard() {
     return locals.length > 0;
   }, []);
 
+  // Origins (row, col) of the five overlapping 9x9 grids
+  const SUBGRIDS: Array<[number, number]> = [
+    [0, 0],
+    [0, 12],
+    [12, 0],
+    [12, 12],
+    [6, 6],
+  ];
+
   return (
     <div className="w-full max-w-3xl mx-auto">
+      <div className="relative w-full aspect-square">
       <div
-        className="grid grid-cols-21 gap-0 w-full aspect-square border-2 border-border"
+        className="grid grid-cols-21 gap-0 w-full aspect-square"
         style={{
           gridTemplateColumns: 'repeat(21, minmax(0, 1fr))'
         }}
@@ -146,14 +158,37 @@ export function SamuraiBoard() {
         })}
       </div>
 
+      {/* Box & sub-grid separators drawn on top so the samurai cross reads clearly */}
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        viewBox="0 0 21 21"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        {SUBGRIDS.map(([br, bc], i) => (
+          <g key={i} stroke="hsl(var(--cell-box-line))" fill="none" strokeLinecap="square">
+            {/* internal 3x3 lines */}
+            {[3, 6].map((k) => (
+              <line key={`v${k}`} x1={bc + k} y1={br} x2={bc + k} y2={br + 9} strokeWidth={0.1} />
+            ))}
+            {[3, 6].map((k) => (
+              <line key={`h${k}`} x1={bc} y1={br + k} x2={bc + 9} y2={br + k} strokeWidth={0.1} />
+            ))}
+            {/* outer 9x9 frame */}
+            <rect x={bc} y={br} width={9} height={9} strokeWidth={0.18} />
+          </g>
+        ))}
+      </svg>
+      </div>
+
       {/* Legend for mobile */}
       <div className="mt-4 text-sm text-center text-muted-foreground md:hidden">
-        <p>Tap a cell and use the number pad below to fill it</p>
+        <p>{t("hintTapCell")}</p>
       </div>
 
       {/* Legend for desktop */}
       <div className="mt-4 text-sm text-center text-muted-foreground hidden md:block">
-        <p>Use arrow keys to navigate, 1-9 to fill, Backspace to clear</p>
+        <p>{t("hintKeyboard")}</p>
       </div>
     </div>
   );

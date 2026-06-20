@@ -2,58 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+:root {
+    /* 墨韵 Sumi-e — light mode (宣纸 + 墨黑 + 朱红) */
+    --background: 42 31.3% 93.7%;
+    --foreground: 35 16.2% 14.5%;
+    --primary: 35 22.2% 10.6%;
+    --primary-foreground: 42 31.3% 93.7%;
+    --secondary: 40 33.3% 89.4%;
+    --secondary-foreground: 38.2 13.3% 32.5%;
+    --muted: 40 33.3% 89.4%;
+    --muted-foreground: 38.6 11.8% 46.7%;
+    --accent: 40 33.3% 89.4%;
+    --accent-foreground: 35 16.2% 14.5%;
+    --destructive: 9.1 69.7% 38.8%;
+    --destructive-foreground: 42 31.3% 93.7%;
+    --border: 41.7 19.3% 76.7%;
+    --input: 41.7 19.3% 76.7%;
+    --ring: 10.1 62.6% 48.2%;
 
     /* Sudoku specific variables */
     --cell-bg: 0 0% 100%;
-    --cell-border: 214.3 31.8% 91.4%;
-    --cell-highlight: 210 40% 96.1%;
-    --cell-selected: 221.2 83.2% 95%;
-    --conflict: 0 84.2% 60.2%;
-    --candidate-color: 215.4 16.3% 46.9%;
+    --cell-border: 41.7 19.3% 76.7%;
+    --cell-box-line: 39.3 11.8% 48%;
+    --cell-highlight: 40 33.3% 89.4%;
+    --cell-selected: 18.5 54.2% 90.6%;
+    --conflict: 10.1 62.6% 48.2%;
+    --candidate-color: 38.6 11.8% 46.7%;
+    --cell-given: 35 22.2% 10.6%;
+    --cell-entered: 10.1 62.6% 48.2%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* 夜枫 Dark Maple — dark mode (炭黑 + 米金 + 枫红) */
+    --background: 222.9 14.9% 9.2%;
+    --foreground: 43.3 29% 87.8%;
+    --primary: 11.5 78% 60.8%;
+    --primary-foreground: 27.3 26.8% 8%;
+    --secondary: 221.5 14.6% 17.5%;
+    --secondary-foreground: 43.3 29% 87.8%;
+    --muted: 221.5 14.6% 17.5%;
+    --muted-foreground: 221.2 7.4% 57.6%;
+    --accent: 221.5 14.6% 17.5%;
+    --accent-foreground: 43.3 29% 87.8%;
+    --destructive: 12.9 81.3% 68.6%;
+    --destructive-foreground: 27.3 26.8% 8%;
+    --border: 221.3 14.5% 21.6%;
+    --input: 221.3 14.5% 21.6%;
+    --ring: 11.5 78% 60.8%;
 
     /* Sudoku specific variables - dark mode */
-    --cell-bg: 217.2 32.6% 17.5%;
-    --cell-border: 217.2 32.6% 30%;
-    --cell-highlight: 217.2 32.6% 25%;
-    --cell-selected: 217.2 91.2% 20%;
-    --conflict: 0 62.8% 30.6%;
-    --candidate-color: 215 20.2% 65.1%;
-  }
+    --cell-bg: 220 15.8% 14.9%;
+    --cell-border: 221.3 14.5% 21.6%;
+    --cell-box-line: 219.1 11.1% 40.6%;
+    --cell-highlight: 221.5 14.6% 17.5%;
+    --cell-selected: 291.4 17.1% 16.1%;
+    --conflict: 11.5 78% 60.8%;
+    --candidate-color: 221.2 7.4% 57.6%;
+    --cell-given: 43.3 29% 87.8%;
+    --cell-entered: 11.5 78% 60.8%;
 }
 
 @layer base {
@@ -65,6 +71,15 @@
   }
 }
 
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
 @layer components {
   .sudoku-cell {
     @apply aspect-square flex items-center justify-center;
@@ -73,12 +88,13 @@
     border-color: hsl(var(--cell-border));
   }
 
+  /* Given clues sit on a faint paper tint so they read apart from entered cells */
   .sudoku-cell-initial {
-    @apply font-bold text-foreground bg-muted;
+    background-color: hsl(var(--secondary));
   }
 
   .sudoku-cell-selected {
-    @apply ring-2 ring-primary;
+    @apply ring-2 ring-primary z-10;
     background-color: hsl(var(--cell-selected));
   }
 
@@ -87,11 +103,20 @@
   }
 
   .sudoku-cell-conflict {
-    @apply text-destructive;
-    background-color: hsl(var(--conflict) / 0.2);
+    background-color: hsl(var(--conflict) / 0.18);
   }
 
   .sudoku-cell:not(.sudoku-cell-initial):hover {
-    background-color: hsl(var(--accent) / 0.5);
+    background-color: hsl(var(--accent) / 0.6);
+  }
+
+  /* Number colors: given = ink/cream bold, entered = vermilion/maple */
+  .sudoku-num-given {
+    color: hsl(var(--cell-given));
+    font-weight: 700;
+  }
+  .sudoku-num-entered {
+    color: hsl(var(--cell-entered));
+    font-weight: 500;
   }
 }

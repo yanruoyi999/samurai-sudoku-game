@@ -1,7 +1,9 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next';
+
+import { getSiteBaseUrl } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://samurai-sudoku.com' // TODO: Update with actual domain
+  const baseUrl = getSiteBaseUrl();
 
   return {
     rules: [
@@ -12,5 +14,5 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-  }
+  };
 }

@@ -69,7 +69,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         .map(() => Array(21).fill(false)),
       engine: null,
       candidates: new Map(),
-      showCandidates: true,
+      showCandidates: false,
       history: [],
       historyIndex: -1,
       startTime: null,

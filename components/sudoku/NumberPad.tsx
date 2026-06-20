@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +10,7 @@ interface NumberPadProps {
 }
 
 export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadProps) {
+  const t = useTranslations("game");
   const { selectedCell, setCell, engine } = useSudokuStore();
 
   const handleNumberClick = (num: number) => {
@@ -86,13 +88,13 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
         {/* Hint */}
         {!selectedCell && (
           <p className="text-xs text-center text-muted-foreground">
-            Select a cell to enter a number
+            {t("selectCellPrompt")}
           </p>
         )}
 
         {selectedCell && showCandidates && candidates.size > 0 && (
           <p className="text-xs text-center text-muted-foreground">
-            Possible: {Array.from(candidates).sort().join(', ')}
+            {t("possibleValues", { values: Array.from(candidates).sort().join(", ") })}
           </p>
         )}
       </div>

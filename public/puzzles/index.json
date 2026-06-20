@@ -1,16 +1,1898 @@
 {
   "puzzles": [
     {
-      "id": "2025-10-27",
-      "difficulty": "easy",
-      "estimatedTime": 30,
-      "checksum": "sample2025",
+      "id": "2026-06-20",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "6efca263",
       "tags": [
         "daily",
-        "sample"
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-19",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "662e678b",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-18",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "62a3b9d",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-17",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "c4ff6ff",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-16",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "58fa1ff3",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-15",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "f8e4e55",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-14",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "6907afeb",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-13",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "524e2ba8",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-12",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "95ae15f",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-11",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "6c6b4137",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-10",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "28654d2f",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-09",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "7aae9799",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-08",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "7bf3b77d",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-07",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "2b0db9d9",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-06",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "1bd382f0",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-05",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "1f2619bf",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-04",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "ab80622",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-03",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "78267866",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-02",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "4357e077",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-01",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "a313620",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-31",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "5eb188e6",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-30",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "26faf6af",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-29",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "5704e689",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-28",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "14dac48",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-27",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "59f42b7c",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-26",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "5ef34347",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-25",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "61c61678",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-24",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "2fd8d8c4",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-23",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "eca4d19",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-22",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "17a7b231",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-21",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "73b99023",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-20",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "5d1bd7c6",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-19",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1b6e60d5",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-18",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "1ac22cd4",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-17",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "4510271",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-16",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "724b523c",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-15",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "3bdc8203",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-14",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "3ed419b0",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-13",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "6d37b66",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-12",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "237bbae4",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-11",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "7ca60d94",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-10",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "77fbe18",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-09",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "6cdc94a4",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-08",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "774a1e3b",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-07",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "14ebd07c",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-06",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "37e8d400",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-05",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "14288925",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-04",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "7c3b16e6",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-03",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1c4ae822",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-02",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "7d36c2f3",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-05-01",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "7d92aa32",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-30",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "286cf651",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-29",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "7efa78b3",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-28",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "50df374b",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-27",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "60d57e90",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-26",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "5d552e30",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-25",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "3511eae9",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-24",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "114a2c43",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-23",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "485a59e5",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-22",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "54fcb103",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-21",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "56b2ab66",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-20",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "4f725002",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-19",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "6c57ee7e",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-18",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "4c334f63",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-17",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "3284335c",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-16",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "aa18677",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-15",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "286041e0",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-14",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "4e52ee00",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-13",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1ab275e3",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-12",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "6d6def0d",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-11",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "6efd21a4",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-10",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "4a9dca82",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-09",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "51c3a816",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-08",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "541be5f5",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-07",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "4701c8d8",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-06",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "660dd6a6",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-05",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "594e12b8",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-04",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "6f880368",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-03",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "46da730c",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-02",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "3e7ac379",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-04-01",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "58d99e9b",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-31",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "2a75bbcb",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-30",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "1d82832",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-29",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "11ffdebb",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-28",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1199cba8",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-27",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "74e13825",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-26",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "77f7d2b5",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-25",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "346f553a",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-24",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "40229e89",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-23",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "3748dd02",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-22",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "4fb40bac",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-21",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "718ccfe1",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-20",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "2fcc34ef",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-19",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "11b56b19",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-18",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "23685317",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-17",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "3b810a42",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-16",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "4766f6d2",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-15",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "2840e589",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-14",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "20d42c3",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-13",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "74a29fd4",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-12",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "71d32184",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-11",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "303281d4",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-10",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "55a42eda",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-09",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "543b0d45",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-08",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "65a92626",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-07",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "7e70de03",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-06",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "7fd00d75",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-05",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "214387aa",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-04",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "6aed17f3",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-03",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "3896ee1",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-02",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "504029ae",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-03-01",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "5a27209b",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-28",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "4637df83",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-27",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "4151a440",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-26",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "7027bb11",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-25",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "7cf928b0",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-24",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "2eea8295",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-23",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "5120c75",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-22",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "3fcdaa29",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-21",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "97755cb",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-20",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1b178718",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-19",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "759fcbfc",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-18",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "bc1f134",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-17",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "60544012",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-16",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1406a6cf",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-15",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "360c2078",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-14",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "5cc65fc9",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-13",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "196ce308",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-12",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "26ba01cd",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-11",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "426e80a4",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-10",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "33fdf81",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-09",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "25c44d25",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-08",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "46fb6701",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-07",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "37cc60b9",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-06",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "2b336969",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-05",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "210ca731",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-04",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "352a4e21",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-03",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "39de82d2",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-02",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "609c641e",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-02-01",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "2ffdf97d",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-31",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "410d986",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-30",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "ae7bbc3",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-29",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "1797972f",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-28",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "69d8fea0",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-27",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "295f2ee9",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-26",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "79c19f41",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-25",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "6492ed21",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-24",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "3de3aa1f",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-23",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "6433ff28",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-22",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "4c58480f",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-21",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "58804706",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-20",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "7388b7d",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-19",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "17c8fc5e",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-18",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "23ded101",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-17",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "3d11be33",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-16",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "48db29e1",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-15",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "1eb2eaf1",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-14",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "5a021f87",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-13",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "29e11a84",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-12",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "45538fdc",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-11",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "4cbecba3",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-10",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "66dee038",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-09",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "13bcb064",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-08",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "708158dc",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-07",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "22dc32c5",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-06",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "4451ef47",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-05",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "5be7a7d9",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-04",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "d36d42b",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-03",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "d25e4c8",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-02",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "c8e9835",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-01-01",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "3ee04225",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
+      "id": "2025-10-27",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "36a5d642",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
       ]
     }
   ],
-  "total": 1,
-  "lastUpdated": "2025-10-28T11:33:36.352Z"
+  "total": 172,
+  "lastUpdated": "2026-06-20T14:39:13.755Z"
 }

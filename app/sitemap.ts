@@ -1,35 +1,48 @@
-import { MetadataRoute } from 'next'
-import { locales } from '@/i18n'
+import type { MetadataRoute } from 'next';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://samurai-sudoku.com' // TODO: Update with actual domain
+import { locales } from '@/i18n';
+import { getPuzzleIndex } from '@/lib/puzzles';
+import { buildAbsoluteUrl } from '@/lib/site-url';
 
-  // Generate sitemap for all locales
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes = [
-    '',
-    '/games/samurai',
-    '/games/samurai/archive',
-  ]
+    { path: '', changeFrequency: 'daily' as const, priority: 1 },
+    { path: '/games/samurai', changeFrequency: 'daily' as const, priority: 0.9 },
+    { path: '/games/samurai/archive', changeFrequency: 'weekly' as const, priority: 0.85 },
+  ];
+  const index = await getPuzzleIndex();
+  const entries: MetadataRoute.Sitemap = [];
 
-  const sitemap: MetadataRoute.Sitemap = []
-
-  // Add routes for each locale
-  locales.forEach((locale) => {
-    routes.forEach((route) => {
-      sitemap.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: new Date(),
-        changeFrequency: route === '' ? 'daily' : route.includes('archive') ? 'weekly' : 'daily',
-        priority: route === '' ? 1 : route.includes('archive') ? 0.8 : 0.9,
+  for (const locale of locales) {
+    for (const route of routes) {
+      entries.push({
+        url: buildAbsoluteUrl(`/${locale}${route.path}`),
+        lastModified: new Date(index.lastUpdated),
+        changeFrequency: route.changeFrequency,
+        priority: route.priority,
         alternates: {
-          languages: {
-            en: `${baseUrl}/en${route}`,
-            zh: `${baseUrl}/zh${route}`,
-          },
+          languages: Object.fromEntries(
+            locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${route.path}`)]),
+          ),
         },
-      })
-    })
-  })
+      });
+    }
 
-  return sitemap
+    for (const puzzle of index.puzzles) {
+      const path = `/games/samurai/${puzzle.id}`;
+      entries.push({
+        url: buildAbsoluteUrl(`/${locale}${path}`),
+        lastModified: new Date(index.lastUpdated),
+        changeFrequency: 'monthly',
+        priority: puzzle.difficulty === 'evil' || puzzle.difficulty === 'hard' ? 0.82 : 0.78,
+        alternates: {
+          languages: Object.fromEntries(
+            locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${path}`)]),
+          ),
+        },
+      });
+    }
+  }
+
+  return entries;
 }

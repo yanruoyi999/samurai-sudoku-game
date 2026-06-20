@@ -24,7 +24,7 @@ export function StatsPanel() {
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-muted/40 rounded-lg">
       <StatItem
         label={t('time')}
         value={formatTime(elapsedTime)}
@@ -61,7 +61,7 @@ export function StatsPanel() {
 function StatItem({ label, value, icon }: { label: string; value: string; icon: string }) {
   return (
     <div className="flex flex-col items-center justify-center p-3 bg-background rounded border">
-      <div className="text-2xl mb-1">{icon}</div>
+      <div className="text-xl mb-1 opacity-80">{icon}</div>
       <div className="text-xs text-muted-foreground mb-1">{label}</div>
       <div className="text-lg font-semibold">{value}</div>
     </div>

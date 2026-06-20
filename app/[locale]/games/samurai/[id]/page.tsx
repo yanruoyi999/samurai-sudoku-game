@@ -1,164 +1,114 @@
-"use client";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
-import { useSudokuStore } from "@/stores/sudoku-store";
-import { Puzzle } from "@/lib/sudoku/types";
-import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
-import { useLocale, useTranslations } from 'next-intl';
-import Link from "next/link";
-import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton } from "@/components/LoadingSkeleton";
+import { locales, type Locale } from '@/i18n';
+import { buildAbsoluteUrl } from '@/lib/site-url';
+import { getPuzzle, getPuzzleIndex, getPuzzleMetadata } from '@/lib/puzzles';
+import PuzzleClient from './PuzzleClient';
 
-// Dynamic imports for heavy components with loading skeletons
-const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
-  loading: () => <BoardSkeleton />,
-  ssr: false
-});
+interface PuzzlePageProps {
+  params: { locale: string; id: string };
+}
 
-const ActionBar = dynamic(() => import("@/components/sudoku/ActionBar").then(mod => ({ default: mod.ActionBar })), {
-  loading: () => <ActionBarSkeleton />,
-  ssr: false
-});
+export async function generateStaticParams() {
+  const index = await getPuzzleIndex();
+  return locales.flatMap((locale) =>
+    index.puzzles.map((puzzle) => ({
+      locale,
+      id: puzzle.id,
+    })),
+  );
+}
+export async function generateMetadata({ params }: PuzzlePageProps): Promise<Metadata> {
+  const locale = (params.locale as Locale) ?? 'en';
+  const puzzle = await getPuzzleMetadata(params.id);
 
-const NumberPad = dynamic(() => import("@/components/sudoku/NumberPad").then(mod => ({ default: mod.NumberPad })), {
-  loading: () => <NumberPadSkeleton />,
-  ssr: false
-});
-
-export default function PuzzlePage() {
-  const t = useTranslations('game');
-  const tArchive = useTranslations('archive');
-  const locale = useLocale();
-
-  const params = useParams();
-  const puzzleId = params.id as string;
-  const { puzzleId: currentPuzzleId, loadPuzzle, status } = useSudokuStore();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchPuzzle() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Try to load from public/puzzles
-        const year = puzzleId.split('-')[0];
-        const response = await fetch(`/puzzles/${year}/${puzzleId}.json`);
-
-        if (!response.ok) {
-          throw new Error(`Puzzle ${puzzleId} not found`);
-        }
-
-        const puzzle: Puzzle = await response.json();
-        loadPuzzle(puzzle);
-      } catch (err) {
-        console.error('Failed to load puzzle:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load puzzle');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    // Only fetch if different puzzle or no puzzle loaded
-    if (puzzleId !== currentPuzzleId) {
-      fetchPuzzle();
-    } else {
-      setLoading(false);
-    }
-  }, [puzzleId, currentPuzzleId, loadPuzzle]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{t('loadingPuzzle')}...</p>
-        </div>
-      </div>
-    );
+  if (!puzzle) {
+    return {
+      title: locale === 'zh' ? '未找到武士数独谜题' : 'Samurai Sudoku Puzzle Not Found',
+    };
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-2xl font-bold mb-2">{t('puzzleNotFound')}</h1>
-          <p className="text-muted-foreground mb-6">{error}</p>
-        <div className="flex gap-4 justify-center">
-          <Link
-            href={`/${locale}/games/samurai/archive`}
-            className="px-4 py-2 border rounded hover:bg-accent transition-colors"
-          >
-            {tArchive('title')}
-          </Link>
-          <Link
-            href={`/${locale}/games/samurai`}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
-          >
-            {tArchive('playToday')}
-          </Link>
-        </div>
-        </div>
-      </div>
-    );
+  const difficulty =
+    locale === 'zh'
+      ? {
+          easy: '简单',
+          medium: '中等',
+          hard: '困难',
+          evil: 'Evil 极难',
+        }[puzzle.difficulty]
+      : puzzle.difficulty.charAt(0).toUpperCase() + puzzle.difficulty.slice(1);
+  const title =
+    locale === 'zh'
+      ? `${puzzle.id} 武士数独 - ${difficulty}难度`
+      : `${puzzle.id} Samurai Sudoku - ${difficulty} Puzzle`;
+  const description =
+    locale === 'zh'
+      ? `在线游玩 ${puzzle.id} 武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示和进度记录。`
+      : `Play the ${puzzle.id} Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, and progress tracking.`;
+  const canonical = `/${locale}/games/samurai/${puzzle.id}`;
+
+  return {
+    title,
+    description,
+    keywords:
+      locale === 'zh'
+        ? ['武士数独', '在线数独', `${difficulty}数独`, '每日数独', puzzle.id, ...puzzle.tags]
+        : ['samurai sudoku', 'online sudoku', `${puzzle.difficulty} sudoku`, 'daily sudoku', puzzle.id, ...puzzle.tags],
+    alternates: {
+      canonical,
+      languages: Object.fromEntries(
+        locales.map((loc) => [
+          loc === 'zh' ? 'zh-CN' : 'en-US',
+          `/${loc}/games/samurai/${puzzle.id}`,
+        ]),
+      ),
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
+  };
+}
+
+export default async function PuzzlePage({ params }: PuzzlePageProps) {
+  const puzzle = await getPuzzle(params.id);
+
+  if (!puzzle) {
+    notFound();
   }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Game',
+    name:
+      params.locale === 'zh'
+        ? `${puzzle.id} 武士数独`
+        : `${puzzle.id} Samurai Sudoku`,
+    url: buildAbsoluteUrl(`/${params.locale}/games/samurai/${puzzle.id}`),
+    inLanguage: params.locale === 'zh' ? 'zh-CN' : 'en-US',
+    gameItem: {
+      '@type': 'Thing',
+      name: 'Samurai Sudoku',
+    },
+    educationalUse: 'logic training',
+    keywords: puzzle.metadata.tags?.join(', '),
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="border-b px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/${locale}/games/samurai/archive`}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            ← {tArchive('title')}
-          </Link>
-
-          <div className="text-sm">
-            <span className="text-muted-foreground">{t('puzzle')}: </span>
-            <span className="font-semibold">{puzzleId}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <TimerDisplay />
-        </div>
-      </header>
-
-      {/* Main Game Area */}
-      <main className="flex-1 container mx-auto px-4 py-8">
-        {status === "completed" && (
-          <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg text-center">
-            <p className="text-lg font-semibold text-green-700 dark:text-green-400 mb-2">
-              {t('completed')}
-            </p>
-            <div className="flex gap-4 justify-center mt-4">
-              <Link
-                href={`/${locale}/games/samurai/archive`}
-                className="px-4 py-2 border border-green-600 text-green-700 dark:text-green-400 rounded hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors"
-              >
-                {tArchive('browseMore') || 'Browse More Puzzles'}
-              </Link>
-            </div>
-          </div>
-        )}
-
-        <div className="max-w-4xl mx-auto">
-          <SamuraiBoard />
-        </div>
-      </main>
-
-      {/* Mobile Number Pad */}
-      <div className="md:hidden">
-        <NumberPad showCandidates />
-      </div>
-
-      {/* Action Bar */}
-      <ActionBar />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PuzzleClient puzzleId={params.id} initialPuzzle={puzzle} />
+    </>
   );
 }

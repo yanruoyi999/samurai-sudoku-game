@@ -10,6 +10,7 @@
     "prebuild": "pnpm build-index",
     "generate-puzzles": "tsx scripts/puzzles/generate.ts",
     "build-index": "tsx scripts/puzzles/build-index.ts",
+    "generate-pwa-assets": "tsx scripts/generate-pwa-assets.ts",
     "validate-puzzles": "tsx scripts/puzzles/validate-all.ts",
     "check-difficulty": "tsx scripts/puzzles/check-difficulty.ts",
     "test": "vitest",
