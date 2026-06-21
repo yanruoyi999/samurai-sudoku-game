@@ -91,10 +91,14 @@
       "id": "Puzzle ID",
       "difficulty": "Difficulty",
       "estimatedTime": "Est. Time",
+      "playCount": "Play Count",
+      "bestTime": "Best Time",
+      "lastPlayed": "Last Played",
       "tags": "Tags",
       "action": "Action"
     },
     "play": "Play",
+    "plays": "{count}x",
     "noResults": "No puzzles found.",
     "minutesShort": "min",
     "pagination": {

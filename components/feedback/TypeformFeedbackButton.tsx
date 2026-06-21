@@ -15,13 +15,17 @@ function buildTypeformHref(locale: string, pathname: string | null) {
   const base = formUrl || (formId ? `https://form.typeform.com/to/${formId}` : "");
   if (!base) return "";
 
-  const url = new URL(base);
-  url.searchParams.set("source", "samurai-sudoku");
-  url.searchParams.set("locale", locale);
-  if (pathname) {
-    url.searchParams.set("page", pathname);
+  try {
+    const url = new URL(base);
+    url.searchParams.set("source", "samurai-sudoku");
+    url.searchParams.set("locale", locale);
+    if (pathname) {
+      url.searchParams.set("page", pathname);
+    }
+    return url.toString();
+  } catch {
+    return "";
   }
-  return url.toString();
 }
 
 interface TypeformFeedbackButtonProps {
@@ -41,6 +45,7 @@ export function TypeformFeedbackButton({ locale }: TypeformFeedbackButtonProps) 
       href={typeformHref || fallbackHref}
       target={typeformHref ? "_blank" : undefined}
       rel={typeformHref ? "noopener noreferrer" : undefined}
+      aria-label={isZh ? "反馈武士数独题目" : "Send Samurai Sudoku feedback"}
       className="fixed bottom-5 right-5 z-40 rounded-full border border-primary/20 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90"
     >
       {isZh ? "反馈题目" : "Feedback"}

@@ -91,10 +91,14 @@
       "id": "谜题 ID",
       "difficulty": "难度",
       "estimatedTime": "预计时间",
+      "playCount": "游玩次数",
+      "bestTime": "最佳时间",
+      "lastPlayed": "最近游玩",
       "tags": "标签",
       "action": "操作"
     },
     "play": "开始",
+    "plays": "{count} 次",
     "noResults": "未找到谜题。",
     "minutesShort": "分钟",
     "pagination": {

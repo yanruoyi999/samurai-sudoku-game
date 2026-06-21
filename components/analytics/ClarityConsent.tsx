@@ -35,7 +35,7 @@ function loadClarity(projectId: string) {
     firstScript.parentNode?.insertBefore(script, firstScript);
   })(window, document, "script", projectId);
 
-  const clarity = (window as any).clarity;
+  const clarity = window.clarity as ClarityFunction | undefined;
   if (typeof clarity === "function") {
     clarity("consent");
   }

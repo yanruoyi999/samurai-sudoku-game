@@ -28,6 +28,21 @@ export async function generateMetadata({
         ])
       ),
     },
+    openGraph: {
+      title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
+      description: isZh
+        ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
+        : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+      url: buildAbsoluteUrl(`/${params.locale}/games/samurai/archive`),
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
+      description: isZh
+        ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
+        : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+    },
   };
 }
 

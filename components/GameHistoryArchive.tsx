@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Difficulty } from '@/lib/sudoku/types';
-import { getUniquePuzzlesFromHistory } from '@/lib/storage/game-history';
+import {
+  getUniquePuzzlesFromHistory,
+  SUDOKU_STORAGE_EVENT,
+} from '@/lib/storage/game-history';
 
 interface ArchivePuzzle {
   id: string;
@@ -22,6 +25,7 @@ export function GameHistoryArchive({
   selectedDifficulty?: Difficulty;
 }) {
   const locale = useLocale();
+  const tCommon = useTranslations('common');
   const t = useTranslations('archive');
   const tGame = useTranslations('game');
 
@@ -29,23 +33,32 @@ export function GameHistoryArchive({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load from localStorage
-    const allPuzzles = getUniquePuzzlesFromHistory();
+    const loadHistory = () => {
+      const allPuzzles = getUniquePuzzlesFromHistory();
 
-    // Filter by difficulty if specified
-    const filtered = selectedDifficulty
-      ? allPuzzles.filter(p => p.difficulty === selectedDifficulty)
-      : allPuzzles;
+      const filtered = selectedDifficulty
+        ? allPuzzles.filter(p => p.difficulty === selectedDifficulty)
+        : allPuzzles;
 
-    setPuzzles(filtered);
-    setLoading(false);
+      setPuzzles(filtered);
+      setLoading(false);
+    };
+
+    loadHistory();
+    window.addEventListener(SUDOKU_STORAGE_EVENT, loadHistory);
+    window.addEventListener('storage', loadHistory);
+
+    return () => {
+      window.removeEventListener(SUDOKU_STORAGE_EVENT, loadHistory);
+      window.removeEventListener('storage', loadHistory);
+    };
   }, [selectedDifficulty]);
 
   if (loading) {
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">{tCommon('loading')}</p>
       </div>
     );
   }
@@ -72,7 +85,7 @@ export function GameHistoryArchive({
 
   function formatDate(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleDateString(locale, {
+    return date.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -86,9 +99,9 @@ export function GameHistoryArchive({
           <tr className="border-b">
             <th className="text-left p-3 font-medium">{t('table.id')}</th>
             <th className="text-left p-3 font-medium">{t('table.difficulty')}</th>
-            <th className="text-left p-3 font-medium">Play Count</th>
-            <th className="text-left p-3 font-medium">Best Time</th>
-            <th className="text-left p-3 font-medium">Last Played</th>
+            <th className="text-left p-3 font-medium">{t('table.playCount')}</th>
+            <th className="text-left p-3 font-medium">{t('table.bestTime')}</th>
+            <th className="text-left p-3 font-medium">{t('table.lastPlayed')}</th>
             <th className="text-left p-3 font-medium">{t('table.tags')}</th>
             <th className="text-right p-3 font-medium">{t('table.action')}</th>
           </tr>
@@ -106,7 +119,7 @@ export function GameHistoryArchive({
                 <DifficultyBadge difficulty={puzzle.difficulty} tGame={tGame} />
               </td>
               <td className="p-3 text-muted-foreground">
-                {puzzle.playCount}x
+                {t('plays', { count: puzzle.playCount })}
               </td>
               <td className="p-3 text-muted-foreground">
                 {puzzle.bestTime ? formatTime(puzzle.bestTime) : '-'}
@@ -142,7 +155,13 @@ export function GameHistoryArchive({
   );
 }
 
-function DifficultyBadge({ difficulty, tGame }: { difficulty: Difficulty; tGame: any }) {
+function DifficultyBadge({
+  difficulty,
+  tGame,
+}: {
+  difficulty: Difficulty;
+  tGame: ReturnType<typeof useTranslations>;
+}) {
   const colors = {
     easy: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
@@ -154,7 +173,7 @@ function DifficultyBadge({ difficulty, tGame }: { difficulty: Difficulty; tGame:
     <span
       className={`px-2 py-1 text-xs font-medium rounded ${colors[difficulty]}`}
     >
-      {tGame(`difficulty.${difficulty}`).toUpperCase()}
+      {tGame(`difficulty.${difficulty}`)}
     </span>
   );
 }

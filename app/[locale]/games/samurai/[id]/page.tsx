@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { notFound } from 'next/navigation';
 
 import { locales, type Locale } from '@/i18n';
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
     locale === 'zh'
       ? `在线游玩 ${puzzle.id} 武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示和进度记录。`
       : `Play the ${puzzle.id} Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, and progress tracking.`;
-  const canonical = `/${locale}/games/samurai/${puzzle.id}`;
+  const canonical = buildAbsoluteUrl(`/${locale}/games/samurai/${puzzle.id}`);
 
   return {
     title,
@@ -60,7 +61,7 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
       languages: Object.fromEntries(
         locales.map((loc) => [
           loc === 'zh' ? 'zh-CN' : 'en-US',
-          `/${loc}/games/samurai/${puzzle.id}`,
+          buildAbsoluteUrl(`/${loc}/games/samurai/${puzzle.id}`),
         ]),
       ),
     },
@@ -104,7 +105,8 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
 
   return (
     <>
-      <script
+      <Script
+        id={`samurai-sudoku-puzzle-jsonld-${puzzle.id}-${params.locale}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
