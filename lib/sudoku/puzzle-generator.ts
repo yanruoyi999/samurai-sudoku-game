@@ -1,37 +1,79 @@
-import { Puzzle, GridData } from './types';
+import { localToGlobal } from './coordinates';
+import {
+  SAMURAI_PLAYABLE_CELLS,
+  cloneSamuraiBoard,
+  countBoardClues,
+  countGridClues,
+  createEmptySamuraiBoard,
+  hasUniqueSamuraiSolution,
+} from './solution-counter';
+import { GridData, Puzzle } from './types';
 
-// Fisher-Yates 洗牌算法
-function shuffle<T>(array: T[]): void {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
+type Difficulty = 'easy' | 'medium' | 'hard' | 'evil';
+
+interface DifficultyConfig {
+  targetGlobalClues: number;
+  minGridClues: number;
+  estimatedTime: number;
 }
 
-// 从完整的数独网格生成谜题（移除一些数字）
-function createPuzzleFromSolution(solution: number[][], cellsToRemove: number): number[][] {
-  const puzzle = solution.map(row => [...row]);
+const DIFFICULTY_CONFIG: Record<Difficulty, DifficultyConfig> = {
+  easy: {
+    targetGlobalClues: 185,
+    minGridClues: 35,
+    estimatedTime: 20,
+  },
+  medium: {
+    targetGlobalClues: 155,
+    minGridClues: 30,
+    estimatedTime: 35,
+  },
+  hard: {
+    targetGlobalClues: 135,
+    minGridClues: 27,
+    estimatedTime: 60,
+  },
+  evil: {
+    targetGlobalClues: 120,
+    minGridClues: 24,
+    estimatedTime: 90,
+  },
+};
 
-  const positions: Array<[number, number]> = [];
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
-      positions.push([i, j]);
-    }
+function shuffle<T>(array: T[]): T[] {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-
-  shuffle(positions);
-
-  for (let i = 0; i < Math.min(cellsToRemove, positions.length); i++) {
-    const [row, col] = positions[i];
-    puzzle[row][col] = 0;
-  }
-
-  return puzzle;
+  return copy;
 }
 
 function createBaseSolution(): number[][] {
   return Array.from({ length: 9 }, (_, row) =>
     Array.from({ length: 9 }, (_, col) => ((row * 3 + Math.floor(row / 3) + col) % 9) + 1),
+  );
+}
+
+function createRandomSolution(): number[][] {
+  const base = createBaseSolution();
+  const digits = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  const bandOrder = shuffle([0, 1, 2]);
+  const stackOrder = shuffle([0, 1, 2]);
+  const rowOrder = bandOrder.flatMap((band) =>
+    shuffle([0, 1, 2]).map((row) => band * 3 + row)
+  );
+  const colOrder = stackOrder.flatMap((stack) =>
+    shuffle([0, 1, 2]).map((col) => stack * 3 + col)
+  );
+  const transposed = Math.random() < 0.5;
+
+  return Array.from({ length: 9 }, (_, row) =>
+    Array.from({ length: 9 }, (_, col) => {
+      const sourceRow = transposed ? rowOrder[col] : rowOrder[row];
+      const sourceCol = transposed ? colOrder[row] : colOrder[col];
+      return digits[base[sourceRow][sourceCol] - 1];
+    })
   );
 }
 
@@ -47,62 +89,104 @@ function transformBandsAndStacks(
 }
 
 function buildSamuraiSolutions(): [number[][], number[][], number[][], number[][], number[][]] {
-  const center = createBaseSolution();
+  const center = createRandomSolution();
 
   return [
-    // Grid 0 bottom-right = center top-left
     transformBandsAndStacks(center, [1, 2, 0], [1, 2, 0]),
-    // Grid 1 bottom-left = center top-right
     transformBandsAndStacks(center, [1, 2, 0], [2, 0, 1]),
     center,
-    // Grid 3 top-right = center bottom-left
     transformBandsAndStacks(center, [2, 0, 1], [1, 2, 0]),
-    // Grid 4 top-left = center bottom-right
     transformBandsAndStacks(center, [2, 0, 1], [2, 0, 1]),
   ];
 }
 
-/**
- * 生成一个新的武士数独谜题
- * @param difficulty 难度：easy (简单), medium (中等), hard (困难), evil (极难)
- * @returns 完整的武士数独谜题
- */
-export function generateSamuraiPuzzle(difficulty: 'easy' | 'medium' | 'hard' | 'evil' = 'medium'): Puzzle {
-  // 根据难度决定要移除的单元格数量
-  const cellsToRemove = {
-    easy: 35,      // 移除35个单元格（保留46个）
-    medium: 45,    // 移除45个单元格（保留36个）
-    hard: 55,      // 移除55个单元格（保留26个）
-    evil: 65,      // 移除65个单元格（保留16个）- Evil 难度！
-  }[difficulty];
+function buildGlobalSolution(
+  solutions: [number[][], number[][], number[][], number[][], number[][]],
+): number[][] {
+  const board = createEmptySamuraiBoard();
 
-  const finalSolutions = buildSamuraiSolutions();
+  for (let grid = 0; grid < 5; grid++) {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        const global = localToGlobal({ grid: grid as 0 | 1 | 2 | 3 | 4, row, col });
+        board[global.row][global.col] = solutions[grid][row][col];
+      }
+    }
+  }
 
-  // 为每个网格创建谜题
-  const grids = finalSolutions.map(solution => ({
-    initial: createPuzzleFromSolution(solution, cellsToRemove),
-    solution: solution,
+  return board;
+}
+
+function buildGridData(
+  initialBoard: number[][],
+  solutions: [number[][], number[][], number[][], number[][], number[][]],
+): [GridData, GridData, GridData, GridData, GridData] {
+  return solutions.map((solution, grid) => ({
+    initial: Array.from({ length: 9 }, (_, row) =>
+      Array.from({ length: 9 }, (_, col) => {
+        const global = localToGlobal({ grid: grid as 0 | 1 | 2 | 3 | 4, row, col });
+        return initialBoard[global.row][global.col];
+      })
+    ),
+    solution,
   })) as [GridData, GridData, GridData, GridData, GridData];
+}
 
-  // 生成谜题ID
+function canRemoveClue(board: number[][], config: DifficultyConfig): boolean {
+  if (countBoardClues(board) < config.targetGlobalClues) {
+    return false;
+  }
+
+  if (countGridClues(board).some((gridClues) => gridClues < config.minGridClues)) {
+    return false;
+  }
+
+  return hasUniqueSamuraiSolution(board);
+}
+
+function createPuzzleBoard(solutionBoard: number[][], config: DifficultyConfig): number[][] {
+  const puzzleBoard = cloneSamuraiBoard(solutionBoard);
+  const positions = shuffle(SAMURAI_PLAYABLE_CELLS);
+
+  for (const pos of positions) {
+    if (countBoardClues(puzzleBoard) <= config.targetGlobalClues) {
+      break;
+    }
+
+    const value = puzzleBoard[pos.row][pos.col];
+    puzzleBoard[pos.row][pos.col] = 0;
+
+    if (!canRemoveClue(puzzleBoard, config)) {
+      puzzleBoard[pos.row][pos.col] = value;
+    }
+  }
+
+  return puzzleBoard;
+}
+
+/**
+ * 生成一个新的武士数独谜题。
+ *
+ * 生成流程：
+ * 1. 随机化完整解盘，避免每日谜题共用同一个答案。
+ * 2. 在 21x21 全局棋盘上挖空，重叠区只当作一个真实单元。
+ * 3. 每次挖空后用回溯求解器确认仍然只有唯一解。
+ */
+export function generateSamuraiPuzzle(difficulty: Difficulty = 'medium'): Puzzle {
+  const config = DIFFICULTY_CONFIG[difficulty];
+  const solutions = buildSamuraiSolutions();
+  const solutionBoard = buildGlobalSolution(solutions);
+  const initialBoard = createPuzzleBoard(solutionBoard, config);
+  const grids = buildGridData(initialBoard, solutions);
   const now = new Date();
-  const id = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${Date.now()}`;
-
-  // 估计完成时间（分钟）
-  const estimatedTime = {
-    easy: 20,
-    medium: 35,
-    hard: 60,
-    evil: 90,    // Evil 难度预计需要 90 分钟！
-  }[difficulty];
 
   return {
-    id,
+    id: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${Date.now()}`,
     difficulty,
     grids,
     metadata: {
       createdAt: now.toISOString(),
-      estimatedTime,
+      estimatedTime: config.estimatedTime,
       checksum: `generated-${Date.now()}`,
       tags: ['generated', difficulty],
     },

@@ -3,6 +3,7 @@
 import { Puzzle, GridData } from '@/lib/sudoku/types';
 import { SudokuEngine } from '@/lib/sudoku/engine';
 import { GlobalPosition, globalToLocal, localToGlobal, getOverlappingCell } from '@/lib/sudoku/coordinates';
+import { countBoardClues, countSamuraiSolutions, getGlobalInitialBoard } from '@/lib/sudoku/solution-counter';
 
 /**
  * Validation result
@@ -161,14 +162,8 @@ export function validatePuzzle(puzzle: Puzzle): ValidationResult {
   }
 
   // 4. Check minimum clues (warning only)
-  let totalClues = 0;
-  for (const grid of puzzle.grids) {
-    for (const row of grid.initial) {
-      for (const val of row) {
-        if (val !== 0) totalClues++;
-      }
-    }
-  }
+  const initialBoard = getGlobalInitialBoard(puzzle);
+  const totalClues = countBoardClues(initialBoard);
 
   if (totalClues < 50) {
     result.warnings.push(`Very few clues (${totalClues}). Puzzle may have multiple solutions.`);
@@ -178,8 +173,18 @@ export function validatePuzzle(puzzle: Puzzle): ValidationResult {
     result.warnings.push(`Many clues (${totalClues}). Puzzle may be too easy.`);
   }
 
-  // 5. Note: Uniqueness checking requires a full solver (not implemented yet)
-  result.warnings.push('Uniqueness checking not implemented - assuming unique solution');
+  // 5. Check uniqueness with a bounded Samurai Sudoku solver.
+  const solutionCount = countSamuraiSolutions(initialBoard, 2);
+  if (solutionCount === 0) {
+    result.hasSolution = false;
+    result.hasUniqueSolution = false;
+    result.errors.push('Puzzle has no valid solution.');
+  } else if (solutionCount > 1) {
+    result.hasUniqueSolution = false;
+    result.errors.push('Puzzle has multiple valid solutions.');
+  } else {
+    result.hasUniqueSolution = true;
+  }
 
   result.isValid = result.errors.length === 0;
   result.hasSolution = result.hasSolution && result.isValid;
@@ -227,7 +232,7 @@ if (require.main === module) {
     console.log('==================');
     console.log(`Valid: ${result.isValid ? '✅' : '❌'}`);
     console.log(`Has Solution: ${result.hasSolution ? '✅' : '❌'}`);
-    console.log(`Unique Solution: ${result.hasUniqueSolution ? '⚠️  (not checked)' : '❌'}`);
+    console.log(`Unique Solution: ${result.hasUniqueSolution ? '✅' : '❌'}`);
 
     if (result.errors.length > 0) {
       console.log('\n❌ Errors:');
