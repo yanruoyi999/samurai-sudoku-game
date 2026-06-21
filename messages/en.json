@@ -9,7 +9,8 @@
     "time": "Time",
     "progress": "Progress",
     "hints": "Hints",
-    "moves": "Moves"
+    "moves": "Moves",
+    "mistakes": "Mistakes"
   },
   "actions": {
     "newGame": "New Game",
@@ -24,13 +25,30 @@
     "newGameConfirm": "Start a new puzzle? Current progress will be lost.",
     "resetConfirm": "Are you sure you want to reset the puzzle? All progress will be lost.",
     "pause": "Pause",
+    "paused": "Paused",
     "resume": "Resume",
-    "backHome": "← Back to home"
+    "backHome": "← Back to home",
+    "completion": "Completion",
+    "controls": "Controls",
+    "keyboardControls": "Keyboard Controls",
+    "navigate": "Navigate",
+    "enterNumber": "Enter Number",
+    "clearCell": "Clear",
+    "undoRedo": "Undo/Redo",
+    "undoShortcut": "Undo (Ctrl+Z)",
+    "redoShortcut": "Redo (Ctrl+Y)",
+    "gameHistory": "Game History",
+    "viewAll": "View All",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "noGameHistory": "No game history yet",
+    "generationError": "Failed to load the new puzzle. Please try again."
   },
   "hints": {
     "noHint": "No hints available. Try using the undo button or clearing some cells.",
     "nakedSingle": "This cell can only be {value}. All other numbers are already used in its row, column, or box.",
     "hiddenSingle": "In this {unit}, the number {value} can only go in this cell.",
+    "tryThisCell": "Try this cell.",
     "units": {
       "row": "row",
       "column": "column",
@@ -53,7 +71,9 @@
     "hintTapCell": "Tap a cell and use the number pad below to fill it",
     "hintKeyboard": "Use arrow keys to navigate, 1-9 to fill, Backspace to clear",
     "selectCellPrompt": "Select a cell to enter a number",
-    "possibleValues": "Possible: {values}"
+    "possibleValues": "Possible: {values}",
+    "noteMode": "Candidate note mode is on. Tap numbers to add or remove notes.",
+    "enterNumber": "Enter {value}"
   },
   "archive": {
     "title": "Puzzle Archive",
@@ -76,6 +96,7 @@
     },
     "play": "Play",
     "noResults": "No puzzles found.",
+    "minutesShort": "min",
     "pagination": {
       "previous": "← Previous",
       "next": "Next →",
@@ -108,7 +129,7 @@
       "intelligent": "Smart Hints",
       "intelligentDesc": "Get intelligent hints when you're stuck, with detailed explanations.",
       "candidates": "Candidate Marking",
-      "candidatesDesc": "Visualize possible numbers with automatic candidate detection",
+      "candidatesDesc": "Add pencil-mark notes directly on the board while solving.",
       "progress": "Track Progress",
       "progressDesc": "Monitor your completion time, hints used, and improvement over time.",
       "mobile": "Mobile Optimized",

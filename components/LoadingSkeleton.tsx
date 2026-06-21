@@ -33,8 +33,8 @@ export function ActionBarSkeleton() {
 export function StatsPanelSkeleton() {
   return (
     <div className="h-24 p-4 border rounded-lg">
-      <div className="animate-pulse grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="animate-pulse grid grid-cols-2 md:grid-cols-5 gap-4 h-full">
+        {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <div className="h-4 bg-muted rounded w-3/4" />
             <div className="h-6 bg-muted rounded" />

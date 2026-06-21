@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { formatTime } from "@/lib/utils";
 
 export function TimerDisplay() {
+  const t = useTranslations("actions");
   const { startTime, elapsedTime, isPaused, updateElapsedTime } =
     useSudokuStore();
   const [currentTime, setCurrentTime] = useState(elapsedTime);
@@ -29,7 +31,7 @@ export function TimerDisplay() {
       <span className="text-muted-foreground">⏱️</span>
       <span className="font-mono font-semibold">{formatTime(currentTime)}</span>
       {isPaused && (
-        <span className="text-xs text-muted-foreground">(Paused)</span>
+        <span className="text-xs text-muted-foreground">({t("paused")})</span>
       )}
     </div>
   );

@@ -11,6 +11,7 @@ export function StatsPanel() {
   const {
     elapsedTime,
     hintsUsed,
+    mistakesMade,
     engine,
     difficulty,
     history
@@ -24,7 +25,7 @@ export function StatsPanel() {
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-muted/40 rounded-lg">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-3 bg-muted/40 rounded-lg">
       <StatItem
         label={t('time')}
         value={formatTime(elapsedTime)}
@@ -49,8 +50,14 @@ export function StatsPanel() {
         icon="🎯"
       />
 
+      <StatItem
+        label={t('mistakes')}
+        value={mistakesMade.toString()}
+        icon="!"
+      />
+
       {difficulty && (
-        <div className="col-span-2 md:col-span-4 text-center text-sm text-muted-foreground">
+        <div className="col-span-2 md:col-span-5 text-center text-sm text-muted-foreground">
           {tGame('difficulty.label')}: <span className="font-semibold capitalize">{getDifficultyTranslation(difficulty)}</span>
         </div>
       )}
@@ -61,7 +68,7 @@ export function StatsPanel() {
 function StatItem({ label, value, icon }: { label: string; value: string; icon: string }) {
   return (
     <div className="flex flex-col items-center justify-center p-3 bg-background rounded border">
-      <div className="text-xl mb-1 opacity-80">{icon}</div>
+      <div className="text-xl mb-1 opacity-80 font-semibold">{icon}</div>
       <div className="text-xs text-muted-foreground mb-1">{label}</div>
       <div className="text-lg font-semibold">{value}</div>
     </div>

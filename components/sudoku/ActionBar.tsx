@@ -4,9 +4,18 @@ import { useState, useEffect, useTransition } from "react";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
 import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
+import type { Difficulty } from "@/lib/sudoku/types";
 import { useTranslations, useLocale } from 'next-intl';
-import { getGameHistory, getInProgressGames, type GameHistoryEntry } from '@/lib/storage/game-history';
+import {
+  getGameHistory,
+  getInProgressGames,
+  SUDOKU_STORAGE_EVENT,
+  type GameHistoryEntry,
+  type InProgressGame,
+} from '@/lib/storage/game-history';
 import Link from 'next/link';
+
+const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
 
 export function ActionBar() {
   const t = useTranslations('actions');
@@ -35,9 +44,9 @@ export function ActionBar() {
   } = useSudokuStore();
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard' | 'evil'>('medium');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium');
   const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
-  const [inProgressGames, setInProgressGames] = useState<any[]>([]);
+  const [inProgressGames, setInProgressGames] = useState<InProgressGame[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -50,15 +59,21 @@ export function ActionBar() {
       setInProgressGames(inProgress.slice(0, 3)); // Show last 3 in-progress games
     };
 
+    const handleStorage = () => loadHistory();
+
     loadHistory();
-    // Refresh history every 5 seconds to pick up new saves
-    const interval = setInterval(loadHistory, 5000);
-    return () => clearInterval(interval);
+    window.addEventListener(SUDOKU_STORAGE_EVENT, handleStorage);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener(SUDOKU_STORAGE_EVENT, handleStorage);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   useEffect(() => {
-    if (difficulty && ['easy', 'medium', 'hard', 'evil'].includes(difficulty as any)) {
-      setSelectedDifficulty(difficulty as 'easy' | 'medium' | 'hard' | 'evil');
+    if (difficulty && DIFFICULTIES.includes(difficulty)) {
+      setSelectedDifficulty(difficulty);
     }
   }, [difficulty]);
 
@@ -89,7 +104,7 @@ export function ActionBar() {
             setHintMessage(null);
           } catch (error) {
             console.error('Failed to load puzzle:', error);
-            alert('Failed to load the new puzzle. Please try again.');
+            alert(t('generationError'));
           } finally {
             // Wait for state to settle before allowing new games
             setTimeout(() => setIsGenerating(false), 200);
@@ -118,7 +133,7 @@ export function ActionBar() {
         'hidden-single': tHints('hiddenSingle', { value: hint.value, unit: '' }),
       };
 
-      setHintMessage(messages[hint.type as keyof typeof messages] || 'Try this cell');
+      setHintMessage(messages[hint.type as keyof typeof messages] || tHints('tryThisCell'));
 
       // Clear hint message after 5 seconds
       setTimeout(() => setHintMessage(null), 5000);
@@ -143,7 +158,7 @@ export function ActionBar() {
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">{tStats('progress')}</h3>
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-            <span>完成度</span>
+            <span>{t('completion')}</span>
             <span>{getCompletionPercentage()}%</span>
           </div>
           <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
@@ -203,7 +218,7 @@ export function ActionBar() {
 
         {/* Control Buttons */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">操作</h3>
+          <h3 className="text-sm font-semibold">{t('controls')}</h3>
 
           <button
             onClick={handleNewGame}
@@ -225,7 +240,7 @@ export function ActionBar() {
               onClick={undo}
               disabled={!canUndo}
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Undo (Ctrl+Z)"
+              title={t('undoShortcut')}
             >
               ↶ {t('undo')}
             </button>
@@ -233,7 +248,7 @@ export function ActionBar() {
               onClick={redo}
               disabled={!canRedo}
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Redo (Ctrl+Y)"
+              title={t('redoShortcut')}
             >
               ↷ {t('redo')}
             </button>
@@ -287,23 +302,23 @@ export function ActionBar() {
 
         {/* Keyboard Navigation Help */}
         <div className="space-y-2 pt-4 border-t">
-          <h3 className="text-sm font-semibold">⌨️ Keyboard Controls</h3>
+          <h3 className="text-sm font-semibold">{t('keyboardControls')}</h3>
           <div className="text-xs space-y-1 text-muted-foreground">
             <div className="flex items-center justify-between">
               <span>Arrow Keys ←↑↓→</span>
-              <span className="text-xs opacity-75">Navigate</span>
+              <span className="text-xs opacity-75">{t('navigate')}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Number Keys 1-9</span>
-              <span className="text-xs opacity-75">Enter Number</span>
+              <span className="text-xs opacity-75">{t('enterNumber')}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Backspace/Delete</span>
-              <span className="text-xs opacity-75">Clear</span>
+              <span className="text-xs opacity-75">{t('clearCell')}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Ctrl+Z / Ctrl+Y</span>
-              <span className="text-xs opacity-75">Undo/Redo</span>
+              <span className="text-xs opacity-75">{t('undoRedo')}</span>
             </div>
           </div>
         </div>
@@ -311,32 +326,32 @@ export function ActionBar() {
         {/* Game History */}
         <div className="space-y-2 pt-4 border-t">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold">📊 Game History</h3>
+            <h3 className="text-sm font-semibold">{t('gameHistory')}</h3>
             <Link
-              href="/games/samurai/archive"
+              href={`/${locale}/games/samurai/archive`}
               className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
             >
-              View All
+              {t('viewAll')}
             </Link>
           </div>
 
           {/* In Progress Games */}
           {inProgressGames.length > 0 && (
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">In Progress:</p>
+              <p className="text-xs text-muted-foreground">{t('inProgress')}:</p>
               {inProgressGames.map((game, idx) => (
                 <div
                   key={idx}
                   className="p-2 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium capitalize">{game.difficulty}</span>
+                    <span className="font-medium capitalize">{tGame(`difficulty.${game.difficulty}`)}</span>
                     <span className="text-muted-foreground">
                       {Math.floor(game.currentTime / 60)}:{(game.currentTime % 60).toString().padStart(2, '0')}
                     </span>
                   </div>
                   <div className="text-muted-foreground text-[10px] mt-1">
-                    {new Date(game.lastPlayed).toLocaleDateString('zh-CN', {
+                    {new Date(game.lastPlayed).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
                       month: 'short',
                       day: 'numeric',
                       hour: '2-digit',
@@ -351,20 +366,20 @@ export function ActionBar() {
           {/* Completed Games */}
           {gameHistory.length > 0 && (
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Completed:</p>
+              <p className="text-xs text-muted-foreground">{t('completed')}:</p>
               {gameHistory.map((game, idx) => (
                 <div
                   key={idx}
                   className="p-2 bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium capitalize">{game.difficulty}</span>
+                    <span className="font-medium capitalize">{tGame(`difficulty.${game.difficulty}`)}</span>
                     <span className="text-muted-foreground">
                       {Math.floor(game.stats.timeSpent / 60)}:{(game.stats.timeSpent % 60).toString().padStart(2, '0')}
                     </span>
                   </div>
                   <div className="text-muted-foreground text-[10px] mt-1">
-                    ✓ {new Date(game.completedAt).toLocaleDateString('zh-CN', {
+                    ✓ {new Date(game.completedAt).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
                       month: 'short',
                       day: 'numeric',
                       hour: '2-digit',
@@ -378,7 +393,7 @@ export function ActionBar() {
 
           {gameHistory.length === 0 && inProgressGames.length === 0 && (
             <div className="p-3 text-xs text-center text-muted-foreground bg-secondary/50 rounded">
-              No game history yet
+              {t('noGameHistory')}
             </div>
           )}
         </div>
@@ -414,7 +429,7 @@ export function ActionBar() {
               {tGame('difficulty.label')}:
             </span>
             <div className="flex gap-1">
-              {(['easy', 'medium', 'hard', 'evil'] as const).map((diff) => (
+              {DIFFICULTIES.map((diff) => (
                 <button
                   key={diff}
                   onClick={() => setSelectedDifficulty(diff)}

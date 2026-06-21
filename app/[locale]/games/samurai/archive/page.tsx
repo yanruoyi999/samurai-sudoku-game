@@ -4,6 +4,8 @@ import { Difficulty } from '@/lib/sudoku/types';
 import { getTranslations } from 'next-intl/server';
 import { GameHistoryArchive } from '@/components/GameHistoryArchive';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
+import { locales } from '@/i18n';
+import { buildAbsoluteUrl } from '@/lib/site-url';
 
 export async function generateMetadata({
   params,
@@ -17,6 +19,15 @@ export async function generateMetadata({
     description: isZh
       ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
       : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+    alternates: {
+      canonical: buildAbsoluteUrl(`/${params.locale}/games/samurai/archive`),
+      languages: Object.fromEntries(
+        locales.map((locale) => [
+          locale,
+          buildAbsoluteUrl(`/${locale}/games/samurai/archive`),
+        ])
+      ),
+    },
   };
 }
 
@@ -35,8 +46,9 @@ export default async function ArchivePage({
     ? searchParams.difficulty
     : undefined;
   const locale = params.locale;
-  const currentPage = Number.isInteger(Number(searchParams.page)) && Number(searchParams.page) > 0
-    ? Number(searchParams.page)
+  const pageParam = Number(searchParams.page);
+  const currentPage = Number.isInteger(pageParam) && pageParam > 0
+    ? pageParam
     : 1;
   const pageSize = 24;
   const index = await getPuzzleIndex();
@@ -163,7 +175,7 @@ export default async function ArchivePage({
                         {tGame(`difficulty.${puzzle.difficulty}`)}
                       </td>
                       <td className="px-4 py-3">
-                        {puzzle.estimatedTime} min
+                        {puzzle.estimatedTime} {t('minutesShort')}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">

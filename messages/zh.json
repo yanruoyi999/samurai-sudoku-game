@@ -21,13 +21,16 @@
     "hintTapCell": "点击格子，用下方数字键盘填入",
     "hintKeyboard": "方向键移动，1-9 填入，退格键清除",
     "selectCellPrompt": "先选中一个格子，再输入数字",
-    "possibleValues": "可填：{values}"
+    "possibleValues": "可填：{values}",
+    "noteMode": "候选笔记模式已开启。点击数字可添加或移除笔记。",
+    "enterNumber": "输入 {value}"
   },
   "stats": {
     "time": "时间",
     "progress": "进度",
     "hints": "提示",
-    "moves": "移动"
+    "moves": "移动",
+    "mistakes": "失误"
   },
   "actions": {
     "newGame": "新游戏",
@@ -42,13 +45,30 @@
     "newGameConfirm": "开始新游戏？当前进度将丢失。",
     "resetConfirm": "确定重置谜题？所有进度将丢失。",
     "pause": "暂停",
+    "paused": "已暂停",
     "resume": "继续",
-    "backHome": "← 返回首页"
+    "backHome": "← 返回首页",
+    "completion": "完成度",
+    "controls": "操作",
+    "keyboardControls": "键盘操作",
+    "navigate": "移动",
+    "enterNumber": "输入数字",
+    "clearCell": "清除",
+    "undoRedo": "撤销/重做",
+    "undoShortcut": "撤销 (Ctrl+Z)",
+    "redoShortcut": "重做 (Ctrl+Y)",
+    "gameHistory": "游戏历史",
+    "viewAll": "查看全部",
+    "inProgress": "进行中",
+    "completed": "已完成",
+    "noGameHistory": "暂无游戏历史",
+    "generationError": "新谜题加载失败，请重试。"
   },
   "hints": {
     "noHint": "没有可用的提示。尝试使用撤销按钮或清除一些单元格。",
     "nakedSingle": "这个单元格只能是 {value}。所有其他数字已在其行、列或宫格中使用。",
     "hiddenSingle": "在这个{unit}中，数字 {value} 只能放在这个单元格。",
+    "tryThisCell": "试试这个格子。",
     "units": {
       "row": "行",
       "column": "列",
@@ -76,6 +96,7 @@
     },
     "play": "开始",
     "noResults": "未找到谜题。",
+    "minutesShort": "分钟",
     "pagination": {
       "previous": "← 上一页",
       "next": "下一页 →",
@@ -108,7 +129,7 @@
       "intelligent": "智能提示",
       "intelligentDesc": "在遇到困难时获得智能提示和详细解释。",
       "candidates": "候选标记",
-      "candidatesDesc": "通过自动候选检测可视化可能的数字",
+      "candidatesDesc": "解题时可在棋盘上直接添加候选笔记。",
       "progress": "进度追踪",
       "progressDesc": "监控完成时间、使用的提示和进步情况。",
       "mobile": "移动优化",

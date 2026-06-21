@@ -52,7 +52,7 @@ export function addDays(dateStr: string, days: number): string {
 /**
  * Calculate checksum for puzzle data
  */
-export function calculateChecksum(data: any): string {
+export function calculateChecksum(data: unknown): string {
   const str = JSON.stringify(data);
   let hash = 0;
   for (let i = 0; i < str.length; i++) {

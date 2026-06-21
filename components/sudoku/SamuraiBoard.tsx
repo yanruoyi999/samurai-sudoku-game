@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { GlobalPosition, globalToLocal, getAffectedCells, positionsEqual } from "@/lib/sudoku/coordinates";
@@ -15,9 +15,58 @@ export function SamuraiBoard() {
     showConflicts,
     showCandidates,
     engine,
+    candidates,
     selectCell,
     setCell,
+    clearCell,
+    toggleCandidate,
+    undo,
+    redo,
   } = useSudokuStore();
+
+  const validCellKeys = useMemo(() => {
+    const keys = new Set<string>();
+
+    for (let row = 0; row < 21; row++) {
+      for (let col = 0; col < 21; col++) {
+        if (globalToLocal({ row, col }).length > 0) {
+          keys.add(`${row},${col}`);
+        }
+      }
+    }
+
+    return keys;
+  }, []);
+
+  const highlightedCellKeys = useMemo(() => {
+    if (!selectedCell) return new Set<string>();
+
+    const affected = getAffectedCells(selectedCell);
+    return new Set(
+      [...affected.row, ...affected.col, ...affected.box, ...affected.overlap]
+        .filter((pos) => !positionsEqual(pos, selectedCell))
+        .map((pos) => `${pos.row},${pos.col}`)
+    );
+  }, [selectedCell]);
+
+  const findNextSelectableCell = useCallback(
+    (start: GlobalPosition, delta: { row: number; col: number }) => {
+      let row = start.row + delta.row;
+      let col = start.col + delta.col;
+
+      while (row >= 0 && row < 21 && col >= 0 && col < 21) {
+        if (validCellKeys.has(`${row},${col}`) && !initial[row][col]) {
+          return { row, col };
+        }
+
+        row += delta.row;
+        col += delta.col;
+      }
+
+      return start;
+    },
+    [initial, validCellKeys]
+  );
 
   // Handle cell click
   const handleCellClick = useCallback(
@@ -31,34 +80,78 @@ export function SamuraiBoard() {
   // Handle keyboard input
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+        return;
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        redo();
+        return;
+      }
+
       if (!selectedCell) return;
 
       // Number keys (1-9)
       if (e.key >= "1" && e.key <= "9") {
+        e.preventDefault();
         const num = parseInt(e.key);
-        setCell(selectedCell, num);
+        if (showCandidates) {
+          toggleCandidate(selectedCell, num);
+        } else {
+          setCell(selectedCell, num);
+        }
+        return;
       }
 
       // Backspace or Delete to clear
       if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
-        setCell(selectedCell, 0);
+        e.preventDefault();
+        clearCell(selectedCell);
+        return;
       }
 
       // Arrow keys for navigation
-      if (e.key === "ArrowUp" && selectedCell.row > 0) {
-        selectCell({ ...selectedCell, row: selectedCell.row - 1 });
-      }
-      if (e.key === "ArrowDown" && selectedCell.row < 20) {
-        selectCell({ ...selectedCell, row: selectedCell.row + 1 });
-      }
-      if (e.key === "ArrowLeft" && selectedCell.col > 0) {
-        selectCell({ ...selectedCell, col: selectedCell.col - 1 });
-      }
-      if (e.key === "ArrowRight" && selectedCell.col < 20) {
-        selectCell({ ...selectedCell, col: selectedCell.col + 1 });
+      const navigation: Record<string, { row: number; col: number }> = {
+        ArrowUp: { row: -1, col: 0 },
+        ArrowDown: { row: 1, col: 0 },
+        ArrowLeft: { row: 0, col: -1 },
+        ArrowRight: { row: 0, col: 1 },
+      };
+      const delta = navigation[e.key];
+      if (delta) {
+        e.preventDefault();
+        selectCell(findNextSelectableCell(selectedCell, delta));
       }
     },
-    [selectedCell, setCell, selectCell]
+    [
+      selectedCell,
+      showCandidates,
+      setCell,
+      clearCell,
+      toggleCandidate,
+      selectCell,
+      findNextSelectableCell,
+      undo,
+      redo,
+    ]
   );
 
   // Add keyboard listener
@@ -73,15 +166,9 @@ export function SamuraiBoard() {
       if (!selectedCell) return false;
       if (positionsEqual(pos, selectedCell)) return false;
 
-      const affected = getAffectedCells(selectedCell);
-
-      return (
-        affected.row.some((p) => positionsEqual(p, pos)) ||
-        affected.col.some((p) => positionsEqual(p, pos)) ||
-        affected.box.some((p) => positionsEqual(p, pos))
-      );
+      return highlightedCellKeys.has(`${pos.row},${pos.col}`);
     },
-    [selectedCell]
+    [highlightedCellKeys, selectedCell]
   );
 
   // Check if a cell has a conflict
@@ -99,9 +186,8 @@ export function SamuraiBoard() {
 
   // Check if position is in a valid grid
   const isValidPosition = useCallback((pos: GlobalPosition): boolean => {
-    const locals = globalToLocal(pos);
-    return locals.length > 0;
-  }, []);
+    return validCellKeys.has(`${pos.row},${pos.col}`);
+  }, [validCellKeys]);
 
   // Origins (row, col) of the five overlapping 9x9 grids
   const SUBGRIDS: Array<[number, number]> = [
@@ -136,8 +222,8 @@ export function SamuraiBoard() {
             );
           }
 
-          // Get candidates for this cell
-          const candidates = engine?.getCandidates(pos);
+          // Show user-entered candidate notes. Engine candidates are surfaced in the number pad.
+          const candidateNotes = candidates.get(`${row},${col}`);
 
           return (
             <Cell
@@ -150,7 +236,7 @@ export function SamuraiBoard() {
               }
               isHighlighted={isCellHighlighted(pos)}
               hasConflict={hasCellConflict(pos)}
-              candidates={candidates}
+              candidates={candidateNotes}
               showCandidates={showCandidates}
               onClick={() => handleCellClick(pos)}
             />

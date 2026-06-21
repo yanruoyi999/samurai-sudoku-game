@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { SudokuEngine } from '@/lib/sudoku/engine';
-import { GlobalPosition } from '@/lib/sudoku/coordinates';
-import { Puzzle, Move, GameStatus } from '@/lib/sudoku/types';
+import { GlobalPosition, getAffectedCells } from '@/lib/sudoku/coordinates';
+import { Puzzle, Move, GameStatus, Difficulty } from '@/lib/sudoku/types';
 import {
   getInProgressGames,
   removeInProgressGame,
@@ -12,7 +12,7 @@ import {
 interface SudokuStore {
   // Puzzle info
   puzzleId: string | null;
-  difficulty: string | null;
+  difficulty: Difficulty | null;
   puzzle: Puzzle | null;
 
   // Board state
@@ -66,6 +66,8 @@ const createEmptyBoard = () =>
 
 const CURRENT_PROGRESS_KEY = 'samurai-sudoku-current-progress';
 const MAX_IN_PROGRESS_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+const MIN_PROGRESS_SAVE_INTERVAL_MS = 15_000;
+let lastProgressSaveAt = 0;
 
 interface PersistedSudokuProgress {
   puzzleId: string;
@@ -95,6 +97,44 @@ const deserializeCandidates = (candidates?: Array<[string, number[]]>) =>
     )
   );
 
+const getCandidateKey = (pos: GlobalPosition) => `${pos.row},${pos.col}`;
+
+const removePlacedValueFromCandidates = (
+  candidates: Map<string, Set<number>>,
+  pos: GlobalPosition,
+  value: number
+) => {
+  const nextCandidates = new Map(candidates);
+  nextCandidates.delete(getCandidateKey(pos));
+
+  if (value === 0) return nextCandidates;
+
+  const affected = getAffectedCells(pos);
+  const peers = [
+    ...affected.row,
+    ...affected.col,
+    ...affected.box,
+    ...affected.overlap,
+  ];
+
+  for (const peer of peers) {
+    const key = getCandidateKey(peer);
+    const peerCandidates = nextCandidates.get(key);
+    if (!peerCandidates?.has(value)) continue;
+
+    const updatedPeerCandidates = new Set(peerCandidates);
+    updatedPeerCandidates.delete(value);
+
+    if (updatedPeerCandidates.size > 0) {
+      nextCandidates.set(key, updatedPeerCandidates);
+    } else {
+      nextCandidates.delete(key);
+    }
+  }
+
+  return nextCandidates;
+};
+
 const getCurrentElapsedTime = (state: SudokuStore) =>
   state.startTime && !state.isPaused
     ? Math.floor((Date.now() - state.startTime) / 1000)
@@ -115,12 +155,24 @@ const rebuildEngine = (puzzle: Puzzle, board: number[][]) => {
   return engine;
 };
 
-const saveCurrentProgress = (state: SudokuStore) => {
+const saveCurrentProgress = (
+  state: SudokuStore,
+  options: { throttle?: boolean } = {}
+) => {
   if (typeof window === 'undefined' || !state.puzzle || !state.puzzleId) return;
+
+  const now = Date.now();
+  if (
+    options.throttle &&
+    now - lastProgressSaveAt < MIN_PROGRESS_SAVE_INTERVAL_MS
+  ) {
+    return;
+  }
 
   if (state.status === 'completed') {
     localStorage.removeItem(CURRENT_PROGRESS_KEY);
     removeInProgressGame(state.puzzleId);
+    lastProgressSaveAt = now;
     return;
   }
 
@@ -159,6 +211,7 @@ const saveCurrentProgress = (state: SudokuStore) => {
       mistakesMade: state.mistakesMade,
       savedAt,
     });
+    lastProgressSaveAt = now;
   } catch (error) {
     console.error('Failed to save current Sudoku progress:', error);
   }
@@ -269,7 +322,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Set cell value
       setCell: (pos, value) => {
-        const { engine, history, historyIndex, mistakesMade } = get();
+        const { engine, history, historyIndex, mistakesMade, candidates } = get();
 
         if (!engine) return;
         if (engine.isInitial(pos)) return;
@@ -294,12 +347,14 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         });
 
         const newBoard = engine.getBoard();
+        const newCandidates = removePlacedValueFromCandidates(candidates, pos, value);
 
         set({
           board: newBoard,
           history: newHistory,
           historyIndex: newHistory.length - 1,
           mistakesMade: mistakesMade + (isMistake ? 1 : 0),
+          candidates: newCandidates,
         });
 
         // Check if completed
@@ -312,6 +367,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           // Save to completed history
           const completedState = get();
           if (completedState.puzzle) {
+            const completedAt = new Date().toISOString();
             saveGameToHistory({
               puzzle: completedState.puzzle,
               stats: {
@@ -319,9 +375,9 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
                 timeSpent,
                 hintsUsed: completedState.hintsUsed,
                 mistakesMade: completedState.mistakesMade,
-                completedAt: new Date().toISOString(),
+                completedAt,
               },
-              completedAt: new Date().toISOString(),
+              completedAt,
               difficulty: completedState.puzzle.difficulty,
             });
           }
@@ -334,6 +390,21 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Clear cell
       clearCell: (pos) => {
+        const { engine, candidates } = get();
+        if (!engine || engine.isInitial(pos)) return;
+
+        const oldValue = engine.getValue(pos);
+        const key = getCandidateKey(pos);
+
+        if (oldValue === 0) {
+          if (!candidates.has(key)) return;
+          const newCandidates = new Map(candidates);
+          newCandidates.delete(key);
+          set({ candidates: newCandidates });
+          saveCurrentProgress(get());
+          return;
+        }
+
         get().setCell(pos, 0);
       },
 
@@ -344,9 +415,12 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Toggle candidate
       toggleCandidate: (pos, value) => {
-        const { candidates } = get();
-        const key = `${pos.row},${pos.col}`;
-        const cellCandidates = candidates.get(key) || new Set();
+        const { candidates, engine } = get();
+        if (!engine || engine.isInitial(pos) || engine.getValue(pos) !== 0) return;
+        if (!Number.isInteger(value) || value < 1 || value > 9) return;
+
+        const key = getCandidateKey(pos);
+        const cellCandidates = new Set(candidates.get(key) ?? []);
 
         if (cellCandidates.has(value)) {
           cellCandidates.delete(value);
@@ -355,7 +429,11 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         }
 
         const newCandidates = new Map(candidates);
-        newCandidates.set(key, cellCandidates);
+        if (cellCandidates.size > 0) {
+          newCandidates.set(key, cellCandidates);
+        } else {
+          newCandidates.delete(key);
+        }
 
         set({ candidates: newCandidates });
         saveCurrentProgress(get());
@@ -454,7 +532,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
       // Update elapsed time
       updateElapsedTime: (time) => {
         set({ elapsedTime: time });
-        saveCurrentProgress(get());
+        saveCurrentProgress(get(), { throttle: true });
       },
 
       // Increment hints

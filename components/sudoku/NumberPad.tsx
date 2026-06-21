@@ -11,11 +11,24 @@ interface NumberPadProps {
 
 export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadProps) {
   const t = useTranslations("game");
-  const { selectedCell, setCell, engine } = useSudokuStore();
+  const tActions = useTranslations("actions");
+  const {
+    selectedCell,
+    setCell,
+    clearCell,
+    toggleCandidate,
+    engine,
+    candidates,
+    showCandidates: noteMode,
+  } = useSudokuStore();
 
   const handleNumberClick = (num: number) => {
     if (selectedCell) {
-      setCell(selectedCell, num);
+      if (noteMode) {
+        toggleCandidate(selectedCell, num);
+      } else {
+        setCell(selectedCell, num);
+      }
     }
 
     if (onNumberSelect) {
@@ -30,13 +43,16 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
 
   const handleClear = () => {
     if (selectedCell) {
-      setCell(selectedCell, 0);
+      clearCell(selectedCell);
     }
   };
 
   // Get candidates for selected cell
-  const candidates = selectedCell && engine
+  const possibleValues = selectedCell && engine
     ? engine.getCandidates(selectedCell)
+    : new Set<number>();
+  const selectedCandidateMarks = selectedCell
+    ? candidates.get(`${selectedCell.row},${selectedCell.col}`) ?? new Set<number>()
     : new Set<number>();
 
   return (
@@ -45,7 +61,8 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
         {/* Number Grid */}
         <div className="grid grid-cols-5 gap-2 mb-3">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => {
-            const isCandidate = candidates.has(num);
+            const isPossibleValue = possibleValues.has(num);
+            const isMarkedCandidate = selectedCandidateMarks.has(num);
             const isDisabled = !selectedCell;
 
             return (
@@ -53,13 +70,22 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
                 key={num}
                 onClick={() => handleNumberClick(num)}
                 disabled={isDisabled}
+                aria-label={
+                  noteMode
+                    ? `${tActions('candidates')} ${num}`
+                    : t("enterNumber", { value: num })
+                }
+                aria-pressed={noteMode ? isMarkedCandidate : undefined}
+                title={noteMode ? `${tActions('candidates')} ${num}` : String(num)}
                 className={cn(
                   "aspect-square rounded-lg font-semibold text-xl",
                   "border-2 transition-all active:scale-95",
                   "disabled:opacity-40 disabled:cursor-not-allowed",
                   isDisabled
                     ? "border-muted bg-muted/20"
-                    : showCandidates && !isCandidate
+                    : noteMode && isMarkedCandidate
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : showCandidates && possibleValues.size > 0 && !isPossibleValue
                     ? "border-muted bg-muted/20 opacity-50"
                     : "border-primary hover:bg-primary hover:text-primary-foreground"
                 )}
@@ -73,6 +99,8 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           <button
             onClick={handleClear}
             disabled={!selectedCell}
+            aria-label={tActions('clear')}
+            title={tActions('clear')}
             className={cn(
               "aspect-square rounded-lg font-semibold",
               "border-2 border-destructive text-destructive",
@@ -92,9 +120,11 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           </p>
         )}
 
-        {selectedCell && showCandidates && candidates.size > 0 && (
+        {selectedCell && showCandidates && (noteMode || possibleValues.size > 0) && (
           <p className="text-xs text-center text-muted-foreground">
-            {t("possibleValues", { values: Array.from(candidates).sort().join(", ") })}
+            {noteMode
+              ? t("noteMode")
+              : t("possibleValues", { values: Array.from(possibleValues).sort().join(", ") })}
           </p>
         )}
       </div>

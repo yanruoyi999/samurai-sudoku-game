@@ -14,6 +14,7 @@ interface CellProps {
 }
 
 export function Cell({
+  position,
   value,
   isInitial,
   isSelected,
@@ -25,6 +26,9 @@ export function Cell({
 }: CellProps) {
   // Show candidates only if cell is empty, showCandidates is true, and we have candidates
   const displayCandidates = !value && showCandidates && candidates && candidates.size > 0;
+  const ariaLabel = value
+    ? `Row ${position.row + 1}, column ${position.col + 1}, value ${value}${isInitial ? ', given' : ''}`
+    : `Row ${position.row + 1}, column ${position.col + 1}, empty`;
 
   return (
     <button
@@ -40,6 +44,10 @@ export function Cell({
       onClick={onClick}
       disabled={isInitial}
       type="button"
+      aria-label={ariaLabel}
+      aria-pressed={isSelected}
+      data-invalid={hasConflict || undefined}
+      title={ariaLabel}
     >
       {value ? (
         // Display main value — given clues in ink, player entries in vermilion/maple

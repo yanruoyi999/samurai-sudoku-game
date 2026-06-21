@@ -14,6 +14,12 @@ const HISTORY_KEY = 'sudoku-game-history';
 const IN_PROGRESS_HISTORY_KEY = 'sudoku-in-progress-history';
 const MAX_HISTORY_SIZE = 100; // 最多保存100条历史记录
 const MAX_IN_PROGRESS_SIZE = 50; // 最多保存50条进行中的游戏
+export const SUDOKU_STORAGE_EVENT = 'sudoku-storage-updated';
+
+function notifyStorageUpdated(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event(SUDOKU_STORAGE_EVENT));
+}
 
 /**
  * Get game history from localStorage
@@ -49,6 +55,7 @@ export function saveGameToHistory(entry: GameHistoryEntry): void {
     const trimmedHistory = history.slice(0, MAX_HISTORY_SIZE);
 
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmedHistory));
+    notifyStorageUpdated();
   } catch (error) {
     console.error('Failed to save game to history:', error);
   }
@@ -127,6 +134,7 @@ export function clearGameHistory(): void {
 
   try {
     localStorage.removeItem(HISTORY_KEY);
+    notifyStorageUpdated();
   } catch (error) {
     console.error('Failed to clear game history:', error);
   }
@@ -199,6 +207,7 @@ export function saveInProgressGame(game: InProgressGame): void {
     const trimmedHistory = history.slice(0, MAX_IN_PROGRESS_SIZE);
 
     localStorage.setItem(IN_PROGRESS_HISTORY_KEY, JSON.stringify(trimmedHistory));
+    notifyStorageUpdated();
   } catch (error) {
     console.error('Failed to save in-progress game:', error);
   }
@@ -232,6 +241,7 @@ export function removeInProgressGame(puzzleId: string): void {
     const history = getInProgressGames();
     const filtered = history.filter(g => g.puzzle.id !== puzzleId);
     localStorage.setItem(IN_PROGRESS_HISTORY_KEY, JSON.stringify(filtered));
+    notifyStorageUpdated();
   } catch (error) {
     console.error('Failed to remove in-progress game:', error);
   }
