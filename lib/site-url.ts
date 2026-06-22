@@ -1,4 +1,4 @@
-const FALLBACK_SITE_URL = 'https://samurai-sudoku.com';
+const FALLBACK_SITE_URL = 'https://www.samuraisudoku.net';
 
 export function getSiteBaseUrl(): string {
   const candidate =
@@ -18,4 +18,3 @@ export function buildAbsoluteUrl(pathname: string): string {
   const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
   return new URL(normalizedPath, getSiteBaseUrl()).toString();
 }
-
