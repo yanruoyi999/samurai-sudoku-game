@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { locales } from "@/i18n";
+import { buildAbsoluteUrl } from "@/lib/site-url";
+
 interface PrivacyPageProps {
   params: { locale: string };
 }
@@ -13,6 +16,15 @@ export async function generateMetadata({ params }: PrivacyPageProps): Promise<Me
     description: isZh
       ? "了解武士数独如何处理本地进度、反馈数据和网站分析。"
       : "Learn how Samurai Sudoku handles local progress, feedback data, and site analytics.",
+    alternates: {
+      canonical: buildAbsoluteUrl(`/${params.locale}/privacy`),
+      languages: Object.fromEntries(
+        locales.map((locale) => [
+          locale === "zh" ? "zh-CN" : "en-US",
+          buildAbsoluteUrl(`/${locale}/privacy`),
+        ]),
+      ),
+    },
   };
 }
 

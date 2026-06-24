@@ -151,9 +151,20 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t text-center text-sm text-muted-foreground">
         <p>{t('footer')}</p>
-        <Link href={`/${locale}/privacy`} className="mt-2 inline-flex text-primary hover:text-primary/80">
-          {t('privacy')}
-        </Link>
+        <nav
+          aria-label={locale === 'zh' ? '网站信息' : 'Site information'}
+          className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2"
+        >
+          <Link href={`/${locale}/about`} className="text-primary hover:text-primary/80">
+            {t('about')}
+          </Link>
+          <Link href={`/${locale}/contact`} className="text-primary hover:text-primary/80">
+            {t('contact')}
+          </Link>
+          <Link href={`/${locale}/privacy`} className="text-primary hover:text-primary/80">
+            {t('privacy')}
+          </Link>
+        </nav>
       </footer>
     </main>
 
