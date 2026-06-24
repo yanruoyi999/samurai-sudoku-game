@@ -93,6 +93,20 @@ export default async function ArchivePage({
             <p className="text-sm text-muted-foreground">
               {t('description')}
             </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-muted-foreground">
+                {locale === 'zh' ? '按难度浏览：' : 'Browse by difficulty:'}
+              </span>
+              {(['easy', 'medium', 'hard', 'evil'] as const).map((d) => (
+                <Link
+                  key={d}
+                  href={`/${locale}/games/samurai/difficulty/${d}`}
+                  className="rounded-md border px-3 py-1 hover:bg-accent transition-colors"
+                >
+                  {tGame(`difficulty.${d}`)}
+                </Link>
+              ))}
+            </div>
           </div>
 
           <Link

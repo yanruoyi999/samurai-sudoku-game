@@ -1,6 +1,39 @@
 {
   "puzzles": [
     {
+      "id": "2026-06-24",
+      "difficulty": "hard",
+      "estimatedTime": 60,
+      "checksum": "27fe2d1e",
+      "tags": [
+        "daily",
+        "hard",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-23",
+      "difficulty": "medium",
+      "estimatedTime": 35,
+      "checksum": "46876d43",
+      "tags": [
+        "daily",
+        "medium",
+        "generated"
+      ]
+    },
+    {
+      "id": "2026-06-22",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "7867d6ff",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
       "id": "2026-06-21",
       "difficulty": "evil",
       "estimatedTime": 90,
@@ -1904,6 +1937,6 @@
       ]
     }
   ],
-  "total": 173,
-  "lastUpdated": "2026-06-21T04:00:42.545Z"
+  "total": 176,
+  "lastUpdated": "2026-06-24T14:47:01.224Z"
 }

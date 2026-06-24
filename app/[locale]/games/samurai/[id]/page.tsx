@@ -1,11 +1,21 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Script from 'next/script';
 import { notFound } from 'next/navigation';
 
 import { locales, type Locale } from '@/i18n';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { getPuzzle, getPuzzleIndex, getPuzzleMetadata } from '@/lib/puzzles';
+import type { Difficulty } from '@/lib/sudoku/types';
 import PuzzleClient from './PuzzleClient';
+
+const DIFFICULTY_LABELS: Record<Difficulty, { en: string; zh: string }> = {
+  easy: { en: 'Easy', zh: '简单' },
+  medium: { en: 'Medium', zh: '中等' },
+  hard: { en: 'Hard', zh: '困难' },
+  evil: { en: 'Evil', zh: 'Evil 极难' },
+};
+const ALL_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
 
 interface PuzzlePageProps {
   params: { locale: string; id: string };
@@ -103,6 +113,31 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
     keywords: puzzle.metadata.tags?.join(', '),
   };
 
+  const isZh = params.locale === 'zh';
+  const difficulty = puzzle.difficulty;
+  const diffLabel = isZh ? DIFFICULTY_LABELS[difficulty].zh : DIFFICULTY_LABELS[difficulty].en;
+
+  // Prev/next within the same difficulty for crawlable internal linking.
+  const index = await getPuzzleIndex();
+  const sameDifficulty = index.puzzles
+    .filter((p) => p.difficulty === difficulty)
+    .sort((a, b) => (a.id < b.id ? 1 : -1));
+  const pos = sameDifficulty.findIndex((p) => p.id === puzzle.id);
+  const newer = pos > 0 ? sameDifficulty[pos - 1] : null;
+  const older = pos >= 0 && pos < sameDifficulty.length - 1 ? sameDifficulty[pos + 1] : null;
+  const related = sameDifficulty.filter((p) => p.id !== puzzle.id).slice(0, 6);
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: isZh ? '首页' : 'Home', item: buildAbsoluteUrl(`/${params.locale}`) },
+      { '@type': 'ListItem', position: 2, name: 'Samurai Sudoku', item: buildAbsoluteUrl(`/${params.locale}/games/samurai`) },
+      { '@type': 'ListItem', position: 3, name: `${diffLabel} Samurai Sudoku`, item: buildAbsoluteUrl(`/${params.locale}/games/samurai/difficulty/${difficulty}`) },
+      { '@type': 'ListItem', position: 4, name: puzzle.id, item: buildAbsoluteUrl(`/${params.locale}/games/samurai/${puzzle.id}`) },
+    ],
+  };
+
   return (
     <>
       <Script
@@ -110,7 +145,70 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <Script
+        id={`samurai-sudoku-breadcrumb-jsonld-${puzzle.id}-${params.locale}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <PuzzleClient puzzleId={params.id} initialPuzzle={puzzle} />
+
+      {/* Server-rendered internal links (crawlable; the game UI above is client-only) */}
+      <footer className="border-t bg-muted/20">
+        <div className="container mx-auto px-4 py-8 space-y-6 text-sm">
+          <nav className="flex flex-wrap items-center justify-between gap-3" aria-label={isZh ? '相邻题目' : 'Adjacent puzzles'}>
+            {older ? (
+              <Link href={`/${params.locale}/games/samurai/${older.id}`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+                ← {older.id}
+              </Link>
+            ) : <span />}
+            <Link href={`/${params.locale}/games/samurai/difficulty/${difficulty}`} className="font-medium text-primary hover:underline">
+              {isZh ? `更多${diffLabel}武士数独` : `More ${diffLabel.toLowerCase()} Samurai Sudoku`}
+            </Link>
+            {newer ? (
+              <Link href={`/${params.locale}/games/samurai/${newer.id}`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+                {newer.id} →
+              </Link>
+            ) : <span />}
+          </nav>
+
+          {related.length > 0 && (
+            <div className="border-t pt-4">
+              <h2 className="font-medium mb-3">
+                {isZh ? `更多${diffLabel}武士数独` : `More ${diffLabel.toLowerCase()} Samurai Sudoku`}
+              </h2>
+              <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {related.map((p) => (
+                  <li key={p.id}>
+                    <Link
+                      href={`/${params.locale}/games/samurai/${p.id}`}
+                      className="flex items-center justify-between rounded-lg border px-4 py-3 hover:border-primary hover:bg-primary/5 transition-colors"
+                    >
+                      <span className="font-medium tabular">{p.id}</span>
+                      <span className="text-sm text-muted-foreground">{p.estimatedTime} {isZh ? '分钟' : 'min'}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-2 border-t pt-4">
+            <span className="text-muted-foreground">{isZh ? '按难度浏览：' : 'Browse by difficulty:'}</span>
+            {ALL_DIFFICULTIES.map((d) => (
+              <Link
+                key={d}
+                href={`/${params.locale}/games/samurai/difficulty/${d}`}
+                className="rounded-md border px-3 py-1 hover:bg-accent transition-colors"
+              >
+                {isZh ? DIFFICULTY_LABELS[d].zh : DIFFICULTY_LABELS[d].en}
+              </Link>
+            ))}
+            <Link href={`/${params.locale}/games/samurai/archive`} className="rounded-md border px-3 py-1 hover:bg-accent transition-colors">
+              {isZh ? '全部题库' : 'Full archive'}
+            </Link>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

@@ -89,6 +89,39 @@ export default async function HomePage() {
             />
           </div>
 
+          {/* Browse by difficulty — internal links to difficulty hubs */}
+          <section className="mt-20 space-y-6">
+            <h2 className="text-3xl md:text-4xl font-semibold text-foreground">
+              {locale === 'zh' ? '按难度选择' : 'Choose your difficulty'}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {([
+                ['easy', locale === 'zh' ? '简单' : 'Easy', locale === 'zh' ? '轻松入门' : 'Gentle start'],
+                ['medium', locale === 'zh' ? '中等' : 'Medium', locale === 'zh' ? '稳步推理' : 'Steady logic'],
+                ['hard', locale === 'zh' ? '困难' : 'Hard', locale === 'zh' ? '深度推理' : 'Deep deduction'],
+                ['evil', locale === 'zh' ? 'Evil 极难' : 'Evil', locale === 'zh' ? '终极挑战' : 'Ultimate test'],
+              ] as const).map(([d, label, sub]) => (
+                <Link
+                  key={d}
+                  href={`/${locale}/games/samurai/difficulty/${d}`}
+                  className="rounded-lg border bg-secondary/40 p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
+                >
+                  <div className="text-lg font-semibold">{label}</div>
+                  <div className="text-sm text-muted-foreground mt-1">{sub}</div>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center">
+              <Link
+                href={`/${locale}/games/samurai/how-to-play`}
+                className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
+              >
+                {locale === 'zh' ? '不会玩？看武士数独规则与技巧' : 'New here? Learn the rules & strategy'}
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </section>
+
           <section className="mt-20 space-y-6 text-left">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground text-center">
               {t('seoSection.title')}

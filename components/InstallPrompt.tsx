@@ -57,13 +57,7 @@ export function InstallPrompt() {
     }
 
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === 'accepted') {
-      console.log('用户接受了安装');
-    } else {
-      console.log('用户拒绝了安装');
-    }
+    await deferredPrompt.userChoice;
 
     setDeferredPrompt(null);
     setShowInstallBanner(false);

@@ -5,10 +5,17 @@ import { getPuzzleIndex } from '@/lib/puzzles';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const difficulties = ['easy', 'medium', 'hard', 'evil'];
   const routes = [
     { path: '', changeFrequency: 'daily' as const, priority: 1 },
     { path: '/games/samurai', changeFrequency: 'daily' as const, priority: 0.9 },
     { path: '/games/samurai/archive', changeFrequency: 'weekly' as const, priority: 0.85 },
+    { path: '/games/samurai/how-to-play', changeFrequency: 'monthly' as const, priority: 0.7 },
+    ...difficulties.map((difficulty) => ({
+      path: `/games/samurai/difficulty/${difficulty}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     { path: '/about', changeFrequency: 'yearly' as const, priority: 0.4 },
     { path: '/contact', changeFrequency: 'yearly' as const, priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },

@@ -232,7 +232,7 @@ export function ActionBar() {
             href={`/${locale}`}
             className="block w-full px-4 py-2 text-sm font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-colors text-center"
           >
-            {t('backHome') ?? '← Back to home'}
+            {t('backHome')}
           </Link>
 
           <div className="grid grid-cols-2 gap-2">
@@ -509,7 +509,7 @@ export function ActionBar() {
               href={`/${locale}`}
               className="px-3 py-2 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-colors whitespace-nowrap"
             >
-              {t('backHome') ?? '← Back to home'}
+              {t('backHome')}
             </Link>
           </div>
         </div>
