@@ -2,12 +2,12 @@
   "puzzles": [
     {
       "id": "2026-06-24",
-      "difficulty": "hard",
-      "estimatedTime": 60,
-      "checksum": "27fe2d1e",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "7915dc48",
       "tags": [
         "daily",
-        "hard",
+        "evil",
         "generated"
       ]
     },
@@ -1938,5 +1938,5 @@
     }
   ],
   "total": 176,
-  "lastUpdated": "2026-06-24T14:47:01.224Z"
+  "lastUpdated": "2026-06-24T15:00:44.776Z"
 }
