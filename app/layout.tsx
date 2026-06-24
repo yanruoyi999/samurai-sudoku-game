@@ -43,12 +43,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const requestedLocale = headers().get("x-next-intl-locale");
+  const requestedLocale = (await headers()).get("x-next-intl-locale");
   const htmlLang = locales.find((locale) => locale === requestedLocale) ?? "en";
 
   return (

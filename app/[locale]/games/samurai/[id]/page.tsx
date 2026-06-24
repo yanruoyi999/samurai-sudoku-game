@@ -18,7 +18,7 @@ const DIFFICULTY_LABELS: Record<Difficulty, { en: string; zh: string }> = {
 const ALL_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
 
 interface PuzzlePageProps {
-  params: { locale: string; id: string };
+  params: Promise<{ locale: string; id: string }>;
 }
 
 export async function generateStaticParams() {
@@ -31,8 +31,9 @@ export async function generateStaticParams() {
   );
 }
 export async function generateMetadata({ params }: PuzzlePageProps): Promise<Metadata> {
-  const locale = (params.locale as Locale) ?? 'en';
-  const puzzle = await getPuzzleMetadata(params.id);
+  const resolvedParams = await params;
+  const locale = (resolvedParams.locale as Locale) ?? 'en';
+  const puzzle = await getPuzzleMetadata(resolvedParams.id);
 
   if (!puzzle) {
     return {
@@ -90,7 +91,8 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
 }
 
 export default async function PuzzlePage({ params }: PuzzlePageProps) {
-  const puzzle = await getPuzzle(params.id);
+  const resolvedParams = await params;
+  const puzzle = await getPuzzle(resolvedParams.id);
 
   if (!puzzle) {
     notFound();
@@ -100,11 +102,11 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
     '@context': 'https://schema.org',
     '@type': 'Game',
     name:
-      params.locale === 'zh'
+      resolvedParams.locale === 'zh'
         ? `${puzzle.id} 武士数独`
         : `${puzzle.id} Samurai Sudoku`,
-    url: buildAbsoluteUrl(`/${params.locale}/games/samurai/${puzzle.id}`),
-    inLanguage: params.locale === 'zh' ? 'zh-CN' : 'en-US',
+    url: buildAbsoluteUrl(`/${resolvedParams.locale}/games/samurai/${puzzle.id}`),
+    inLanguage: resolvedParams.locale === 'zh' ? 'zh-CN' : 'en-US',
     gameItem: {
       '@type': 'Thing',
       name: 'Samurai Sudoku',
@@ -113,7 +115,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
     keywords: puzzle.metadata.tags?.join(', '),
   };
 
-  const isZh = params.locale === 'zh';
+  const isZh = resolvedParams.locale === 'zh';
   const difficulty = puzzle.difficulty;
   const diffLabel = isZh ? DIFFICULTY_LABELS[difficulty].zh : DIFFICULTY_LABELS[difficulty].en;
 
@@ -131,41 +133,41 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: isZh ? '首页' : 'Home', item: buildAbsoluteUrl(`/${params.locale}`) },
-      { '@type': 'ListItem', position: 2, name: 'Samurai Sudoku', item: buildAbsoluteUrl(`/${params.locale}/games/samurai`) },
-      { '@type': 'ListItem', position: 3, name: `${diffLabel} Samurai Sudoku`, item: buildAbsoluteUrl(`/${params.locale}/games/samurai/difficulty/${difficulty}`) },
-      { '@type': 'ListItem', position: 4, name: puzzle.id, item: buildAbsoluteUrl(`/${params.locale}/games/samurai/${puzzle.id}`) },
+      { '@type': 'ListItem', position: 1, name: isZh ? '首页' : 'Home', item: buildAbsoluteUrl(`/${resolvedParams.locale}`) },
+      { '@type': 'ListItem', position: 2, name: 'Samurai Sudoku', item: buildAbsoluteUrl(`/${resolvedParams.locale}/games/samurai`) },
+      { '@type': 'ListItem', position: 3, name: `${diffLabel} Samurai Sudoku`, item: buildAbsoluteUrl(`/${resolvedParams.locale}/games/samurai/difficulty/${difficulty}`) },
+      { '@type': 'ListItem', position: 4, name: puzzle.id, item: buildAbsoluteUrl(`/${resolvedParams.locale}/games/samurai/${puzzle.id}`) },
     ],
   };
 
   return (
     <>
       <Script
-        id={`samurai-sudoku-puzzle-jsonld-${puzzle.id}-${params.locale}`}
+        id={`samurai-sudoku-puzzle-jsonld-${puzzle.id}-${resolvedParams.locale}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Script
-        id={`samurai-sudoku-breadcrumb-jsonld-${puzzle.id}-${params.locale}`}
+        id={`samurai-sudoku-breadcrumb-jsonld-${puzzle.id}-${resolvedParams.locale}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <PuzzleClient puzzleId={params.id} initialPuzzle={puzzle} />
+      <PuzzleClient puzzleId={resolvedParams.id} initialPuzzle={puzzle} />
 
       {/* Server-rendered internal links (crawlable; the game UI above is client-only) */}
       <footer className="border-t bg-muted/20">
         <div className="container mx-auto px-4 py-8 space-y-6 text-sm">
           <nav className="flex flex-wrap items-center justify-between gap-3" aria-label={isZh ? '相邻题目' : 'Adjacent puzzles'}>
             {older ? (
-              <Link href={`/${params.locale}/games/samurai/${older.id}`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+              <Link href={`/${resolvedParams.locale}/games/samurai/${older.id}`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
                 ← {older.id}
               </Link>
             ) : <span />}
-            <Link href={`/${params.locale}/games/samurai/difficulty/${difficulty}`} className="font-medium text-primary hover:underline">
+            <Link href={`/${resolvedParams.locale}/games/samurai/difficulty/${difficulty}`} className="font-medium text-primary hover:underline">
               {isZh ? `更多${diffLabel}武士数独` : `More ${diffLabel.toLowerCase()} Samurai Sudoku`}
             </Link>
             {newer ? (
-              <Link href={`/${params.locale}/games/samurai/${newer.id}`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+              <Link href={`/${resolvedParams.locale}/games/samurai/${newer.id}`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
                 {newer.id} →
               </Link>
             ) : <span />}
@@ -180,7 +182,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
                 {related.map((p) => (
                   <li key={p.id}>
                     <Link
-                      href={`/${params.locale}/games/samurai/${p.id}`}
+                      href={`/${resolvedParams.locale}/games/samurai/${p.id}`}
                       className="flex items-center justify-between rounded-lg border px-4 py-3 hover:border-primary hover:bg-primary/5 transition-colors"
                     >
                       <span className="font-medium tabular">{p.id}</span>
@@ -197,13 +199,13 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
             {ALL_DIFFICULTIES.map((d) => (
               <Link
                 key={d}
-                href={`/${params.locale}/games/samurai/difficulty/${d}`}
+                href={`/${resolvedParams.locale}/games/samurai/difficulty/${d}`}
                 className="rounded-md border px-3 py-1 hover:bg-accent transition-colors"
               >
                 {isZh ? DIFFICULTY_LABELS[d].zh : DIFFICULTY_LABELS[d].en}
               </Link>
             ))}
-            <Link href={`/${params.locale}/games/samurai/archive`} className="rounded-md border px-3 py-1 hover:bg-accent transition-colors">
+            <Link href={`/${resolvedParams.locale}/games/samurai/archive`} className="rounded-md border px-3 py-1 hover:bg-accent transition-colors">
               {isZh ? '全部题库' : 'Full archive'}
             </Link>
           </div>

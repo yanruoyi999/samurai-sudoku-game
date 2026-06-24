@@ -1,8 +1,9 @@
 #!/usr/bin/env tsx
 
-import { mkdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { isPuzzleId } from '@/lib/puzzles';
 import { generateSamuraiPuzzle } from '@/lib/sudoku/puzzle-generator';
 import type { Difficulty } from '@/lib/sudoku/types';
 import { calculateChecksum } from '@/lib/utils';
@@ -23,6 +24,7 @@ function parseArgs() {
   let outputDir = 'public/puzzles';
   let start = '';
   let count = 1;
+  let existingMode: 'error' | 'skip' | 'overwrite' = 'error';
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
@@ -42,10 +44,21 @@ function parseArgs() {
       const parsed = Number(args[i + 1]);
       count = Number.isInteger(parsed) && parsed > 0 ? parsed : count;
       i += 1;
+    } else if (arg === '--skip-existing') {
+      existingMode = 'skip';
+    } else if (arg === '--overwrite') {
+      existingMode = 'overwrite';
     }
   }
 
-  return { difficulty, id, outputDir, start, count };
+  if (!isPuzzleId(id)) {
+    throw new Error(`Invalid puzzle ID "${id}". Expected a real date in YYYY-MM-DD format.`);
+  }
+  if (start && !isPuzzleId(start)) {
+    throw new Error(`Invalid start date "${start}". Expected a real date in YYYY-MM-DD format.`);
+  }
+
+  return { difficulty, id, outputDir, start, count, existingMode };
 }
 
 function addDays(dateId: string, days: number): string {
@@ -62,7 +75,41 @@ function pickBatchDifficulty(baseDifficulty: Difficulty, index: number): Difficu
   return cycle[index % cycle.length];
 }
 
-async function writePuzzle(id: string, difficulty: Difficulty, outputDir: string) {
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function writePuzzle(
+  id: string,
+  difficulty: Difficulty,
+  outputDir: string,
+  existingMode: 'error' | 'skip' | 'overwrite' = 'error',
+): Promise<boolean> {
+  if (!isPuzzleId(id)) {
+    throw new Error(`Invalid puzzle ID "${id}". Expected a real date in YYYY-MM-DD format.`);
+  }
+
+  const year = id.slice(0, 4);
+  const yearDir = path.join(outputDir, year);
+  const filePath = path.join(yearDir, `${id}.json`);
+
+  if (await fileExists(filePath)) {
+    if (existingMode === 'skip') {
+      console.log(`Puzzle already exists, leaving it unchanged: ${filePath}`);
+      return false;
+    }
+    if (existingMode !== 'overwrite') {
+      throw new Error(
+        `Puzzle already exists: ${filePath}. Use --skip-existing or --overwrite explicitly.`,
+      );
+    }
+  }
+
   const puzzle = generateSamuraiPuzzle(difficulty);
   puzzle.id = id;
   puzzle.metadata.createdAt = new Date(`${id}T00:00:00.000Z`).toISOString();
@@ -70,32 +117,37 @@ async function writePuzzle(id: string, difficulty: Difficulty, outputDir: string
   puzzle.metadata.tags = Array.from(new Set(['daily', difficulty, ...(puzzle.metadata.tags ?? [])]));
 
   const validation = validatePuzzle(puzzle);
-  if (!validation.isValid || !validation.hasSolution) {
+  if (!validation.isValid || !validation.hasSolution || !validation.hasUniqueSolution) {
     validation.errors.forEach((error) => console.error(`  - ${error}`));
     throw new Error('Generated puzzle failed validation and was not written.');
   }
 
-  const year = id.slice(0, 4);
-  const yearDir = path.join(outputDir, year);
   await mkdir(yearDir, { recursive: true });
-  const filePath = path.join(yearDir, `${id}.json`);
   await writeFile(filePath, JSON.stringify(puzzle, null, 2), 'utf8');
 
   console.log(`Generated ${difficulty} puzzle: ${filePath}`);
+  return true;
 }
 
 async function main() {
-  const { difficulty, id, outputDir, start, count } = parseArgs();
+  const { difficulty, id, outputDir, start, count, existingMode } = parseArgs();
   const startId = start || id;
 
   for (let index = 0; index < count; index += 1) {
-    await writePuzzle(addDays(startId, index), pickBatchDifficulty(difficulty, index), outputDir);
+    await writePuzzle(
+      addDays(startId, index),
+      pickBatchDifficulty(difficulty, index),
+      outputDir,
+      existingMode,
+    );
   }
 
   await buildPuzzleIndex(outputDir);
 }
 
-void main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+if (require.main === module) {
+  void main().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  });
+}

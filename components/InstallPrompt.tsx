@@ -7,47 +7,50 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export function InstallPrompt() {
+interface InstallPromptProps {
+  locale: string;
+}
+
+export function InstallPrompt({ locale }: InstallPromptProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const isZh = locale === 'zh';
 
   useEffect(() => {
-    // 检查是否已经安装
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches
-      || (window.navigator as any).standalone
+      || Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)
       || document.referrer.includes('android-app://');
 
     if (isInstalled) {
       return;
     }
 
-    // 检查是否已经关闭过安装提示
     const hasClosedInstallPrompt = localStorage.getItem('closedInstallPrompt');
     if (hasClosedInstallPrompt) {
       return;
     }
 
-    // 监听 beforeinstallprompt 事件
+    let showTimer: ReturnType<typeof setTimeout> | null = null;
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // 延迟3秒显示安装提示
-      setTimeout(() => {
+      showTimer = setTimeout(() => {
         setShowInstallBanner(true);
       }, 3000);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // 监听应用安装事件
-    window.addEventListener('appinstalled', () => {
+    const handleAppInstalled = () => {
       setShowInstallBanner(false);
       setDeferredPrompt(null);
       localStorage.removeItem('closedInstallPrompt');
-    });
+    };
 
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
     return () => {
+      if (showTimer) clearTimeout(showTimer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -85,22 +88,24 @@ export function InstallPrompt() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-bold text-white mb-1">
-                安装武士数独应用
+                {isZh ? '安装武士数独应用' : 'Install Samurai Sudoku'}
               </h3>
               <p className="text-sm text-white/90 mb-3">
-                添加到主屏幕，随时随地畅玩，支持离线游戏！
+                {isZh
+                  ? '添加到主屏幕，快速启动并继续本地保存的进度。'
+                  : 'Add it to your home screen for quick access and locally saved progress.'}
               </p>
 
               {/* Features */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="inline-flex items-center gap-1 text-xs bg-white/20 text-white px-2 py-1 rounded-full">
-                  ⚡ 快速启动
+                  {isZh ? '⚡ 快速启动' : '⚡ Quick launch'}
                 </span>
                 <span className="inline-flex items-center gap-1 text-xs bg-white/20 text-white px-2 py-1 rounded-full">
-                  📴 离线可用
+                  {isZh ? '📴 离线支持' : '📴 Offline support'}
                 </span>
                 <span className="inline-flex items-center gap-1 text-xs bg-white/20 text-white px-2 py-1 rounded-full">
-                  💾 自动保存
+                  {isZh ? '💾 自动保存' : '💾 Auto-save'}
                 </span>
               </div>
 
@@ -110,13 +115,13 @@ export function InstallPrompt() {
                   onClick={handleInstallClick}
                   className="px-4 py-2 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-lg"
                 >
-                  立即安装
+                  {isZh ? '立即安装' : 'Install'}
                 </button>
                 <button
                   onClick={handleClose}
                   className="px-4 py-2 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-colors"
                 >
-                  以后再说
+                  {isZh ? '以后再说' : 'Not now'}
                 </button>
               </div>
             </div>
@@ -125,7 +130,7 @@ export function InstallPrompt() {
             <button
               onClick={handleClose}
               className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-              aria-label="关闭"
+              aria-label={isZh ? '关闭' : 'Close'}
             >
               ✕
             </button>

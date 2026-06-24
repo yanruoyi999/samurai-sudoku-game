@@ -5,11 +5,12 @@ import { locales } from "@/i18n";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface AboutPageProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export function generateMetadata({ params }: AboutPageProps): Metadata {
-  const isZh = params.locale === "zh";
+export async function generateMetadata({ params }: AboutPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const isZh = locale === "zh";
 
   return {
     title: isZh ? "关于武士数独" : "About Samurai Sudoku",
@@ -17,7 +18,7 @@ export function generateMetadata({ params }: AboutPageProps): Metadata {
       ? "了解武士数独的题目标准、本地优先设计和每日逻辑训练目标。"
       : "Learn about Samurai Sudoku's puzzle standards, local-first design, and daily logic-training mission.",
     alternates: {
-      canonical: buildAbsoluteUrl(`/${params.locale}/about`),
+      canonical: buildAbsoluteUrl(`/${locale}/about`),
       languages: Object.fromEntries(
         locales.map((locale) => [
           locale === "zh" ? "zh-CN" : "en-US",
@@ -28,12 +29,13 @@ export function generateMetadata({ params }: AboutPageProps): Metadata {
   };
 }
 
-export default function AboutPage({ params }: AboutPageProps) {
-  const isZh = params.locale === "zh";
+export default async function AboutPage({ params }: AboutPageProps) {
+  const { locale } = await params;
+  const isZh = locale === "zh";
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <Link href={`/${params.locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
+      <Link href={`/${locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
         {isZh ? "返回首页" : "Back to home"}
       </Link>
 
@@ -83,13 +85,13 @@ export default function AboutPage({ params }: AboutPageProps) {
 
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
-          href={`/${params.locale}/games/samurai`}
+          href={`/${locale}/games/samurai`}
           className="rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
         >
           {isZh ? "开始今日谜题" : "Play Today's Puzzle"}
         </Link>
         <Link
-          href={`/${params.locale}/contact`}
+          href={`/${locale}/contact`}
           className="rounded-lg border border-primary px-5 py-3 font-semibold text-primary hover:bg-primary/10"
         >
           {isZh ? "联系我们" : "Contact Us"}

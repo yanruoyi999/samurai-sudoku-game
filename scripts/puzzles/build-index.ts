@@ -1,7 +1,8 @@
 #!/usr/bin/env tsx
 
 import { readdir, readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
+import { basename, join } from 'path';
+import { isPuzzleId } from '@/lib/puzzles';
 import { Puzzle, PuzzleIndex, PuzzleMetadata } from '@/lib/sudoku/types';
 import { calculateChecksum } from '@/lib/utils';
 
@@ -12,12 +13,16 @@ export async function buildPuzzleIndex(puzzlesDir: string = 'public/puzzles'): P
   console.log(`Building index from ${puzzlesDir}...`);
 
   const allPuzzles: PuzzleMetadata[] = [];
+  const seenIds = new Set<string>();
+  const errors: string[] = [];
+  let latestCreatedAt = 0;
 
   try {
     // Get all year directories
     const entries = await readdir(puzzlesDir, { withFileTypes: true });
     const years = entries
       .filter((e) => e.isDirectory())
+      .filter((e) => /^\d{4}$/.test(e.name))
       .map((e) => e.name)
       .sort();
 
@@ -38,6 +43,21 @@ export async function buildPuzzleIndex(puzzlesDir: string = 'public/puzzles'): P
         try {
           const content = await readFile(filePath, 'utf-8');
           const puzzle: Puzzle = JSON.parse(content);
+          const expectedId = basename(file, '.json');
+
+          if (!isPuzzleId(puzzle.id)) {
+            throw new Error(`Invalid puzzle ID "${puzzle.id}"`);
+          }
+          if (puzzle.id !== expectedId) {
+            throw new Error(`Puzzle ID "${puzzle.id}" does not match filename "${expectedId}"`);
+          }
+          if (puzzle.id.slice(0, 4) !== year) {
+            throw new Error(`Puzzle ID "${puzzle.id}" is stored in the wrong year directory`);
+          }
+          if (seenIds.has(puzzle.id)) {
+            throw new Error(`Duplicate puzzle ID "${puzzle.id}"`);
+          }
+          seenIds.add(puzzle.id);
 
           // Extract metadata
           const metadata: PuzzleMetadata = {
@@ -49,10 +69,22 @@ export async function buildPuzzleIndex(puzzlesDir: string = 'public/puzzles'): P
           };
 
           allPuzzles.push(metadata);
+          const createdAt = new Date(puzzle.metadata.createdAt).getTime();
+          const fallbackCreatedAt = new Date(`${puzzle.id}T00:00:00.000Z`).getTime();
+          latestCreatedAt = Math.max(
+            latestCreatedAt,
+            Number.isNaN(createdAt) ? fallbackCreatedAt : createdAt,
+          );
         } catch (error) {
-          console.error(`    ❌ Error processing ${file}:`, error);
+          const message = error instanceof Error ? error.message : String(error);
+          errors.push(`${filePath}: ${message}`);
         }
       }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((error) => console.error(`    Error: ${error}`));
+      throw new Error(`Puzzle index was not written because ${errors.length} file(s) failed.`);
     }
 
     // Sort by date (newest first)
@@ -61,12 +93,12 @@ export async function buildPuzzleIndex(puzzlesDir: string = 'public/puzzles'): P
     const index: PuzzleIndex = {
       puzzles: allPuzzles,
       total: allPuzzles.length,
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: new Date(latestCreatedAt || 0).toISOString(),
     };
 
     // Write index file
     const indexPath = join(puzzlesDir, 'index.json');
-    await writeFile(indexPath, JSON.stringify(index, null, 2));
+    await writeFile(indexPath, `${JSON.stringify(index, null, 2)}\n`);
 
     console.log(`\n✅ Index built successfully:`);
     console.log(`   Total puzzles: ${index.total}`);

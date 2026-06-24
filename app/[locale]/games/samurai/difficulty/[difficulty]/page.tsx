@@ -11,7 +11,7 @@ import type { Difficulty } from '@/lib/sudoku/types';
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
 
 interface DifficultyPageProps {
-  params: { locale: string; difficulty: string };
+  params: Promise<{ locale: string; difficulty: string }>;
 }
 
 const LABELS: Record<Difficulty, { en: string; zh: string }> = {
@@ -28,16 +28,16 @@ const INTRO: Record<Difficulty, { en: string; zh: string }> = {
     zh: '简单难度的武士数独保留了更多提示数字，五个互相重叠的 9×9 网格更容易上手，是熟悉重叠角宫规则的轻松入门方式。',
   },
   medium: {
-    en: 'Medium Samurai Sudoku strikes the balance: fewer clues than easy, but still solvable with steady single-candidate logic across the cross-shaped board.',
-    zh: '中等难度的武士数独提示适中，比简单更少，但仍可通过稳扎稳打的唯一候选逻辑解开整个十字形棋盘。',
+    en: 'Medium Samurai Sudoku strikes the balance: fewer clues than easy and more candidate tracking across the cross-shaped board.',
+    zh: '中等难度的武士数独提示比简单更少，需要在整个十字形棋盘中更系统地追踪候选数字。',
   },
   hard: {
     en: 'Hard Samurai Sudoku removes most of the clues, forcing you to chain deductions through the overlapping center grid. A real test of concentration.',
     zh: '困难难度的武士数独移除了大部分提示，需要你借助重叠的中央网格层层推理，是对专注力的真正考验。',
   },
   evil: {
-    en: 'Evil Samurai Sudoku is the ultimate challenge — minimal clues across all five grids, demanding advanced techniques and patience to crack the unique solution.',
-    zh: 'Evil 极难武士数独是终极挑战，五个网格的提示都极少，需要高级技巧与耐心才能解出唯一答案。',
+    en: 'Evil Samurai Sudoku is the toughest clue profile on this site. Every generated board is checked for one solution, but solving it may require patient candidate tracking beyond the built-in basic hints.',
+    zh: 'Evil 极难武士数独采用本站最少的提示配置。每道生成题都会验证唯一解，但完成它可能需要超出内置基础提示的耐心候选推理。',
   },
 };
 
@@ -48,13 +48,14 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: DifficultyPageProps): Promise<Metadata> {
-  if (!isPuzzleDifficulty(params.difficulty)) {
+  const resolvedParams = await params;
+  if (!isPuzzleDifficulty(resolvedParams.difficulty)) {
     return { title: 'Samurai Sudoku' };
   }
 
-  const locale = (params.locale as Locale) ?? 'en';
+  const locale = (resolvedParams.locale as Locale) ?? 'en';
   const isZh = locale === 'zh';
-  const difficulty = params.difficulty;
+  const difficulty = resolvedParams.difficulty;
   const label = isZh ? LABELS[difficulty].zh : LABELS[difficulty].en;
 
   const index = await getPuzzleIndex();
@@ -89,13 +90,14 @@ export async function generateMetadata({ params }: DifficultyPageProps): Promise
 }
 
 export default async function DifficultyLandingPage({ params }: DifficultyPageProps) {
-  if (!isPuzzleDifficulty(params.difficulty)) {
+  const resolvedParams = await params;
+  if (!isPuzzleDifficulty(resolvedParams.difficulty)) {
     notFound();
   }
 
-  const locale = params.locale;
+  const locale = resolvedParams.locale;
   const isZh = locale === 'zh';
-  const difficulty = params.difficulty;
+  const difficulty = resolvedParams.difficulty;
   const label = isZh ? LABELS[difficulty].zh : LABELS[difficulty].en;
   const tGame = await getTranslations('game');
 

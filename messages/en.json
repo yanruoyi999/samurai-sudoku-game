@@ -133,7 +133,7 @@
       "offline": "Offline Support",
       "offlineDesc": "Play anytime, anywhere. Your progress is saved locally.",
       "intelligent": "Smart Hints",
-      "intelligentDesc": "Get intelligent hints when you're stuck, with detailed explanations.",
+      "intelligentDesc": "Get focused hints for naked and hidden singles when you are stuck.",
       "candidates": "Candidate Marking",
       "candidatesDesc": "Add pencil-mark notes directly on the board while solving.",
       "progress": "Track Progress",
@@ -147,7 +147,7 @@
       "points": [
         "Daily evil sudoku puzzles - Samurai Sudoku with extreme difficulty, generated and validated for unique solutions that challenge even expert solvers.",
         "Interactive evil sudoku board with advanced conflict detection, candidate notes, and timer tracking. Perfect for mastering hard sudoku techniques.",
-        "Strategy-driven hints for evil sudoku - Learn advanced solving patterns including X-Wings, Swordfish, and cross-grid elimination chains specific to evil difficulty levels."
+        "Focused hints identify naked and hidden singles, while candidate notes help you reason across overlapping grids."
       ],
       "cta": "Explore evil sudoku strategies and techniques",
       "pointHeading": "Evil Sudoku Feature"
@@ -157,7 +157,7 @@
       "items": [
         {
           "question": "What is Evil Sudoku?",
-          "answer": "Evil sudoku refers to the highest difficulty level in sudoku puzzles. In our Samurai Sudoku game, evil difficulty combines extremely challenging puzzles across five interconnected 9×9 grids, requiring advanced techniques like X-Wings, Swordfish, and cross-grid logic chains. Evil sudoku puzzles have minimal given numbers and demand expert-level solving strategies."
+          "answer": "Evil is the toughest clue profile on this site. In Samurai Sudoku, fewer starting clues are spread across five interconnected 9×9 grids, so candidate tracking and cross-grid checking become more demanding. Every generated puzzle is verified for one solution."
         },
         {
           "question": "What is Samurai Sudoku?",
@@ -165,7 +165,7 @@
         },
         {
           "question": "How can I solve evil sudoku puzzles?",
-          "answer": "To master evil sudoku and hard Samurai Sudoku puzzles, focus on the overlapping zones first, systematically track pencil marks (candidate numbers), and use our guided hints to learn advanced evil sudoku strategies including naked pairs, hidden triples, X-Wings, and cross-grid elimination chains. Start with easier difficulties and progressively work up to evil sudoku levels."
+          "answer": "To work through hard Samurai Sudoku puzzles, focus on the overlapping zones first and systematically track candidate numbers. The built-in hints cover naked and hidden singles; harder deductions still require your own candidate analysis. Start with easier difficulties and progress gradually."
         },
         {
           "question": "Is Samurai Sudoku harder than normal Sudoku?",

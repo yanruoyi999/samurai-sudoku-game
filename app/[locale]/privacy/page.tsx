@@ -5,11 +5,12 @@ import { locales } from "@/i18n";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface PrivacyPageProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
 export async function generateMetadata({ params }: PrivacyPageProps): Promise<Metadata> {
-  const isZh = params.locale === "zh";
+  const { locale } = await params;
+  const isZh = locale === "zh";
 
   return {
     title: isZh ? "隐私政策 - 武士数独" : "Privacy Policy - Samurai Sudoku",
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: PrivacyPageProps): Promise<Me
       ? "了解武士数独如何处理本地进度、反馈数据和网站分析。"
       : "Learn how Samurai Sudoku handles local progress, feedback data, and site analytics.",
     alternates: {
-      canonical: buildAbsoluteUrl(`/${params.locale}/privacy`),
+      canonical: buildAbsoluteUrl(`/${locale}/privacy`),
       languages: Object.fromEntries(
         locales.map((locale) => [
           locale === "zh" ? "zh-CN" : "en-US",
@@ -28,12 +29,13 @@ export async function generateMetadata({ params }: PrivacyPageProps): Promise<Me
   };
 }
 
-export default function PrivacyPage({ params }: PrivacyPageProps) {
-  const isZh = params.locale === "zh";
+export default async function PrivacyPage({ params }: PrivacyPageProps) {
+  const { locale } = await params;
+  const isZh = locale === "zh";
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <Link href={`/${params.locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
+      <Link href={`/${locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
         {isZh ? "返回首页" : "Back to home"}
       </Link>
 

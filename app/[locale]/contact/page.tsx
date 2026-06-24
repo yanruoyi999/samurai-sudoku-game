@@ -5,11 +5,12 @@ import { locales } from "@/i18n";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface ContactPageProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export function generateMetadata({ params }: ContactPageProps): Metadata {
-  const isZh = params.locale === "zh";
+export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const isZh = locale === "zh";
 
   return {
     title: isZh ? "联系我们 - 武士数独" : "Contact Samurai Sudoku",
@@ -17,7 +18,7 @@ export function generateMetadata({ params }: ContactPageProps): Metadata {
       ? "报告武士数独题目问题、体验故障或隐私疑问。"
       : "Report a Samurai Sudoku puzzle issue, experience problem, or privacy question.",
     alternates: {
-      canonical: buildAbsoluteUrl(`/${params.locale}/contact`),
+      canonical: buildAbsoluteUrl(`/${locale}/contact`),
       languages: Object.fromEntries(
         locales.map((locale) => [
           locale === "zh" ? "zh-CN" : "en-US",
@@ -28,12 +29,13 @@ export function generateMetadata({ params }: ContactPageProps): Metadata {
   };
 }
 
-export default function ContactPage({ params }: ContactPageProps) {
-  const isZh = params.locale === "zh";
+export default async function ContactPage({ params }: ContactPageProps) {
+  const { locale } = await params;
+  const isZh = locale === "zh";
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
-      <Link href={`/${params.locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
+      <Link href={`/${locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
         {isZh ? "返回首页" : "Back to home"}
       </Link>
 
@@ -89,10 +91,10 @@ export default function ContactPage({ params }: ContactPageProps) {
       </section>
 
       <div className="mt-10 flex flex-wrap gap-4 text-sm">
-        <Link href={`/${params.locale}/privacy`} className="font-medium text-primary hover:text-primary/80">
+        <Link href={`/${locale}/privacy`} className="font-medium text-primary hover:text-primary/80">
           {isZh ? "查看隐私政策" : "Read the Privacy Policy"}
         </Link>
-        <Link href={`/${params.locale}/about`} className="font-medium text-primary hover:text-primary/80">
+        <Link href={`/${locale}/about`} className="font-medium text-primary hover:text-primary/80">
           {isZh ? "了解本站" : "About This Site"}
         </Link>
       </div>
