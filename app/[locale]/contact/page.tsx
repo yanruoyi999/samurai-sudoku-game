@@ -19,12 +19,15 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
       : "Report a Samurai Sudoku puzzle issue, experience problem, or privacy question.",
     alternates: {
       canonical: buildAbsoluteUrl(`/${locale}/contact`),
-      languages: Object.fromEntries(
-        locales.map((locale) => [
-          locale === "zh" ? "zh-CN" : "en-US",
-          buildAbsoluteUrl(`/${locale}/contact`),
-        ]),
-      ),
+      languages: {
+        ...Object.fromEntries(
+          locales.map((locale) => [
+            locale === "zh" ? "zh-CN" : "en-US",
+            buildAbsoluteUrl(`/${locale}/contact`),
+          ]),
+        ),
+        "x-default": buildAbsoluteUrl("/en/contact"),
+      },
     },
   };
 }
@@ -32,9 +35,37 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
 export default async function ContactPage({ params }: ContactPageProps) {
   const { locale } = await params;
   const isZh = locale === "zh";
+  const contactPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: isZh ? "联系武士数独" : "Contact Samurai Sudoku",
+    url: buildAbsoluteUrl(`/${locale}/contact`),
+    inLanguage: isZh ? "zh-CN" : "en-US",
+    mainEntity: {
+      "@type": "Organization",
+      name: "Samurai Sudoku",
+      url: buildAbsoluteUrl(`/${locale}`),
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          email: "feedback@samuraisudoku.net",
+        },
+        {
+          "@type": "ContactPoint",
+          contactType: "privacy",
+          email: "privacy@samuraisudoku.net",
+        },
+      ],
+    },
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageSchema) }}
+      />
       <Link href={`/${locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
         {isZh ? "返回首页" : "Back to home"}
       </Link>

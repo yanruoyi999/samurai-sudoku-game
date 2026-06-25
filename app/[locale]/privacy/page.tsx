@@ -19,12 +19,15 @@ export async function generateMetadata({ params }: PrivacyPageProps): Promise<Me
       : "Learn how Samurai Sudoku handles local progress, feedback data, and site analytics.",
     alternates: {
       canonical: buildAbsoluteUrl(`/${locale}/privacy`),
-      languages: Object.fromEntries(
-        locales.map((locale) => [
-          locale === "zh" ? "zh-CN" : "en-US",
-          buildAbsoluteUrl(`/${locale}/privacy`),
-        ]),
-      ),
+      languages: {
+        ...Object.fromEntries(
+          locales.map((locale) => [
+            locale === "zh" ? "zh-CN" : "en-US",
+            buildAbsoluteUrl(`/${locale}/privacy`),
+          ]),
+        ),
+        "x-default": buildAbsoluteUrl("/en/privacy"),
+      },
     },
   };
 }

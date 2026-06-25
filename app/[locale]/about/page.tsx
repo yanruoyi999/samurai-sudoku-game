@@ -19,12 +19,15 @@ export async function generateMetadata({ params }: AboutPageProps): Promise<Meta
       : "Learn about Samurai Sudoku's puzzle standards, local-first design, and daily logic-training mission.",
     alternates: {
       canonical: buildAbsoluteUrl(`/${locale}/about`),
-      languages: Object.fromEntries(
-        locales.map((locale) => [
-          locale === "zh" ? "zh-CN" : "en-US",
-          buildAbsoluteUrl(`/${locale}/about`),
-        ]),
-      ),
+      languages: {
+        ...Object.fromEntries(
+          locales.map((locale) => [
+            locale === "zh" ? "zh-CN" : "en-US",
+            buildAbsoluteUrl(`/${locale}/about`),
+          ]),
+        ),
+        "x-default": buildAbsoluteUrl("/en/about"),
+      },
     },
   };
 }
@@ -32,9 +35,34 @@ export async function generateMetadata({ params }: AboutPageProps): Promise<Meta
 export default async function AboutPage({ params }: AboutPageProps) {
   const { locale } = await params;
   const isZh = locale === "zh";
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Samurai Sudoku",
+    url: buildAbsoluteUrl(`/${locale}`),
+    description: isZh
+      ? "提供每日五宫重叠数独、难度题库和解题指南的免费在线站点。"
+      : "A free online site for daily five-grid Samurai Sudoku puzzles, difficulty archives, and solving guides.",
+    email: "feedback@samuraisudoku.net",
+  };
+  const aboutPageSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: isZh ? "关于武士数独" : "About Samurai Sudoku",
+    url: buildAbsoluteUrl(`/${locale}/about`),
+    inLanguage: isZh ? "zh-CN" : "en-US",
+    mainEntity: organizationSchema,
+  };
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
+      {[organizationSchema, aboutPageSchema].map((schema, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       <Link href={`/${locale}`} className="text-sm font-medium text-primary hover:text-primary/80">
         {isZh ? "返回首页" : "Back to home"}
       </Link>
@@ -73,6 +101,12 @@ export default async function AboutPage({ params }: AboutPageProps) {
           </li>
         </ul>
       </section>
+
+      <p className="mt-6 text-sm">
+        <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="font-medium text-primary hover:text-primary/80">
+          {isZh ? "阅读武士数独图解介绍" : "Read the visual introduction to Samurai Sudoku"}
+        </Link>
+      </p>
 
       <section className="mt-10 space-y-3">
         <h2 className="text-2xl font-semibold">{isZh ? "武士数独是什么" : "What Is Samurai Sudoku?"}</h2>

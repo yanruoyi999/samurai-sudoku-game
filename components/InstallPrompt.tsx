@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -14,9 +15,20 @@ interface InstallPromptProps {
 export function InstallPrompt({ locale }: InstallPromptProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const pathname = usePathname();
   const isZh = locale === 'zh';
+  const dailyPath = `/${locale}/games/samurai`;
+  const isEligiblePath =
+    pathname === `/${locale}`
+    || pathname === dailyPath
+    || new RegExp(`^${dailyPath}/\\d{4}-\\d{2}-\\d{2}$`).test(pathname);
 
   useEffect(() => {
+    if (!isEligiblePath) {
+      setShowInstallBanner(false);
+      return;
+    }
+
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches
       || Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone)
       || document.referrer.includes('android-app://');
@@ -36,7 +48,7 @@ export function InstallPrompt({ locale }: InstallPromptProps) {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       showTimer = setTimeout(() => {
         setShowInstallBanner(true);
-      }, 3000);
+      }, 15000);
     };
 
     const handleAppInstalled = () => {
@@ -52,7 +64,7 @@ export function InstallPrompt({ locale }: InstallPromptProps) {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, []);
+  }, [isEligiblePath]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {

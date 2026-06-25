@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '', changeFrequency: 'daily' as const, priority: 1, followsIndex: true },
     { path: '/games/samurai', changeFrequency: 'daily' as const, priority: 0.9, followsIndex: true },
     { path: '/games/samurai/archive', changeFrequency: 'weekly' as const, priority: 0.85, followsIndex: true },
+    { path: '/games/samurai/what-is-samurai-sudoku', changeFrequency: 'monthly' as const, priority: 0.75 },
     { path: '/games/samurai/how-to-play', changeFrequency: 'monthly' as const, priority: 0.7 },
     ...difficulties.map((difficulty) => ({
       path: `/games/samurai/difficulty/${difficulty}`,
@@ -33,9 +34,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: route.changeFrequency,
         priority: route.priority,
         alternates: {
-          languages: Object.fromEntries(
-            locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${route.path}`)]),
-          ),
+          languages: {
+            ...Object.fromEntries(
+              locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${route.path}`)]),
+            ),
+            'x-default': buildAbsoluteUrl(`/en${route.path}`),
+          },
         },
       });
     }
@@ -48,9 +52,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly',
         priority: puzzle.difficulty === 'evil' || puzzle.difficulty === 'hard' ? 0.82 : 0.78,
         alternates: {
-          languages: Object.fromEntries(
-            locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${path}`)]),
-          ),
+          languages: {
+            ...Object.fromEntries(
+              locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${path}`)]),
+            ),
+            'x-default': buildAbsoluteUrl(`/en${path}`),
+          },
         },
       });
     }

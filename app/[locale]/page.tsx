@@ -111,7 +111,14 @@ export default async function HomePage() {
                 </Link>
               ))}
             </div>
-            <div className="text-center">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-center">
+              <Link
+                href={`/${locale}/games/samurai/what-is-samurai-sudoku`}
+                className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
+              >
+                {locale === 'zh' ? '什么是武士数独？' : 'What is Samurai Sudoku?'}
+                <span aria-hidden>→</span>
+              </Link>
               <Link
                 href={`/${locale}/games/samurai/how-to-play`}
                 className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
@@ -196,6 +203,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/privacy`} className="text-primary hover:text-primary/80">
             {t('privacy')}
+          </Link>
+          <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '武士数独介绍' : 'What is Samurai Sudoku?'}
           </Link>
         </nav>
       </footer>

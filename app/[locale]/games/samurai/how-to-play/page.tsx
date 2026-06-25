@@ -146,6 +146,12 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
             ? '武士数独把五个数独网格交织成一个十字形谜题。读懂重叠区，你就掌握了它的精髓。下面是完整规则与一套可复用的解题策略。'
             : 'Samurai Sudoku interlocks five Sudoku grids into one cross-shaped puzzle. Once you understand the overlap zones, the rest follows. Here are the full rules and a repeatable solving strategy.'}
         </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {isZh ? '第一次接触五宫布局？' : 'New to the five-grid layout?'}{' '}
+          <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="font-medium text-primary hover:underline">
+            {isZh ? '先看武士数独图解介绍。' : 'Start with the visual explanation of Samurai Sudoku.'}
+          </Link>
+        </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href={`/${locale}/games/samurai`} className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
