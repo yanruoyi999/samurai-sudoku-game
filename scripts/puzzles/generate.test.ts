@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { writePuzzle } from './generate';
+import { pickBatchDifficulty, writePuzzle } from './generate';
 
 const temporaryDirectories: string[] = [];
 
@@ -55,5 +55,20 @@ describe('writePuzzle existing-file behavior', () => {
     await expect(writePuzzle('2026-02-30', 'easy', outputDir)).rejects.toThrow(
       'Invalid puzzle ID',
     );
+  });
+});
+
+describe('pickBatchDifficulty', () => {
+  it('preserves an explicitly requested medium difficulty for a single puzzle', () => {
+    expect(pickBatchDifficulty('medium', 0, 1)).toBe('medium');
+  });
+
+  it('cycles the default medium starting point for multi-puzzle batches', () => {
+    expect([0, 1, 2, 3].map((index) => pickBatchDifficulty('medium', index, 4))).toEqual([
+      'easy',
+      'medium',
+      'hard',
+      'evil',
+    ]);
   });
 });

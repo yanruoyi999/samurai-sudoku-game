@@ -6,7 +6,7 @@ name: Daily Samurai Sudoku
 
 on:
   schedule:
-    - cron: '15 0 * * *' # 00:15 UTC every day
+    - cron: '15 16 * * *' # 00:15 Asia/Shanghai every day
   workflow_dispatch: # allow manual runs from the Actions tab
 
 permissions:
@@ -43,11 +43,12 @@ jobs:
 
       - name: Generate today's puzzle
         run: |
-          TODAY="$(date -u +%F)"
-          DOY="$(date -u +%j)"; DOY="$((10#$DOY))"
+          TODAY="$(TZ=Asia/Shanghai date +%F)"
+          DOY="$(TZ=Asia/Shanghai date +%j)"; DOY="$((10#$DOY))"
           DIFFS=(easy medium hard evil)
           DIFF="${DIFFS[$((DOY % 4))]}"
           echo "Generating $DIFF puzzle for $TODAY"
+          echo "PUZZLE_DATE=$TODAY" >> "$GITHUB_ENV"
           pnpm exec tsx scripts/puzzles/generate.ts \
             --id "$TODAY" \
             --difficulty "$DIFF" \
@@ -65,7 +66,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No new puzzle to commit."
           else
-            git commit -m "chore(puzzles): daily puzzle $(date -u +%F)"
+            git commit -m "chore(puzzles): daily puzzle ${PUZZLE_DATE}"
             git pull --rebase origin main
             git push
           fi

@@ -67,7 +67,15 @@ function addDays(dateId: string, days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
-function pickBatchDifficulty(baseDifficulty: Difficulty, index: number): Difficulty {
+export function pickBatchDifficulty(
+  baseDifficulty: Difficulty,
+  index: number,
+  count: number,
+): Difficulty {
+  if (count === 1) {
+    return baseDifficulty;
+  }
+
   const cycle: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
   if (baseDifficulty !== 'medium') {
     return baseDifficulty;
@@ -136,7 +144,7 @@ async function main() {
   for (let index = 0; index < count; index += 1) {
     await writePuzzle(
       addDays(startId, index),
-      pickBatchDifficulty(difficulty, index),
+      pickBatchDifficulty(difficulty, index, count),
       outputDir,
       existingMode,
     );
