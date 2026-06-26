@@ -3,6 +3,7 @@
 import { Puzzle, Difficulty } from '@/lib/sudoku/types';
 import { SudokuEngine } from '@/lib/sudoku/engine';
 import { GlobalPosition, globalToLocal } from '@/lib/sudoku/coordinates';
+import { getGlobalInitialBoard } from '@/lib/sudoku/solution-counter';
 
 /**
  * Difficulty analysis result
@@ -24,14 +25,17 @@ export interface DifficultyAnalysis {
  * Count clues in puzzle
  */
 function countClues(puzzle: Puzzle): number {
+  const board = getGlobalInitialBoard(puzzle);
   let count = 0;
-  for (const grid of puzzle.grids) {
-    for (const row of grid.initial) {
-      for (const val of row) {
-        if (val !== 0) count++;
+
+  for (let row = 0; row < 21; row++) {
+    for (let col = 0; col < 21; col++) {
+      if (globalToLocal({ row, col }).length > 0 && board[row][col] !== 0) {
+        count++;
       }
     }
   }
+
   return count;
 }
 
@@ -126,25 +130,25 @@ export function analyzeDifficulty(puzzle: Puzzle): DifficultyAnalysis {
   // Calculate difficulty score (0-100)
   let score = 0;
 
-  // Factor 1: Number of clues (more clues = easier)
-  // Typical range: 80-150 clues for Samurai Sudoku
-  const clueScore = Math.max(0, Math.min(100, ((150 - totalClues) / 70) * 100));
-  score += clueScore * 0.3;
-  reasoning.push(`Clue count: ${totalClues} (score: ${Math.round(clueScore)})`);
+  // Factor 1: Number of unique global clues.
+  // The generator targets roughly 185/155/135/120 clues for easy/medium/hard/evil.
+  const clueScore = Math.max(0, Math.min(100, ((185 - totalClues) / 65) * 100));
+  score += clueScore * 0.55;
+  reasoning.push(`Unique clue count: ${totalClues} (score: ${Math.round(clueScore)})`);
 
   // Factor 2: Naked singles (more naked singles = easier)
   // If > 20% of empty cells are naked singles, it's easier
   const nakedSingleRatio = emptyCells > 0 ? nakedSingles / emptyCells : 0;
   const nakedSingleScore = Math.max(0, 100 - nakedSingleRatio * 300);
-  score += nakedSingleScore * 0.3;
+  score += nakedSingleScore * 0.25;
   reasoning.push(
     `Naked singles: ${nakedSingles}/${emptyCells} (${Math.round(nakedSingleRatio * 100)}%, score: ${Math.round(nakedSingleScore)})`
   );
 
-  // Factor 3: Average candidates (more candidates = harder)
-  // Typical range: 3-7 candidates
-  const candidateScore = Math.max(0, Math.min(100, ((averageCandidates - 3) / 4) * 100));
-  score += candidateScore * 0.4;
+  // Factor 3: Average candidates (more candidates = harder).
+  // Samurai overlap constraints keep this lower than classic 9x9 Sudoku, so calibrate the band.
+  const candidateScore = Math.max(0, Math.min(100, ((averageCandidates - 2.3) / 2.2) * 100));
+  score += candidateScore * 0.2;
   reasoning.push(
     `Avg candidates: ${averageCandidates.toFixed(1)} (score: ${Math.round(candidateScore)})`
   );
@@ -153,15 +157,18 @@ export function analyzeDifficulty(puzzle: Puzzle): DifficultyAnalysis {
 
   // Determine difficulty
   let difficulty: Difficulty;
-  if (score < 30) {
+  if (score < 25) {
     difficulty = 'easy';
     reasoning.push('→ Difficulty: EASY (many clues, many naked singles)');
-  } else if (score < 60) {
+  } else if (score < 55) {
     difficulty = 'medium';
     reasoning.push('→ Difficulty: MEDIUM (moderate clues and techniques)');
-  } else {
+  } else if (score < 78) {
     difficulty = 'hard';
     reasoning.push('→ Difficulty: HARD (few clues, complex deduction needed)');
+  } else {
+    difficulty = 'evil';
+    reasoning.push('→ Difficulty: EVIL (very few clues and low immediate progress)');
   }
 
   return {
