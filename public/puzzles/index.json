@@ -1,6 +1,17 @@
 {
   "puzzles": [
     {
+      "id": "2026-06-28",
+      "difficulty": "evil",
+      "estimatedTime": 90,
+      "checksum": "3a69f69f",
+      "tags": [
+        "daily",
+        "evil",
+        "generated"
+      ]
+    },
+    {
       "id": "2026-06-27",
       "difficulty": "hard",
       "estimatedTime": 60,
@@ -1970,6 +1981,6 @@
       ]
     }
   ],
-  "total": 179,
-  "lastUpdated": "2026-06-27T00:00:00.000Z"
+  "total": 180,
+  "lastUpdated": "2026-06-28T00:00:00.000Z"
 }
