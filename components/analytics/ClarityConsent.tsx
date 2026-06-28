@@ -14,31 +14,42 @@ interface ClarityFunction {
 }
 
 const storageKey = "samurai_sudoku_clarity_consent";
+type AnalyticsConsent = "granted" | "denied";
 const clarityProjectId =
   process.env.NEXT_PUBLIC_SUDOKU_CLARITY_PROJECT_ID ||
   process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
   "";
 
-function loadClarity(projectId: string) {
-  if (!projectId || window.clarity) return;
+function setClarityConsent(analyticsStorage: AnalyticsConsent) {
+  const clarity = window.clarity;
 
-  (function initClarity(c: Window, l: Document, r: string, i: string) {
-    c.clarity =
-      c.clarity ||
-      function clarityQueue(...args: unknown[]) {
-        (c.clarity!.q = c.clarity!.q || []).push(args);
-      };
-    const script = l.createElement(r) as HTMLScriptElement;
-    script.async = true;
-    script.src = `https://www.clarity.ms/tag/${i}`;
-    const firstScript = l.getElementsByTagName(r)[0];
-    firstScript.parentNode?.insertBefore(script, firstScript);
-  })(window, document, "script", projectId);
-
-  const clarity = window.clarity as ClarityFunction | undefined;
   if (typeof clarity === "function") {
-    clarity("consent");
+    clarity("consentv2", {
+      ad_Storage: "denied",
+      analytics_Storage: analyticsStorage,
+    });
   }
+}
+
+function loadClarity(projectId: string, analyticsStorage: AnalyticsConsent) {
+  if (!projectId) return;
+
+  if (!window.clarity) {
+    (function initClarity(c: Window, l: Document, r: string, i: string) {
+      c.clarity =
+        c.clarity ||
+        function clarityQueue(...args: unknown[]) {
+          (c.clarity!.q = c.clarity!.q || []).push(args);
+        };
+      const script = l.createElement(r) as HTMLScriptElement;
+      script.async = true;
+      script.src = `https://www.clarity.ms/tag/${i}`;
+      const firstScript = l.getElementsByTagName(r)[0];
+      firstScript.parentNode?.insertBefore(script, firstScript);
+    })(window, document, "script", projectId);
+  }
+
+  setClarityConsent(analyticsStorage);
 }
 
 interface ClarityConsentProps {
@@ -53,9 +64,7 @@ export function ClarityConsent({ locale }: ClarityConsentProps) {
     if (!clarityProjectId) return;
     const saved = window.localStorage.getItem(storageKey);
     setChoice(saved);
-    if (saved === "granted") {
-      loadClarity(clarityProjectId);
-    }
+    loadClarity(clarityProjectId, saved === "granted" ? "granted" : "denied");
   }, []);
 
   if (!clarityProjectId || choice) return null;
@@ -63,12 +72,13 @@ export function ClarityConsent({ locale }: ClarityConsentProps) {
   const accept = () => {
     window.localStorage.setItem(storageKey, "granted");
     setChoice("granted");
-    loadClarity(clarityProjectId);
+    loadClarity(clarityProjectId, "granted");
   };
 
   const decline = () => {
     window.localStorage.setItem(storageKey, "denied");
     setChoice("denied");
+    loadClarity(clarityProjectId, "denied");
   };
 
   return (
@@ -76,8 +86,8 @@ export function ClarityConsent({ locale }: ClarityConsentProps) {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <p className="leading-relaxed text-muted-foreground">
           {isZh
-            ? "我们使用 Microsoft Clarity 分析数独棋盘点击、滚动和加载问题，只在你同意后启用。"
-            : "We use Microsoft Clarity to analyze board clicks, scrolls, and loading issues. It only runs after your consent."}{" "}
+            ? "我们使用 Microsoft Clarity 分析数独棋盘点击、滚动和加载问题。默认不使用广告存储；同意后会启用更完整的分析。"
+            : "We use Microsoft Clarity to analyze board clicks, scrolls, and loading issues. Ad storage stays disabled; allowing enables fuller analytics."}{" "}
           <a href={`/${locale}/privacy`} className="font-medium text-primary hover:text-primary/80">
             {isZh ? "隐私政策" : "Privacy policy"}
           </a>

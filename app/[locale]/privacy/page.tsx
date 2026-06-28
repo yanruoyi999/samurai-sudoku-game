@@ -64,8 +64,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           <li>
             <strong className="text-foreground">Microsoft Clarity</strong>:{" "}
             {isZh
-              ? "用于热图、会话回放和体验问题分析，只在你同意后启用。"
-              : "Used for heatmaps, session recordings, and experience diagnostics. It only runs after your consent."}{" "}
+              ? "用于热图、会话回放和体验问题分析。拒绝时以无 Cookie 的有限模式运行；同意后启用更完整的分析。"
+              : "Used for heatmaps, session recordings, and experience diagnostics. It runs in limited cookieless mode when declined, and fuller analytics mode after consent."}{" "}
             <a
               href="https://privacy.microsoft.com/privacystatement"
               target="_blank"
@@ -96,8 +96,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         <h2 className="text-2xl font-semibold">{isZh ? "Cookie 和同意" : "Cookies and Consent"}</h2>
         <p className="text-muted-foreground">
           {isZh
-            ? "Clarity 只有在你点击同意后才会加载。你可以通过浏览器清除本网站数据来重置选择。"
-            : "Clarity loads only after you choose Allow. You can reset your choice by clearing this site's browser data."}
+            ? "Clarity 默认不使用广告存储；你可以点击同意启用更完整的分析，也可以选择暂不。你可以通过浏览器清除本网站数据来重置选择。"
+            : "Clarity keeps ad storage disabled by default. You can choose Allow for fuller analytics or Not now for limited cookieless mode. Clear this site's browser data to reset your choice."}
         </p>
       </section>
 

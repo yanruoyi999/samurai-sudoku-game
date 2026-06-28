@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Fraunces } from "next/font/google";
 import { headers } from "next/headers";
 import { locales } from "@/i18n";
@@ -65,6 +67,8 @@ export default async function RootLayout({
       <body className="font-sans">
         {children}
         <ClarityConsent locale={htmlLang} />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
