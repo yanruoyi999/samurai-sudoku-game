@@ -172,6 +172,30 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/en/about',
+        permanent: true,
+      },
+      {
+        source: '/about-us',
+        destination: '/en/about',
+        permanent: true,
+      },
+      {
+        source: '/company',
+        destination: '/en/about',
+        permanent: true,
+      },
+      {
+        source: '/our-team',
+        destination: '/en/about',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = withPWA(withNextIntl(nextConfig));
