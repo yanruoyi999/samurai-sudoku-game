@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import type { Puzzle } from "@/lib/sudoku/types";
@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
+import { trackInteraction } from "@/lib/analytics/events";
 
 const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
   loading: () => <BoardSkeleton />,
@@ -42,6 +43,8 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   const { puzzleId, loadPuzzle, status } = useSudokuStore();
   const [prevPuzzleId, setPrevPuzzleId] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const trackedOpenPuzzleId = useRef<string | null>(null);
+  const trackedCompletedPuzzleId = useRef<string | null>(null);
 
   useEffect(() => {
     if (puzzleId && puzzleId !== prevPuzzleId) {
@@ -59,6 +62,38 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
       loadPuzzle(initialPuzzle);
     }
   }, [puzzleId, initialPuzzle, loadPuzzle]);
+
+  useEffect(() => {
+    if (puzzleId !== initialPuzzle.id || trackedOpenPuzzleId.current === initialPuzzle.id) {
+      return;
+    }
+
+    trackedOpenPuzzleId.current = initialPuzzle.id;
+    trackInteraction("sudoku_puzzle_open", {
+      difficulty: initialPuzzle.difficulty,
+      locale,
+      puzzle_id: initialPuzzle.id,
+      source: "daily",
+    });
+  }, [puzzleId, initialPuzzle.difficulty, initialPuzzle.id, locale]);
+
+  useEffect(() => {
+    if (
+      status !== "completed" ||
+      puzzleId !== initialPuzzle.id ||
+      trackedCompletedPuzzleId.current === initialPuzzle.id
+    ) {
+      return;
+    }
+
+    trackedCompletedPuzzleId.current = initialPuzzle.id;
+    trackInteraction("sudoku_puzzle_completed", {
+      difficulty: initialPuzzle.difficulty,
+      locale,
+      puzzle_id: initialPuzzle.id,
+      source: "daily",
+    });
+  }, [status, puzzleId, initialPuzzle.difficulty, initialPuzzle.id, locale]);
 
   if (puzzleId !== initialPuzzle.id) {
     return (

@@ -4,11 +4,11 @@ import { useEffect } from "react";
 
 declare global {
   interface Window {
-    clarity?: ClarityFunction;
+    clarity?: (...args: unknown[]) => void;
   }
 }
 
-interface ClarityFunction {
+interface QueuedClarityFunction {
   (...args: unknown[]): void;
   q?: unknown[][];
 }
@@ -36,10 +36,12 @@ function loadClarity(projectId: string, analyticsStorage: AnalyticsConsent) {
 
   if (!window.clarity) {
     (function initClarity(c: Window, l: Document, r: string, i: string) {
+      const queuedClarity = c.clarity as QueuedClarityFunction | undefined;
       c.clarity =
-        c.clarity ||
+        queuedClarity ||
         function clarityQueue(...args: unknown[]) {
-          (c.clarity!.q = c.clarity!.q || []).push(args);
+          const clarity = c.clarity as QueuedClarityFunction;
+          (clarity.q = clarity.q || []).push(args);
         };
       const script = l.createElement(r) as HTMLScriptElement;
       script.async = true;
