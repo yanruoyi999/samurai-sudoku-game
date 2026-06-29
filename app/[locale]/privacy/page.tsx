@@ -64,8 +64,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           <li>
             <strong className="text-foreground">Microsoft Clarity</strong>:{" "}
             {isZh
-              ? "用于热图、会话回放和体验问题分析。拒绝时以无 Cookie 的有限模式运行；同意后启用更完整的分析。"
-              : "Used for heatmaps, session recordings, and experience diagnostics. It runs in limited cookieless mode when declined, and fuller analytics mode after consent."}{" "}
+              ? "用于热图、会话回放和体验问题分析。默认不使用广告存储，并以受限分析模式运行，避免弹窗打断用户。"
+              : "Used for heatmaps, session recordings, and experience diagnostics. It runs by default with ad storage disabled and limited analytics mode, without interrupting visitors with a banner."}{" "}
             <a
               href="https://privacy.microsoft.com/privacystatement"
               target="_blank"
@@ -93,11 +93,11 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-2xl font-semibold">{isZh ? "Cookie 和同意" : "Cookies and Consent"}</h2>
+        <h2 className="text-2xl font-semibold">{isZh ? "Cookie 和分析" : "Cookies and Analytics"}</h2>
         <p className="text-muted-foreground">
           {isZh
-            ? "Clarity 默认不使用广告存储；你可以点击同意启用更完整的分析，也可以选择暂不。你可以通过浏览器清除本网站数据来重置选择。"
-            : "Clarity keeps ad storage disabled by default. You can choose Allow for fuller analytics or Not now for limited cookieless mode. Clear this site's browser data to reset your choice."}
+            ? "Clarity 默认不使用广告存储，并以受限分析模式帮助我们发现棋盘点击、滚动和加载问题。你可以通过浏览器隐私设置或清除本网站数据来控制本地存储。"
+            : "Clarity keeps ad storage disabled by default and uses limited analytics mode to help us find board-click, scroll, and loading issues. You can use browser privacy controls or clear this site's data to manage local storage."}
         </p>
       </section>
 

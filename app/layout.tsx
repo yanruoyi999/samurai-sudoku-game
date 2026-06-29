@@ -66,7 +66,7 @@ export default async function RootLayout({
       </head>
       <body className="font-sans">
         {children}
-        <ClarityConsent locale={htmlLang} />
+        <ClarityConsent />
         <Analytics />
         <SpeedInsights />
       </body>

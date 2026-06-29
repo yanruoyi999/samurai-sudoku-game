@@ -99,8 +99,8 @@ export default async function ContactPage({ params }: ContactPageProps) {
           <h2 className="text-xl font-semibold">{isZh ? "隐私与数据" : "Privacy and Data"}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             {isZh
-              ? "咨询本地进度、分析同意或数据处理相关问题。"
-              : "Ask about local progress, analytics consent, or data handling."}
+              ? "咨询本地进度、分析设置或数据处理相关问题。"
+              : "Ask about local progress, analytics settings, or data handling."}
           </p>
           <a
             href="mailto:privacy@samuraisudoku.net"
