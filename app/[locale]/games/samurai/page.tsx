@@ -23,7 +23,15 @@ export async function generateMetadata({ params }: SamuraiGamePageProps): Promis
     description,
     keywords: isZh
       ? ['武士数独', '在线数独', '每日数独', 'Evil 数独', '逻辑游戏']
-      : ['samurai sudoku', 'online sudoku', 'daily sudoku', 'evil sudoku', 'logic game'],
+      : [
+          'samurai sudoku',
+          'samurai sudoku online',
+          'online sudoku samurai',
+          'online sudoku',
+          'daily sudoku',
+          'evil sudoku',
+          'logic game',
+        ],
     alternates: {
       canonical,
       languages: Object.fromEntries(
