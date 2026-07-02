@@ -46,7 +46,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         {isZh ? "隐私政策" : "Privacy Policy"}
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {isZh ? "最后更新：2026年6月20日" : "Last updated: June 20, 2026"}
+        {isZh ? "最后更新：2026年7月3日" : "Last updated: July 3, 2026"}
       </p>
 
       <section className="mt-8 space-y-3">
@@ -61,6 +61,20 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
       <section className="mt-8 space-y-3">
         <h2 className="text-2xl font-semibold">{isZh ? "第三方服务" : "Third-Party Services"}</h2>
         <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
+          <li>
+            <strong className="text-foreground">Google Analytics</strong>:{" "}
+            {isZh
+              ? "用于统计页面访问、来源、设备和基本站内行为，帮助我们判断哪些谜题、语言和入口最有用。只有配置站点专属 Measurement ID 时才会加载。"
+              : "Used to measure page views, acquisition sources, devices, and basic site behavior so we can understand which puzzles, languages, and entry paths are useful. It loads only when a site-specific Measurement ID is configured."}{" "}
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80"
+            >
+              {isZh ? "Google 隐私权政策" : "Google Privacy Policy"}
+            </a>
+          </li>
           <li>
             <strong className="text-foreground">Microsoft Clarity</strong>:{" "}
             {isZh
@@ -96,8 +110,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         <h2 className="text-2xl font-semibold">{isZh ? "Cookie 和分析" : "Cookies and Analytics"}</h2>
         <p className="text-muted-foreground">
           {isZh
-            ? "Clarity 默认不使用广告存储，并以受限分析模式帮助我们发现棋盘点击、滚动和加载问题。你可以通过浏览器隐私设置或清除本网站数据来控制本地存储。"
-            : "Clarity keeps ad storage disabled by default and uses limited analytics mode to help us find board-click, scroll, and loading issues. You can use browser privacy controls or clear this site's data to manage local storage."}
+            ? "Google Analytics 和 Clarity 只用于产品分析，不用于在本站投放个性化广告。Clarity 默认不使用广告存储，并以受限分析模式帮助我们发现棋盘点击、滚动和加载问题。你可以通过浏览器隐私设置或清除本网站数据来控制本地存储。"
+            : "Google Analytics and Clarity are used for product analytics, not for serving personalized ads on this site. Clarity keeps ad storage disabled by default and uses limited analytics mode to help us find board-click, scroll, and loading issues. You can use browser privacy controls or clear this site's data to manage local storage."}
         </p>
       </section>
 

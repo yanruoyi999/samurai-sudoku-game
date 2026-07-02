@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { locales } from "@/i18n";
 import { getSiteBaseUrl } from "@/lib/site-url";
 import { ClarityConsent } from "@/components/analytics/ClarityConsent";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -56,6 +57,8 @@ export default async function RootLayout({
   return (
     <html lang={htmlLang} className={fraunces.variable} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#f0eadf" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -66,6 +69,7 @@ export default async function RootLayout({
       </head>
       <body className="font-sans">
         {children}
+        <GoogleAnalytics />
         <ClarityConsent />
         <Analytics />
         <SpeedInsights />
