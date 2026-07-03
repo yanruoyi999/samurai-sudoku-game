@@ -186,6 +186,8 @@ export interface InProgressGame {
   historyIndex?: number;
   status?: GameStatus;
   candidates?: Array<[string, number[]]>;
+  showCandidates?: boolean;
+  showConflicts?: boolean;
   mistakesMade?: number;
   savedAt?: string;
 }

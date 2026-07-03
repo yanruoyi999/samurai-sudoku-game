@@ -1,20 +1,20 @@
 # Samurai Sudoku
 
-A modern, feature-rich Samurai Sudoku web application built with Next.js 14, React 18, and TypeScript.
+A modern, feature-rich Samurai Sudoku web application built with Next.js 15, React 18, TypeScript, next-intl, and PWA support.
 
 ## 🎯 Project Status
 
-**Phase 1: Core Foundation** ✅ **COMPLETED**
+**Current status** ✅ **Production-oriented game app**
 
-The initial implementation is complete with the following features:
+The implementation includes the core Samurai Sudoku game, localized SEO pages, daily puzzle data, offline support, local progress persistence, analytics hooks, and automated puzzle validation.
 
 ### ✅ Completed Features
 
 1. **Project Setup**
-   - Next.js 14 with App Router
+   - Next.js 15 with App Router
    - TypeScript configuration
    - Tailwind CSS + custom theme with dark mode support
-   - Radix UI components
+   - next-intl locale routing
    - Zustand state management
    - Vitest testing setup
 
@@ -48,10 +48,15 @@ The initial implementation is complete with the following features:
    - Progress indicator
    - Conflict highlighting
 
-6. **Sample Puzzle**
-   - Working test puzzle for development
-   - All 5 grids with initial values
-   - Complete solutions
+6. **Daily Puzzle Library**
+   - Public puzzle archive under `public/puzzles`
+   - Generated index for archive, sitemap, and difficulty pages
+   - Structural validation and difficulty analysis scripts
+
+7. **PWA / SEO**
+   - Offline fallback and service worker
+   - Locale-aware metadata, sitemap, robots, canonical, and structured data
+   - Vercel Analytics, Speed Insights, and optional Clarity consent handling
 
 ## 🚀 Getting Started
 
@@ -63,7 +68,7 @@ The initial implementation is complete with the following features:
 ### Installation
 
 ```bash
-cd ~/Desktop/251027_web_数独_samuraisudoku
+cd ~/ai-native/active/251027_web_数独_samuraisudoku
 pnpm install
 ```
 
@@ -73,7 +78,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser, or pass `-p 3001` if port 3000 is already in use.
 
 ### Testing
 
@@ -83,6 +88,9 @@ pnpm test
 
 # Run Sudoku tests only
 pnpm test:sudoku
+
+# Validate generated puzzle JSON files
+pnpm validate-puzzles
 ```
 
 ### Build
@@ -97,11 +105,9 @@ pnpm start
 ```
 ├── app/                          # Next.js App Router
 │   ├── layout.tsx               # Root layout
-│   ├── page.tsx                 # Home page
+│   ├── [locale]/page.tsx        # Localized home page
 │   ├── globals.css              # Global styles & CSS variables
-│   └── games/
-│       └── samurai/
-│           └── page.tsx         # Main game page
+│   └── [locale]/games/samurai/ # Game, archive, puzzle, and SEO pages
 │
 ├── components/                   # React components
 │   ├── theme-provider.tsx      # Theme context
@@ -124,7 +130,7 @@ pnpm start
 │   └── sudoku-store.ts         # Zustand store
 │
 └── public/                      # Static assets
-    └── puzzles/                # Puzzle data (to be added)
+    └── puzzles/                # Daily puzzle data and generated index
 ```
 
 ## 🎮 How to Play
@@ -165,22 +171,22 @@ pnpm test:sudoku
 - Dark mode support
 - Responsive design
 
-### Planned (Phase 2)
-- [ ] Daily puzzle generation
-- [ ] Puzzle archive
-- [ ] Hint system
-- [ ] Candidate marking
-- [ ] Mobile optimization
-- [ ] Offline support
-- [ ] Statistics tracking
-- [ ] Multiple difficulty levels
+### Included
+- Daily puzzle generation
+- Puzzle archive and difficulty landing pages
+- Hint system
+- Candidate marking
+- Mobile optimization
+- Offline support
+- Statistics and in-progress tracking
+- Multiple difficulty levels
 
 ## 🛠️ Technology Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
+- **Internationalization**: next-intl
 - **State Management**: Zustand
 - **Testing**: Vitest
 - **Theme**: next-themes
@@ -234,6 +240,6 @@ This is a development project. Contributions welcome!
 
 ---
 
-**Status**: Development Server Running on http://localhost:3001 ✅
+**Status**: Ready for local development and production builds.
 
-Last Updated: 2025-10-27
+Last Updated: 2026-07-03

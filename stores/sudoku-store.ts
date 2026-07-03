@@ -7,6 +7,7 @@ import {
   removeInProgressGame,
   saveGameToHistory,
   saveInProgressGame,
+  type InProgressGame,
 } from '@/lib/storage/game-history';
 
 interface SudokuStore {
@@ -42,6 +43,7 @@ interface SudokuStore {
 
   // Actions
   loadPuzzle: (puzzle: Puzzle) => void;
+  loadInProgressGame: (game: InProgressGame) => void;
   setCell: (pos: GlobalPosition, value: number) => void;
   clearCell: (pos: GlobalPosition) => void;
   selectCell: (pos: GlobalPosition | null) => void;
@@ -98,6 +100,9 @@ const deserializeCandidates = (candidates?: Array<[string, number[]]>) =>
   );
 
 const getCandidateKey = (pos: GlobalPosition) => `${pos.row},${pos.col}`;
+
+const normalizeStatusForPlay = (status?: GameStatus): GameStatus =>
+  status === 'completed' ? 'completed' : 'playing';
 
 const removePlacedValueFromCandidates = (
   candidates: Map<string, Set<number>>,
@@ -208,6 +213,8 @@ const saveCurrentProgress = (
       historyIndex: state.historyIndex,
       status: state.status,
       candidates,
+      showCandidates: state.showCandidates,
+      showConflicts: state.showConflicts,
       mistakesMade: state.mistakesMade,
       savedAt,
     });
@@ -265,6 +272,35 @@ const loadCurrentProgress = (puzzle: Puzzle): Partial<SudokuStore> | null => {
   }
 };
 
+const buildStateFromInProgressGame = (
+  game: InProgressGame
+): Partial<SudokuStore> => {
+  const board = game.board ?? createEmptyBoard();
+  const engine = rebuildEngine(game.puzzle, board);
+  const elapsedTime = game.currentTime ?? 0;
+
+  return {
+    puzzleId: game.puzzle.id,
+    difficulty: game.difficulty,
+    puzzle: game.puzzle,
+    board: engine.getBoard(),
+    initial: engine.getInitial(),
+    engine,
+    history: game.history ?? [],
+    historyIndex: game.historyIndex ?? -1,
+    startTime: Date.now() - elapsedTime * 1000,
+    elapsedTime,
+    isPaused: false,
+    status: normalizeStatusForPlay(game.status),
+    hintsUsed: game.hintsUsed ?? 0,
+    mistakesMade: game.mistakesMade ?? 0,
+    selectedCell: null,
+    candidates: deserializeCandidates(game.candidates),
+    showCandidates: game.showCandidates ?? false,
+    showConflicts: game.showConflicts ?? true,
+  };
+};
+
 export const useSudokuStore = create<SudokuStore>()((set, get) => ({
       // Initial state
       puzzleId: null,
@@ -320,12 +356,19 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
+      loadInProgressGame: (game) => {
+        set(buildStateFromInProgressGame(game));
+        saveCurrentProgress(get());
+      },
+
       // Set cell value
       setCell: (pos, value) => {
-        const { engine, history, historyIndex, mistakesMade, candidates } = get();
+        const { engine, history, historyIndex, mistakesMade, candidates, isPaused, status } = get();
 
+        if (isPaused || status === 'completed') return;
         if (!engine) return;
         if (engine.isInitial(pos)) return;
+        if (!Number.isInteger(value) || value < 0 || value > 9) return;
 
         const oldValue = engine.getValue(pos);
         if (oldValue === value) return;
@@ -390,7 +433,8 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Clear cell
       clearCell: (pos) => {
-        const { engine, candidates } = get();
+        const { engine, candidates, isPaused, status } = get();
+        if (isPaused || status === 'completed') return;
         if (!engine || engine.isInitial(pos)) return;
 
         const oldValue = engine.getValue(pos);
@@ -415,7 +459,8 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Toggle candidate
       toggleCandidate: (pos, value) => {
-        const { candidates, engine } = get();
+        const { candidates, engine, isPaused, status } = get();
+        if (isPaused || status === 'completed') return;
         if (!engine || engine.isInitial(pos) || engine.getValue(pos) !== 0) return;
         if (!Number.isInteger(value) || value < 1 || value > 9) return;
 
@@ -441,32 +486,46 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Undo
       undo: () => {
-        const { history, historyIndex, engine } = get();
+        const { history, historyIndex, engine, isPaused, status, candidates } = get();
 
+        if (isPaused || status === 'completed') return;
         if (historyIndex < 0 || !engine) return;
 
         const move = history[historyIndex];
         engine.setValue(move.position, move.oldValue);
+        const newCandidates = removePlacedValueFromCandidates(
+          candidates,
+          move.position,
+          move.oldValue
+        );
 
         set({
           board: engine.getBoard(),
           historyIndex: historyIndex - 1,
+          candidates: newCandidates,
         });
         saveCurrentProgress(get());
       },
 
       // Redo
       redo: () => {
-        const { history, historyIndex, engine } = get();
+        const { history, historyIndex, engine, isPaused, status, candidates } = get();
 
+        if (isPaused || status === 'completed') return;
         if (historyIndex >= history.length - 1 || !engine) return;
 
         const move = history[historyIndex + 1];
         engine.setValue(move.position, move.newValue);
+        const newCandidates = removePlacedValueFromCandidates(
+          candidates,
+          move.position,
+          move.newValue
+        );
 
         set({
           board: engine.getBoard(),
           historyIndex: historyIndex + 1,
+          candidates: newCandidates,
         });
         saveCurrentProgress(get());
       },
@@ -502,6 +561,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           set({
             isPaused: false,
             startTime: Date.now() - elapsedTime * 1000,
+            status: 'playing',
           });
         } else {
           // Pause
@@ -512,6 +572,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           set({
             isPaused: true,
             elapsedTime: currentElapsed,
+            status: 'paused',
           });
         }
         saveCurrentProgress(get());

@@ -2,12 +2,22 @@ import Link from "next/link";
 import Script from "next/script";
 import { getLocale, getTranslations, getMessages } from 'next-intl/server';
 
+interface HomeMessages {
+  seoSection?: {
+    pointHeading?: string;
+    points?: unknown;
+  };
+  faq?: {
+    items?: unknown;
+  };
+}
+
 export default async function HomePage() {
   const locale = await getLocale();
   const t = await getTranslations('home');
 
   const messages = await getMessages({ locale });
-  const homeMessages = (messages as any)?.home ?? {};
+  const homeMessages = (messages as { home?: HomeMessages }).home ?? {};
   const seoSection = homeMessages.seoSection ?? {};
   const faqSection = homeMessages.faq ?? {};
 

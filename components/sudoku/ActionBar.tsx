@@ -40,6 +40,7 @@ export function ActionBar() {
     incrementHints,
     selectCell,
     loadPuzzle,
+    loadInProgressGame,
     difficulty,
   } = useSudokuStore();
 
@@ -92,25 +93,21 @@ export function ActionBar() {
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       setIsGenerating(true);
 
-      // Generate puzzle immediately (it's fast now)
-      const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
+      window.setTimeout(() => {
+        try {
+          const newPuzzle = generateSamuraiPuzzle(selectedDifficulty);
 
-      // Use startTransition to mark this as a non-urgent update
-      startTransition(() => {
-        // Wait for next frame to ensure DOM is stable
-        requestAnimationFrame(() => {
-          try {
+          startTransition(() => {
             loadPuzzle(newPuzzle);
             setHintMessage(null);
-          } catch (error) {
-            console.error('Failed to load puzzle:', error);
-            alert(t('generationError'));
-          } finally {
-            // Wait for state to settle before allowing new games
-            setTimeout(() => setIsGenerating(false), 200);
-          }
-        });
-      });
+          });
+        } catch (error) {
+          console.error('Failed to load puzzle:', error);
+          alert(t('generationError'));
+        } finally {
+          window.setTimeout(() => setIsGenerating(false), 200);
+        }
+      }, 0);
     }
   };
 
@@ -358,6 +355,13 @@ export function ActionBar() {
                       minute: '2-digit'
                     })}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => loadInProgressGame(game)}
+                    className="mt-2 w-full rounded border border-yellow-300 px-2 py-1 text-[11px] font-medium text-yellow-800 transition-colors hover:bg-yellow-100 dark:border-yellow-700 dark:text-yellow-200 dark:hover:bg-yellow-900/30"
+                  >
+                    {t('resumeGame')}
+                  </button>
                 </div>
               ))}
             </div>

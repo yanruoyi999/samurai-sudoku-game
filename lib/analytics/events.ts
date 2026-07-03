@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@vercel/analytics";
+import { trackEvent as trackGoogleEvent } from "@/lib/gtag";
 
 type AnalyticsValue = string | number | boolean;
 type AnalyticsProperties = Record<string, AnalyticsValue | null | undefined>;
@@ -20,6 +21,7 @@ export function trackInteraction(eventName: string, properties?: AnalyticsProper
   const cleanedProperties = cleanProperties(properties);
 
   track(eventName, cleanedProperties);
+  trackGoogleEvent(eventName, cleanedProperties);
 
   if (typeof window !== "undefined") {
     const clarity = (window as WindowWithClarity).clarity;

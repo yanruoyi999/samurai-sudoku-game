@@ -62,6 +62,7 @@
     "inProgress": "进行中",
     "completed": "已完成",
     "noGameHistory": "暂无游戏历史",
+    "resumeGame": "继续",
     "generationError": "新谜题加载失败，请重试。"
   },
   "hints": {

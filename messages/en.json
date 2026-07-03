@@ -42,6 +42,7 @@
     "inProgress": "In Progress",
     "completed": "Completed",
     "noGameHistory": "No game history yet",
+    "resumeGame": "Resume",
     "generationError": "Failed to load the new puzzle. Please try again."
   },
   "hints": {

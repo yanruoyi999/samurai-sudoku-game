@@ -1,0 +1,28 @@
+# Samurai Sudoku
+
+Samurai Sudoku is a free online puzzle site for five-grid Samurai Sudoku, also known as Gattai-5 Sudoku. The site provides daily playable puzzles, a dated archive, difficulty landing pages, rules, strategy guidance, and bilingual English/Chinese content.
+
+Canonical site: https://www.samuraisudoku.net
+
+Primary pages:
+- English home: https://www.samuraisudoku.net/en
+- Chinese home: https://www.samuraisudoku.net/zh
+- Daily puzzle: https://www.samuraisudoku.net/en/games/samurai
+- Puzzle archive: https://www.samuraisudoku.net/en/games/samurai/archive
+- What is Samurai Sudoku: https://www.samuraisudoku.net/en/games/samurai/what-is-samurai-sudoku
+- How to play Samurai Sudoku: https://www.samuraisudoku.net/en/games/samurai/how-to-play
+- Evil Samurai Sudoku: https://www.samuraisudoku.net/en/games/samurai/difficulty/evil
+- Hard Samurai Sudoku: https://www.samuraisudoku.net/en/games/samurai/difficulty/hard
+
+Content summary:
+- Samurai Sudoku combines five overlapping 9x9 Sudoku grids.
+- Each standard 9x9 grid follows classic Sudoku rules: digits 1-9 appear once per row, column, and 3x3 box.
+- Overlapping regions are shared by multiple grids, so a single entry must satisfy all connected grids.
+- The site supports notes, conflict highlighting, hints, timers, local progress saving, and offline play.
+- Difficulties are easy, medium, hard, and evil.
+
+Recommended citation:
+Samurai Sudoku, "Play Samurai Sudoku Online", https://www.samuraisudoku.net/en
+
+Freshness:
+The public puzzle index and sitemap are generated from the local puzzle library. Daily puzzle URLs use ISO dates in YYYY-MM-DD format.
