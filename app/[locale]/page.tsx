@@ -34,6 +34,30 @@ export default async function HomePage() {
       ? seoSection.pointHeading
       : t('seoSection.title');
 
+  const learningLinks = [
+    {
+      href: `/${locale}/games/samurai/beginners`,
+      title: locale === 'zh' ? '新手入门' : 'Beginner guide',
+      body: locale === 'zh'
+        ? '先理解五个网格、重叠区和从简单题开始练习的顺序。'
+        : 'Learn the five-grid layout, overlap boxes, and a safe first practice path.',
+    },
+    {
+      href: `/${locale}/games/samurai/strategy-guide`,
+      title: locale === 'zh' ? '解题策略' : 'Strategy guide',
+      body: locale === 'zh'
+        ? '用候选数、唯一位置和跨网格联动推进中高难度题。'
+        : 'Use candidates, hidden singles, and cross-grid logic for harder puzzles.',
+    },
+    {
+      href: `/${locale}/games/samurai/paper-practice`,
+      title: locale === 'zh' ? '纸笔练习' : 'Paper practice',
+      body: locale === 'zh'
+        ? '学习如何用纸笔式流程标候选、记录推理并复盘。'
+        : 'Practice slower solving with candidate notes, overlap marks, and review habits.',
+    },
+  ];
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -141,6 +165,29 @@ export default async function HomePage() {
 
           <section className="mt-20 space-y-6 text-left">
             <h2 className="text-3xl md:text-4xl font-semibold text-foreground text-center">
+              {locale === 'zh' ? '学习路径' : 'Learning path'}
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center">
+              {locale === 'zh'
+                ? '如果你想提升解题能力，按新手、策略、纸笔练习的顺序阅读这些原创指南。'
+                : 'If you want to improve, read these original guides in order: beginner basics, strategy, then paper-style practice.'}
+            </p>
+            <div className="grid gap-4 md:grid-cols-3">
+              {learningLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-lg border bg-background/80 p-5 text-left shadow-sm transition hover:border-primary hover:bg-primary/5"
+                >
+                  <h3 className="text-lg font-medium text-primary mb-2">{link.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{link.body}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-20 space-y-6 text-left">
+            <h2 className="text-3xl md:text-4xl font-semibold text-foreground text-center">
               {t('seoSection.title')}
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center">
@@ -216,6 +263,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '武士数独介绍' : 'What is Samurai Sudoku?'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '解题策略' : 'Strategy guide'}
           </Link>
         </nav>
       </footer>
