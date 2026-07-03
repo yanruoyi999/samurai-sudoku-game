@@ -19,6 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
+  const canonical = buildAbsoluteUrl(`/${locale}`);
 
   return {
     title: t('title'),
@@ -29,7 +30,7 @@ export async function generateMetadata({
       title: t('og.title'),
       description: t('og.description'),
       type: "website",
-      url: buildAbsoluteUrl(`/${locale}`),
+      url: canonical,
       locale: locale,
       alternateLocale: locales.filter(l => l !== locale),
       images: [
@@ -48,10 +49,12 @@ export async function generateMetadata({
       images: ['/og-image.png'],
     },
     alternates: {
-      canonical: `/${locale}`,
+      canonical,
       languages: {
-        'en': '/en',
-        'zh': '/zh',
+        ...Object.fromEntries(
+          locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}`)]),
+        ),
+        'x-default': buildAbsoluteUrl('/en'),
       },
     },
   };

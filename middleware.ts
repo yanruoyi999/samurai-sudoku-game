@@ -10,7 +10,11 @@ const intlMiddleware = createMiddleware({
   defaultLocale: 'en',
 
   // Always use locale prefix
-  localePrefix: 'always'
+  localePrefix: 'always',
+
+  // Page metadata and sitemap own hreflang links. Disabling this avoids an
+  // unprefixed x-default Link header while localePrefix is always enabled.
+  alternateLinks: false
 });
 
 export default function middleware(request: NextRequest) {
