@@ -13,6 +13,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/what-is-samurai-sudoku', changeFrequency: 'monthly' as const, priority: 0.75 },
     { path: '/games/samurai/how-to-play', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/games/samurai/strategy-guide', changeFrequency: 'monthly' as const, priority: 0.72 },
+    { path: '/games/samurai/beginners', changeFrequency: 'monthly' as const, priority: 0.71 },
+    { path: '/games/samurai/paper-practice', changeFrequency: 'monthly' as const, priority: 0.69 },
     ...difficulties.map((difficulty) => ({
       path: `/games/samurai/difficulty/${difficulty}`,
       changeFrequency: 'weekly' as const,
