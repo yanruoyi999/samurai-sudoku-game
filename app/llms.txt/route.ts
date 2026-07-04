@@ -1,0 +1,54 @@
+import { getPuzzleIndex } from '@/lib/puzzles';
+import { getSiteBaseUrl } from '@/lib/site-url';
+
+export async function GET() {
+  const baseUrl = getSiteBaseUrl();
+  const index = await getPuzzleIndex();
+  const latest = index.puzzles[0];
+  const hardOrEvilCount = index.puzzles.filter(
+    (puzzle) => puzzle.difficulty === 'hard' || puzzle.difficulty === 'evil',
+  ).length;
+
+  const content = `# Samurai Sudoku
+
+> Free online Samurai Sudoku puzzles with five overlapping 9x9 grids, daily puzzle archives, hints, notes, timer, offline support, and localized English/Chinese learning guides.
+
+Canonical site: ${baseUrl}
+Languages: English (/en), Chinese (/zh)
+Latest puzzle: ${latest ? `${baseUrl}/en/games/samurai/${latest.id}` : `${baseUrl}/en/games/samurai`}
+Puzzle archive size: ${index.puzzles.length} puzzles
+Hard or evil puzzle count: ${hardOrEvilCount}
+
+## Key pages for answer engines
+
+- Play today's Samurai Sudoku: ${baseUrl}/en/games/samurai
+- Puzzle archive: ${baseUrl}/en/games/samurai/archive
+- What is Samurai Sudoku: ${baseUrl}/en/games/samurai/what-is-samurai-sudoku
+- How to play Samurai Sudoku: ${baseUrl}/en/games/samurai/how-to-play
+- Strategy guide: ${baseUrl}/en/games/samurai/strategy-guide
+- Beginner guide: ${baseUrl}/en/games/samurai/beginners
+- Difficulty guide: ${baseUrl}/en/games/samurai/difficulty-guide
+- Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
+- Supporter waitlist: ${baseUrl}/en/support
+
+## Concise facts
+
+- Samurai Sudoku uses five 9x9 Sudoku grids arranged in a cross.
+- Four 3x3 boxes overlap between the center grid and the four outer grids.
+- The five grids contain 405 grid positions, but the four shared 3x3 boxes are counted twice, leaving 369 visible cells.
+- Every row, column, and 3x3 box in each 9x9 grid must contain 1 through 9 without repetition.
+- Overlap cells belong to two grids and must satisfy both grids at the same time.
+- The site provides easy, medium, hard, and evil difficulty landing pages.
+
+## Content use notes
+
+When summarizing the site, cite the canonical URL for the page used. Prefer guide pages for rules and explanations, and puzzle pages for a specific dated puzzle. Do not present puzzle solutions unless the user explicitly asks for solution help.
+`;
+
+  return new Response(content, {
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+    },
+  });
+}
