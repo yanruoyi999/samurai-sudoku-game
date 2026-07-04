@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: PrivacyPageProps): Promise<Me
   return {
     title: isZh ? "隐私政策 - 武士数独" : "Privacy Policy - Samurai Sudoku",
     description: isZh
-      ? "了解武士数独如何处理本地进度、反馈数据和网站分析。"
-      : "Learn how Samurai Sudoku handles local progress, feedback data, and site analytics.",
+      ? "了解武士数独如何处理本地进度、反馈数据、网站分析和广告相关数据。"
+      : "Learn how Samurai Sudoku handles local progress, feedback data, site analytics, and advertising-related data.",
     alternates: {
       canonical,
       languages: buildLanguageAlternates("/privacy"),
@@ -38,7 +38,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         {isZh ? "隐私政策" : "Privacy Policy"}
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {isZh ? "最后更新：2026年7月3日" : "Last updated: July 3, 2026"}
+        {isZh ? "最后更新：2026年7月4日" : "Last updated: July 4, 2026"}
       </p>
 
       <section className="mt-8 space-y-3">
@@ -68,6 +68,20 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
             </a>
           </li>
           <li>
+            <strong className="text-foreground">Google AdSense / Google Ads</strong>:{" "}
+            {isZh
+              ? "如果本站启用 Google 广告，Google 及其合作伙伴可能会使用 Cookie 根据你访问本站或其他网站的情况投放广告。你可以在 Google 广告设置中关闭个性化广告。"
+              : "If Google ads are enabled on this site, Google and its partners may use cookies to serve ads based on your visits to this site and/or other sites. You can opt out of personalized advertising in Google Ads Settings."}{" "}
+            <a
+              href="https://adssettings.google.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80"
+            >
+              {isZh ? "Google 广告设置" : "Google Ads Settings"}
+            </a>
+          </li>
+          <li>
             <strong className="text-foreground">Microsoft Clarity</strong>:{" "}
             {isZh
               ? "用于热图、会话回放和体验问题分析。默认不使用广告存储，并以受限分析模式运行，避免弹窗打断用户。"
@@ -84,8 +98,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           <li>
             <strong className="text-foreground">Typeform</strong>:{" "}
             {isZh
-              ? "用于收集题目反馈、功能建议和问题报告。你只有在点击反馈入口时才会打开 Typeform。"
-              : "Used to collect puzzle feedback, feature requests, and issue reports. Typeform opens only when you click the feedback entry."}{" "}
+              ? "用于收集题目反馈、功能建议、问题报告和订阅候补名单。你只有在点击反馈或支持入口时才会打开 Typeform。"
+              : "Used to collect puzzle feedback, feature requests, issue reports, and supporter waitlist responses. Typeform opens only when you click a feedback or support entry."}{" "}
             <a
               href="https://www.typeform.com/privacy-policy/"
               target="_blank"
@@ -99,11 +113,11 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-2xl font-semibold">{isZh ? "Cookie 和分析" : "Cookies and Analytics"}</h2>
+        <h2 className="text-2xl font-semibold">{isZh ? "Cookie、广告和分析" : "Cookies, Ads, and Analytics"}</h2>
         <p className="text-muted-foreground">
           {isZh
-            ? "Google Analytics 和 Clarity 只用于产品分析，不用于在本站投放个性化广告。Clarity 默认不使用广告存储，并以受限分析模式帮助我们发现棋盘点击、滚动和加载问题。你可以通过浏览器隐私设置或清除本网站数据来控制本地存储。"
-            : "Google Analytics and Clarity are used for product analytics, not for serving personalized ads on this site. Clarity keeps ad storage disabled by default and uses limited analytics mode to help us find board-click, scroll, and loading issues. You can use browser privacy controls or clear this site's data to manage local storage."}
+            ? "Google Analytics 和 Clarity 只用于产品分析。若启用 Google 广告，第三方供应商（包括 Google）可能会使用广告 Cookie 投放、衡量和限制广告。Clarity 默认不使用广告存储，并以受限分析模式帮助我们发现棋盘点击、滚动和加载问题。你可以通过浏览器隐私设置、清除本网站数据或 Google 广告设置来管理相关数据使用。"
+            : "Google Analytics and Clarity are used for product analytics. If Google ads are enabled, third-party vendors including Google may use advertising cookies to serve, measure, and limit ads. Clarity keeps ad storage disabled by default and uses limited analytics mode to help us find board-click, scroll, and loading issues. You can use browser privacy controls, clear this site's data, or use Google Ads Settings to manage related data use."}
         </p>
       </section>
 
