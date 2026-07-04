@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { trackInteraction } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ interface NumberPadProps {
 export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadProps) {
   const t = useTranslations("game");
   const tActions = useTranslations("actions");
+  const locale = useLocale();
   const selectedCell = useSudokuStore((state) => state.selectedCell);
   const setCell = useSudokuStore((state) => state.setCell);
   const clearCell = useSudokuStore((state) => state.clearCell);
@@ -24,6 +26,22 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const noteMode = useSudokuStore((state) => state.showCandidates);
   const difficulty = useSudokuStore((state) => state.difficulty);
   const puzzleId = useSudokuStore((state) => state.puzzleId);
+  const trackedFirstNumberPadInputPuzzleId = useRef<string | null>(null);
+  const trackedNumberWithoutCellPuzzleId = useRef<string | null>(null);
+
+  const trackFirstNumberPadInput = (num: number) => {
+    if (!puzzleId || trackedFirstNumberPadInputPuzzleId.current === puzzleId) return;
+
+    trackedFirstNumberPadInputPuzzleId.current = puzzleId;
+    trackInteraction("sudoku_first_number_input", {
+      difficulty: difficulty ?? "",
+      locale,
+      note_mode: noteMode,
+      puzzle_id: puzzleId,
+      source: "number_pad",
+      value: num,
+    });
+  };
 
   const handleNumberClick = (num: number) => {
     if (selectedCell) {
@@ -44,6 +62,16 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           value: num,
         });
       }
+      trackFirstNumberPadInput(num);
+    } else if (puzzleId && trackedNumberWithoutCellPuzzleId.current !== puzzleId) {
+      trackedNumberWithoutCellPuzzleId.current = puzzleId;
+      trackInteraction("sudoku_number_without_cell", {
+        difficulty: difficulty ?? "",
+        locale,
+        puzzle_id: puzzleId,
+        source: "number_pad",
+        value: num,
+      });
     }
 
     if (onNumberSelect) {
@@ -89,7 +117,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
               <button
                 key={num}
                 onClick={() => handleNumberClick(num)}
-                disabled={isDisabled}
+                aria-disabled={isDisabled || undefined}
                 aria-label={
                   noteMode
                     ? `${tActions('candidates')} ${num}`
@@ -100,9 +128,8 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
                 className={cn(
                   "aspect-square rounded-lg font-semibold text-xl",
                   "border-2 transition-all active:scale-95",
-                  "disabled:opacity-40 disabled:cursor-not-allowed",
                   isDisabled
-                    ? "border-muted bg-muted/20"
+                    ? "border-muted bg-muted/20 opacity-40 cursor-not-allowed"
                     : noteMode && isMarkedCandidate
                     ? "border-primary bg-primary text-primary-foreground"
                     : showCandidates && possibleValues.size > 0 && !isPossibleValue
