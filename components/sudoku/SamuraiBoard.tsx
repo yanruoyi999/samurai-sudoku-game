@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useCallback, useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, useCallback, useMemo, useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { GlobalPosition, globalToLocal, getAffectedCells, positionsEqual } from "@/lib/sudoku/coordinates";
+import { trackInteraction } from "@/lib/analytics/events";
 import { Cell } from "./Cell";
 
 const BOARD_SIZE = 21;
@@ -52,6 +53,8 @@ const BOARD_CELLS: Array<{
 
 export function SamuraiBoard() {
   const t = useTranslations("game");
+  const locale = useLocale();
+  const puzzleId = useSudokuStore((state) => state.puzzleId);
   const board = useSudokuStore((state) => state.board);
   const initial = useSudokuStore((state) => state.initial);
   const selectedCell = useSudokuStore((state) => state.selectedCell);
@@ -65,6 +68,8 @@ export function SamuraiBoard() {
   const toggleCandidate = useSudokuStore((state) => state.toggleCandidate);
   const undo = useSudokuStore((state) => state.undo);
   const redo = useSudokuStore((state) => state.redo);
+  const trackedFirstSelectionPuzzleId = useRef<string | null>(null);
+  const trackedFirstKeyboardInputPuzzleId = useRef<string | null>(null);
 
   const highlightedCellKeys = useMemo(() => {
     if (!selectedCell) return new Set<string>();
@@ -113,13 +118,46 @@ export function SamuraiBoard() {
     [initial]
   );
 
+  const trackFirstCellSelection = useCallback(
+    (pos: GlobalPosition, source: "click" | "keyboard") => {
+      if (!puzzleId || trackedFirstSelectionPuzzleId.current === puzzleId) return;
+
+      trackedFirstSelectionPuzzleId.current = puzzleId;
+      trackInteraction("sudoku_first_cell_select", {
+        locale,
+        puzzle_id: puzzleId,
+        row: pos.row + 1,
+        col: pos.col + 1,
+        source,
+      });
+    },
+    [locale, puzzleId]
+  );
+
+  const trackFirstKeyboardInput = useCallback(
+    (value: number) => {
+      if (!puzzleId || trackedFirstKeyboardInputPuzzleId.current === puzzleId) return;
+
+      trackedFirstKeyboardInputPuzzleId.current = puzzleId;
+      trackInteraction("sudoku_first_number_input", {
+        locale,
+        puzzle_id: puzzleId,
+        value,
+        note_mode: showCandidates,
+        source: "keyboard",
+      });
+    },
+    [locale, puzzleId, showCandidates]
+  );
+
   // Handle cell click
   const handleCellClick = useCallback(
     (pos: GlobalPosition) => {
       if (initial[pos.row][pos.col]) return; // Can't select initial cells
       selectCell(pos);
+      trackFirstCellSelection(pos, "click");
     },
-    [initial, selectCell]
+    [initial, selectCell, trackFirstCellSelection]
   );
 
   // Handle keyboard input
@@ -163,6 +201,7 @@ export function SamuraiBoard() {
         } else {
           setCell(selectedCell, num);
         }
+        trackFirstKeyboardInput(num);
         return;
       }
 
@@ -183,7 +222,9 @@ export function SamuraiBoard() {
       const delta = navigation[e.key];
       if (delta) {
         e.preventDefault();
-        selectCell(findNextSelectableCell(selectedCell, delta));
+        const nextCell = findNextSelectableCell(selectedCell, delta);
+        selectCell(nextCell);
+        trackFirstCellSelection(nextCell, "keyboard");
       }
     },
     [
@@ -194,6 +235,8 @@ export function SamuraiBoard() {
       toggleCandidate,
       selectCell,
       findNextSelectableCell,
+      trackFirstCellSelection,
+      trackFirstKeyboardInput,
       undo,
       redo,
     ]
