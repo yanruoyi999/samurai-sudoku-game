@@ -6,16 +6,23 @@ import { GameHistoryArchive } from '@/components/GameHistoryArchive';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 
+type ArchiveSearchParams = {
+  difficulty?: string;
+  page?: string;
+};
+
+const EMPTY_SEARCH_PARAMS: ArchiveSearchParams = {};
+
 export async function generateMetadata({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams?: Promise<{ difficulty?: string; page?: string }>;
+  searchParams?: Promise<ArchiveSearchParams>;
 }): Promise<Metadata> {
   const [{ locale }, resolvedSearchParams] = await Promise.all([
     params,
-    searchParams ?? Promise.resolve({}),
+    searchParams ?? Promise.resolve(EMPTY_SEARCH_PARAMS),
   ]);
   const isZh = locale === 'zh';
   const canonical = buildLocalizedUrl(locale, '/games/samurai/archive');
@@ -59,7 +66,7 @@ export default async function ArchivePage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ difficulty?: string; page?: string }>;
+  searchParams: Promise<ArchiveSearchParams>;
 }) {
   const [{ locale }, resolvedSearchParams] = await Promise.all([params, searchParams]);
   const t = await getTranslations('archive');
