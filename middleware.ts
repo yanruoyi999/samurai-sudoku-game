@@ -1,6 +1,9 @@
 import createMiddleware from 'next-intl/middleware';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { locales } from './i18n';
+
+const CANONICAL_HOST = 'www.samuraisudoku.net';
+const REDIRECT_HOSTS = new Set(['samuraisudoku.net']);
 
 const intlMiddleware = createMiddleware({
   // A list of all locales that are supported
@@ -18,6 +21,15 @@ const intlMiddleware = createMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
+  const hostname = request.headers.get('host')?.split(':')[0].toLowerCase();
+
+  if (hostname && REDIRECT_HOSTS.has(hostname)) {
+    const url = request.nextUrl.clone();
+    url.protocol = 'https:';
+    url.host = CANONICAL_HOST;
+    return NextResponse.redirect(url, 308);
+  }
+
   const pathLocale = request.nextUrl.pathname.split('/')[1];
   const locale = locales.find((candidate) => candidate === pathLocale) ?? 'en';
   const response = intlMiddleware(request);
