@@ -53,12 +53,12 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
       : puzzle.difficulty.charAt(0).toUpperCase() + puzzle.difficulty.slice(1);
   const title =
     locale === 'zh'
-      ? `${puzzle.id} 武士数独 - ${difficulty}难度`
-      : `${puzzle.id} Samurai Sudoku - ${difficulty} Puzzle`;
+      ? `${puzzle.id} ${difficulty}在线武士数独 - 每日谜题`
+      : `${puzzle.id} ${difficulty} Samurai Sudoku Online - Daily Puzzle`;
   const description =
     locale === 'zh'
-      ? `在线游玩 ${puzzle.id} 武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示和进度记录。`
-      : `Play the ${puzzle.id} Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, and progress tracking.`;
+      ? `免费在线游玩 ${puzzle.id} 每日武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示和进度记录。`
+      : `Play the free ${puzzle.id} daily Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, and progress tracking.`;
   const canonical = buildAbsoluteUrl(`/${locale}/games/samurai/${puzzle.id}`);
   const path = `/games/samurai/${puzzle.id}`;
 
@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
     keywords:
       locale === 'zh'
         ? ['武士数独', '在线数独', `${difficulty}数独`, '每日数独', puzzle.id, ...puzzle.tags]
-        : ['samurai sudoku', 'online sudoku', `${puzzle.difficulty} sudoku`, 'daily sudoku', puzzle.id, ...puzzle.tags],
+        : ['samurai sudoku online', 'online sudoku samurai', 'free sudoku', `${puzzle.difficulty} sudoku`, 'daily sudoku', puzzle.id, ...puzzle.tags],
     alternates: {
       canonical,
       languages: buildLanguageAlternates(path),
@@ -108,8 +108,15 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
       '@type': 'Thing',
       name: 'Samurai Sudoku',
     },
+    datePublished: puzzle.id,
     educationalUse: 'logic training',
+    isAccessibleForFree: true,
     keywords: puzzle.metadata.tags?.join(', '),
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
   };
 
   const isZh = resolvedParams.locale === 'zh';

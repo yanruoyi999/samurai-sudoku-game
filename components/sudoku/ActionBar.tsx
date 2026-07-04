@@ -13,6 +13,7 @@ import {
   type GameHistoryEntry,
   type InProgressGame,
 } from '@/lib/storage/game-history';
+import { trackInteraction } from '@/lib/analytics/events';
 import Link from 'next/link';
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
@@ -42,6 +43,7 @@ export function ActionBar() {
     loadPuzzle,
     loadInProgressGame,
     difficulty,
+    puzzleId,
   } = useSudokuStore();
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
@@ -84,6 +86,10 @@ export function ActionBar() {
   const handleReset = () => {
     if (confirm(t('resetConfirm') || "Are you sure you want to reset the puzzle? All progress will be lost.")) {
       reset();
+      trackInteraction('sudoku_puzzle_reset', {
+        difficulty: difficulty ?? '',
+        puzzle_id: puzzleId ?? '',
+      });
     }
   };
 
@@ -100,6 +106,11 @@ export function ActionBar() {
           startTransition(() => {
             loadPuzzle(newPuzzle);
             setHintMessage(null);
+            trackInteraction('sudoku_new_game_generated', {
+              difficulty: newPuzzle.difficulty,
+              puzzle_id: newPuzzle.id,
+              source: 'action_bar',
+            });
           });
         } catch (error) {
           console.error('Failed to load puzzle:', error);
@@ -124,6 +135,11 @@ export function ActionBar() {
     if (hint) {
       incrementHints();
       selectCell(hint.position);
+      trackInteraction('sudoku_hint_used', {
+        difficulty: difficulty ?? '',
+        hint_type: hint.type,
+        puzzle_id: puzzleId ?? '',
+      });
 
       const messages = {
         'naked-single': tHints('nakedSingle', { value: hint.value }),
@@ -136,8 +152,38 @@ export function ActionBar() {
       setTimeout(() => setHintMessage(null), 5000);
     } else {
       setHintMessage(tHints('noHint'));
+      trackInteraction('sudoku_hint_unavailable', {
+        difficulty: difficulty ?? '',
+        puzzle_id: puzzleId ?? '',
+      });
       setTimeout(() => setHintMessage(null), 3000);
     }
+  };
+
+  const handleToggleShowCandidates = () => {
+    toggleShowCandidates();
+    trackInteraction('sudoku_candidates_mode_toggle', {
+      difficulty: difficulty ?? '',
+      enabled: !showCandidates,
+      puzzle_id: puzzleId ?? '',
+    });
+  };
+
+  const handleToggleShowConflicts = () => {
+    toggleShowConflicts();
+    trackInteraction('sudoku_conflicts_toggle', {
+      difficulty: difficulty ?? '',
+      enabled: !showConflicts,
+      puzzle_id: puzzleId ?? '',
+    });
+  };
+
+  const handleTogglePause = () => {
+    togglePause();
+    trackInteraction(isPaused ? 'sudoku_resume' : 'sudoku_pause', {
+      difficulty: difficulty ?? '',
+      puzzle_id: puzzleId ?? '',
+    });
   };
 
   return (
@@ -260,7 +306,7 @@ export function ActionBar() {
 
           <div className="grid grid-cols-2 gap-2">
             <button
-              onClick={toggleShowCandidates}
+              onClick={handleToggleShowCandidates}
               className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
                 showCandidates
                   ? "bg-primary text-primary-foreground"
@@ -270,7 +316,7 @@ export function ActionBar() {
               {showCandidates ? "✓ " : ""}{t('candidates')}
             </button>
             <button
-              onClick={toggleShowConflicts}
+              onClick={handleToggleShowConflicts}
               className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
                 showConflicts
                   ? "bg-primary text-primary-foreground"
@@ -283,7 +329,7 @@ export function ActionBar() {
 
           <div className="grid grid-cols-2 gap-2">
             <button
-              onClick={togglePause}
+              onClick={handleTogglePause}
               className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors"
             >
               {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}
@@ -475,7 +521,7 @@ export function ActionBar() {
               💡 {t('hint')}
             </button>
             <button
-              onClick={toggleShowCandidates}
+              onClick={handleToggleShowCandidates}
               className={`px-3 py-2 text-xs font-medium rounded-md border transition-colors whitespace-nowrap ${
                 showCandidates ? "bg-primary text-primary-foreground" : "hover:bg-accent"
               }`}
@@ -483,7 +529,7 @@ export function ActionBar() {
               {showCandidates ? "✓ " : ""}{t('candidates')}
             </button>
             <button
-              onClick={toggleShowConflicts}
+              onClick={handleToggleShowConflicts}
               className={`px-3 py-2 text-xs font-medium rounded-md border transition-colors whitespace-nowrap ${
                 showConflicts ? "bg-primary text-primary-foreground" : "hover:bg-accent"
               }`}
@@ -491,7 +537,7 @@ export function ActionBar() {
               {showConflicts ? "✓ " : ""}{t('conflicts')}
             </button>
             <button
-              onClick={togglePause}
+              onClick={handleTogglePause}
               className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent transition-colors whitespace-nowrap"
             >
               {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}

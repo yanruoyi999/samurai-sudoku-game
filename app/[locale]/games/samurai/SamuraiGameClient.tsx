@@ -73,6 +73,12 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
     }
 
     trackedOpenPuzzleId.current = initialPuzzle.id;
+    trackInteraction("sudoku_puzzle_start", {
+      difficulty: initialPuzzle.difficulty,
+      locale,
+      puzzle_id: initialPuzzle.id,
+      source: "daily",
+    });
     trackInteraction("sudoku_puzzle_open", {
       difficulty: initialPuzzle.difficulty,
       locale,
@@ -91,6 +97,12 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
     }
 
     trackedCompletedPuzzleId.current = initialPuzzle.id;
+    trackInteraction("sudoku_puzzle_complete", {
+      difficulty: initialPuzzle.difficulty,
+      locale,
+      puzzle_id: initialPuzzle.id,
+      source: "daily",
+    });
     trackInteraction("sudoku_puzzle_completed", {
       difficulty: initialPuzzle.difficulty,
       locale,

@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@vercel/analytics";
+import { isAnalyticsOptedOut } from "@/lib/analytics/opt-out";
 import { trackEvent as trackGoogleEvent } from "@/lib/gtag";
 
 type AnalyticsValue = string | number | boolean;
@@ -18,6 +19,8 @@ function cleanProperties(properties?: AnalyticsProperties): Record<string, Analy
 }
 
 export function trackInteraction(eventName: string, properties?: AnalyticsProperties) {
+  if (isAnalyticsOptedOut()) return;
+
   const cleanedProperties = cleanProperties(properties);
 
   track(eventName, cleanedProperties);

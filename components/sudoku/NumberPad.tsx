@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
+import { trackInteraction } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 interface NumberPadProps {
@@ -19,15 +20,29 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
     toggleCandidate,
     engine,
     candidates,
+    difficulty,
     showCandidates: noteMode,
+    puzzleId,
   } = useSudokuStore();
 
   const handleNumberClick = (num: number) => {
     if (selectedCell) {
       if (noteMode) {
         toggleCandidate(selectedCell, num);
+        trackInteraction("sudoku_candidate_toggle", {
+          difficulty: difficulty ?? "",
+          input_method: "number_pad",
+          puzzle_id: puzzleId ?? "",
+          value: num,
+        });
       } else {
         setCell(selectedCell, num);
+        trackInteraction("sudoku_cell_input", {
+          difficulty: difficulty ?? "",
+          input_method: "number_pad",
+          puzzle_id: puzzleId ?? "",
+          value: num,
+        });
       }
     }
 
@@ -44,6 +59,11 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const handleClear = () => {
     if (selectedCell) {
       clearCell(selectedCell);
+      trackInteraction("sudoku_cell_clear", {
+        difficulty: difficulty ?? "",
+        input_method: "number_pad",
+        puzzle_id: puzzleId ?? "",
+      });
     }
   };
 

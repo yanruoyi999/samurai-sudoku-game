@@ -1,3 +1,9 @@
+import {
+  applyAnalyticsOptOutFromUrl,
+  isAnalyticsOptedOut,
+  setGoogleAnalyticsDisabled,
+} from "@/lib/analytics/opt-out";
+
 export const GA_TRACKING_ID =
   process.env.NEXT_PUBLIC_SUDOKU_GA_ID ||
   process.env.NEXT_PUBLIC_SUDOKU_GA4_MEASUREMENT_ID ||
@@ -22,6 +28,9 @@ type EventParams = Record<string, string | number | boolean | undefined>;
 
 function ensureGtagQueue() {
   if (!GA_TRACKING_ID || typeof window === "undefined") return;
+  const optedOut = applyAnalyticsOptOutFromUrl();
+  setGoogleAnalyticsDisabled(GA_TRACKING_ID, optedOut);
+  if (optedOut) return;
 
   window.dataLayer = window.dataLayer || [];
 
@@ -37,7 +46,12 @@ export const isGoogleAnalyticsReady = () =>
 
 export const pageview = (url: string) => {
   ensureGtagQueue();
-  if (!GA_TRACKING_ID || typeof window === "undefined" || typeof window.gtag !== "function") return;
+  if (
+    !GA_TRACKING_ID ||
+    typeof window === "undefined" ||
+    typeof window.gtag !== "function" ||
+    isAnalyticsOptedOut()
+  ) return;
 
   window.gtag("config", GA_TRACKING_ID, {
     page_path: url,
@@ -46,7 +60,12 @@ export const pageview = (url: string) => {
 
 export const trackEvent = (action: string, params: EventParams = {}) => {
   ensureGtagQueue();
-  if (!GA_TRACKING_ID || typeof window === "undefined" || typeof window.gtag !== "function") return;
+  if (
+    !GA_TRACKING_ID ||
+    typeof window === "undefined" ||
+    typeof window.gtag !== "function" ||
+    isAnalyticsOptedOut()
+  ) return;
 
   window.gtag("event", action, params);
 };

@@ -61,6 +61,12 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
     }
 
     trackedOpenPuzzleId.current = puzzleId;
+    trackInteraction("sudoku_puzzle_start", {
+      difficulty: initialPuzzle.difficulty,
+      locale,
+      puzzle_id: puzzleId,
+      source: "archive",
+    });
     trackInteraction("sudoku_puzzle_open", {
       difficulty: initialPuzzle.difficulty,
       locale,
@@ -79,6 +85,12 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
     }
 
     trackedCompletedPuzzleId.current = puzzleId;
+    trackInteraction("sudoku_puzzle_complete", {
+      difficulty: initialPuzzle.difficulty,
+      locale,
+      puzzle_id: puzzleId,
+      source: "archive",
+    });
     trackInteraction("sudoku_puzzle_completed", {
       difficulty: initialPuzzle.difficulty,
       locale,

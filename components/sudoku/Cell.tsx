@@ -53,7 +53,7 @@ export function Cell({
         // Display main value — given clues in ink, player entries in vermilion/maple
         <span
           className={cn(
-            "text-lg md:text-xl tabular leading-none",
+            "text-[clamp(0.65rem,2.6vw,1.25rem)] tabular leading-none",
             hasConflict
               ? "text-destructive font-semibold"
               : isInitial
@@ -65,7 +65,7 @@ export function Cell({
         </span>
       ) : displayCandidates ? (
         // Display candidates in a 3x3 grid
-        <div className="grid grid-cols-3 gap-0 w-full h-full p-0.5 text-[0.5rem] md:text-xs">
+        <div className="grid grid-cols-3 gap-0 w-full h-full p-px text-[clamp(0.3rem,1.1vw,0.65rem)] md:p-0.5">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <div
               key={num}

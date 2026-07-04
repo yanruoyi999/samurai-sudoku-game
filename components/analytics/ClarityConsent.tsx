@@ -2,6 +2,11 @@
 
 import { useEffect } from "react";
 
+import {
+  applyAnalyticsOptOutFromUrl,
+  isAnalyticsOptedOut,
+} from "@/lib/analytics/opt-out";
+
 declare global {
   interface Window {
     clarity?: (...args: unknown[]) => void;
@@ -57,6 +62,11 @@ function loadClarity(projectId: string, analyticsStorage: AnalyticsConsent) {
 export function ClarityConsent() {
   useEffect(() => {
     if (!clarityProjectId) return;
+    if (applyAnalyticsOptOutFromUrl() || isAnalyticsOptedOut()) {
+      setClarityConsent("denied");
+      return;
+    }
+
     const saved = window.localStorage.getItem(storageKey);
     loadClarity(clarityProjectId, saved === "granted" ? "granted" : "denied");
   }, []);
