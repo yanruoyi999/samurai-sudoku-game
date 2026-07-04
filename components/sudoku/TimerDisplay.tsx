@@ -7,24 +7,29 @@ import { formatTime } from "@/lib/utils";
 
 export function TimerDisplay() {
   const t = useTranslations("actions");
-  const { startTime, elapsedTime, isPaused, updateElapsedTime } =
-    useSudokuStore();
+  const startTime = useSudokuStore((state) => state.startTime);
+  const elapsedTime = useSudokuStore((state) => state.elapsedTime);
+  const isPaused = useSudokuStore((state) => state.isPaused);
+  const updateElapsedTime = useSudokuStore((state) => state.updateElapsedTime);
   const [currentTime, setCurrentTime] = useState(elapsedTime);
 
   useEffect(() => {
     if (!startTime || isPaused) {
       setCurrentTime(elapsedTime);
-      return;
     }
+  }, [startTime, isPaused, elapsedTime]);
 
-    const interval = setInterval(() => {
+  useEffect(() => {
+    if (!startTime || isPaused) return;
+
+    const interval = window.setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
       setCurrentTime(elapsed);
       updateElapsedTime(elapsed);
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [startTime, isPaused, elapsedTime, updateElapsedTime]);
+    return () => window.clearInterval(interval);
+  }, [startTime, isPaused, updateElapsedTime]);
 
   return (
     <div className="flex items-center gap-2 text-sm">
