@@ -40,7 +40,9 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   const tGame = useTranslations('game');
   const locale = useLocale();
 
-  const { puzzleId, loadPuzzle, status } = useSudokuStore();
+  const puzzleId = useSudokuStore((state) => state.puzzleId);
+  const loadPuzzle = useSudokuStore((state) => state.loadPuzzle);
+  const status = useSudokuStore((state) => state.status);
   const loadedInitialPuzzleId = useRef<string | null>(null);
   const [prevPuzzleId, setPrevPuzzleId] = useState<string | null>(null);
   const [isInitialPuzzleLoading, setIsInitialPuzzleLoading] = useState(true);
