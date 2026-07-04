@@ -42,16 +42,18 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
   const locale = useLocale();
 
   const { puzzleId: currentPuzzleId, loadPuzzle, status } = useSudokuStore();
+  const loadedRoutePuzzleId = useRef<string | null>(null);
   const [loading, setLoading] = useState(true);
   const trackedOpenPuzzleId = useRef<string | null>(null);
   const trackedCompletedPuzzleId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (puzzleId !== currentPuzzleId) {
+    if (loadedRoutePuzzleId.current !== puzzleId) {
       loadPuzzle(initialPuzzle);
+      loadedRoutePuzzleId.current = puzzleId;
     }
     setLoading(false);
-  }, [puzzleId, currentPuzzleId, initialPuzzle, loadPuzzle]);
+  }, [puzzleId, initialPuzzle, loadPuzzle]);
 
   useEffect(() => {
     if (loading || currentPuzzleId !== puzzleId || trackedOpenPuzzleId.current === puzzleId) {
@@ -85,7 +87,7 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
     });
   }, [status, currentPuzzleId, puzzleId, initialPuzzle.difficulty, locale]);
 
-  if (loading) {
+  if (loading || !currentPuzzleId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -95,6 +97,7 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
       </div>
     );
   }
+  const displayPuzzleId = currentPuzzleId ?? puzzleId;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -114,7 +117,7 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
 
           <div className="text-sm">
             <span className="text-muted-foreground">{t('puzzle')}: </span>
-            <span className="font-semibold">{puzzleId}</span>
+            <span className="font-semibold">{displayPuzzleId}</span>
           </div>
         </div>
       </header>

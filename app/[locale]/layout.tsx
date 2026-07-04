@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { isLocale, locales } from '@/i18n';
-import { buildAbsoluteUrl } from '@/lib/site-url';
+import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { ThemeProvider } from "@/components/theme-provider";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { TypeformFeedbackButton } from "@/components/feedback/TypeformFeedbackButton";
@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
-  const canonical = buildAbsoluteUrl(`/${locale}`);
+  const canonical = buildLocalizedUrl(locale);
 
   return {
     title: t('title'),
@@ -50,12 +50,7 @@ export async function generateMetadata({
     },
     alternates: {
       canonical,
-      languages: {
-        ...Object.fromEntries(
-          locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}`)]),
-        ),
-        'x-default': buildAbsoluteUrl('/en'),
-      },
+      languages: buildLanguageAlternates(),
     },
   };
 }

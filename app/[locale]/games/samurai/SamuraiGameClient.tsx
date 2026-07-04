@@ -41,7 +41,9 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   const locale = useLocale();
 
   const { puzzleId, loadPuzzle, status } = useSudokuStore();
+  const loadedInitialPuzzleId = useRef<string | null>(null);
   const [prevPuzzleId, setPrevPuzzleId] = useState<string | null>(null);
+  const [isInitialPuzzleLoading, setIsInitialPuzzleLoading] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const trackedOpenPuzzleId = useRef<string | null>(null);
   const trackedCompletedPuzzleId = useRef<string | null>(null);
@@ -58,10 +60,12 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   }, [puzzleId, prevPuzzleId]);
 
   useEffect(() => {
-    if (puzzleId !== initialPuzzle.id) {
+    if (loadedInitialPuzzleId.current !== initialPuzzle.id) {
       loadPuzzle(initialPuzzle);
+      loadedInitialPuzzleId.current = initialPuzzle.id;
     }
-  }, [puzzleId, initialPuzzle, loadPuzzle]);
+    setIsInitialPuzzleLoading(false);
+  }, [initialPuzzle, loadPuzzle]);
 
   useEffect(() => {
     if (puzzleId !== initialPuzzle.id || trackedOpenPuzzleId.current === initialPuzzle.id) {
@@ -95,7 +99,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
     });
   }, [status, puzzleId, initialPuzzle.difficulty, initialPuzzle.id, locale]);
 
-  if (puzzleId !== initialPuzzle.id) {
+  if (isInitialPuzzleLoading || !puzzleId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { locales } from "@/i18n";
+import { buildLanguageAlternates } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface WhatIsSamuraiSudokuPageProps {
@@ -31,15 +31,7 @@ export async function generateMetadata({
       : ["what is samurai sudoku", "samurai sudoku rules", "five grid sudoku", "overlapping sudoku"],
     alternates: {
       canonical,
-      languages: {
-        ...Object.fromEntries(
-          locales.map((loc) => [
-            loc === "zh" ? "zh-CN" : "en-US",
-            buildAbsoluteUrl(`/${loc}${PATH}`),
-          ]),
-        ),
-        "x-default": buildAbsoluteUrl(`/en${PATH}`),
-      },
+      languages: buildLanguageAlternates(PATH),
     },
     openGraph: {
       title,

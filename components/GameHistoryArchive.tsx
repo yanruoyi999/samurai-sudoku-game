@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Difficulty } from '@/lib/sudoku/types';
+import { isPuzzleId } from '@/lib/puzzle-id';
 import {
   getUniquePuzzlesFromHistory,
   SUDOKU_STORAGE_EVENT,
@@ -107,48 +108,62 @@ export function GameHistoryArchive({
           </tr>
         </thead>
         <tbody>
-          {puzzles.map((puzzle) => (
-            <tr
-              key={puzzle.id}
-              className="border-b hover:bg-muted/50 transition-colors"
-            >
-              <td className="p-3">
-                <span className="font-medium">{puzzle.id}</span>
-              </td>
-              <td className="p-3">
-                <DifficultyBadge difficulty={puzzle.difficulty} tGame={tGame} />
-              </td>
-              <td className="p-3 text-muted-foreground">
-                {t('plays', { count: puzzle.playCount })}
-              </td>
-              <td className="p-3 text-muted-foreground">
-                {puzzle.bestTime ? formatTime(puzzle.bestTime) : '-'}
-              </td>
-              <td className="p-3 text-muted-foreground">
-                {formatDate(puzzle.lastPlayed)}
-              </td>
-              <td className="p-3">
-                <div className="flex gap-1 flex-wrap">
-                  {puzzle.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs px-2 py-1 bg-secondary rounded"
+          {puzzles.map((puzzle) => {
+            const isPublicPuzzle = isPuzzleId(puzzle.id);
+            const localOnlyLabel = locale === 'zh' ? '本地记录' : 'Local record';
+
+            return (
+              <tr
+                key={puzzle.id}
+                className="border-b hover:bg-muted/50 transition-colors"
+              >
+                <td className="p-3">
+                  <span className="font-medium">{puzzle.id}</span>
+                </td>
+                <td className="p-3">
+                  <DifficultyBadge difficulty={puzzle.difficulty} tGame={tGame} />
+                </td>
+                <td className="p-3 text-muted-foreground">
+                  {t('plays', { count: puzzle.playCount })}
+                </td>
+                <td className="p-3 text-muted-foreground">
+                  {puzzle.bestTime ? formatTime(puzzle.bestTime) : '-'}
+                </td>
+                <td className="p-3 text-muted-foreground">
+                  {formatDate(puzzle.lastPlayed)}
+                </td>
+                <td className="p-3">
+                  <div className="flex gap-1 flex-wrap">
+                    {puzzle.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs px-2 py-1 bg-secondary rounded"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td className="p-3 text-right">
+                  {isPublicPuzzle ? (
+                    <Link
+                      href={`/${locale}/games/samurai/${puzzle.id}`}
+                      className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors inline-block"
                     >
-                      {tag}
+                      {t('play')}
+                    </Link>
+                  ) : (
+                    <span
+                      className="inline-block rounded bg-muted px-3 py-1 text-sm text-muted-foreground"
+                      title={localOnlyLabel}
+                    >
+                      {localOnlyLabel}
                     </span>
-                  ))}
-                </div>
-              </td>
-              <td className="p-3 text-right">
-                <Link
-                  href={`/${locale}/games/samurai/${puzzle.id}`}
-                  className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors inline-block"
-                >
-                  {t('play')}
-                </Link>
-              </td>
-            </tr>
-          ))}
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

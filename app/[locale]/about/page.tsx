@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { locales } from "@/i18n";
+import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface AboutPageProps {
@@ -11,6 +11,7 @@ interface AboutPageProps {
 export async function generateMetadata({ params }: AboutPageProps): Promise<Metadata> {
   const { locale } = await params;
   const isZh = locale === "zh";
+  const canonical = buildLocalizedUrl(locale, "/about");
 
   return {
     title: isZh ? "关于武士数独" : "About Samurai Sudoku",
@@ -18,16 +19,8 @@ export async function generateMetadata({ params }: AboutPageProps): Promise<Meta
       ? "了解武士数独的题目标准、本地优先设计和每日逻辑训练目标。"
       : "Learn about Samurai Sudoku's puzzle standards, local-first design, and daily logic-training mission.",
     alternates: {
-      canonical: buildAbsoluteUrl(`/${locale}/about`),
-      languages: {
-        ...Object.fromEntries(
-          locales.map((locale) => [
-            locale === "zh" ? "zh-CN" : "en-US",
-            buildAbsoluteUrl(`/${locale}/about`),
-          ]),
-        ),
-        "x-default": buildAbsoluteUrl("/en/about"),
-      },
+      canonical,
+      languages: buildLanguageAlternates("/about"),
     },
   };
 }

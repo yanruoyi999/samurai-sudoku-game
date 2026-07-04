@@ -4,6 +4,7 @@ import Script from 'next/script';
 import { notFound } from 'next/navigation';
 
 import { locales, type Locale } from '@/i18n';
+import { buildLanguageAlternates } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { getPuzzle, getPuzzleIndex, getPuzzleMetadata } from '@/lib/puzzles';
 import type { Difficulty } from '@/lib/sudoku/types';
@@ -59,6 +60,7 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
       ? `在线游玩 ${puzzle.id} 武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示和进度记录。`
       : `Play the ${puzzle.id} Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, and progress tracking.`;
   const canonical = buildAbsoluteUrl(`/${locale}/games/samurai/${puzzle.id}`);
+  const path = `/games/samurai/${puzzle.id}`;
 
   return {
     title,
@@ -69,12 +71,7 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
         : ['samurai sudoku', 'online sudoku', `${puzzle.difficulty} sudoku`, 'daily sudoku', puzzle.id, ...puzzle.tags],
     alternates: {
       canonical,
-      languages: Object.fromEntries(
-        locales.map((loc) => [
-          loc === 'zh' ? 'zh-CN' : 'en-US',
-          buildAbsoluteUrl(`/${loc}/games/samurai/${puzzle.id}`),
-        ]),
-      ),
+      languages: buildLanguageAlternates(path),
     },
     openGraph: {
       title,

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Script from 'next/script';
 
-import { locales } from '@/i18n';
+import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
 interface HowToPlayPageProps {
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: HowToPlayPageProps): Promise<
   const description = isZh
     ? '武士数独完整规则与解题攻略：理解五个重叠 9×9 网格、从重叠区入手的技巧，以及从简单到 Evil 极难的进阶策略。'
     : 'A complete guide to Samurai Sudoku: the rules of the five overlapping 9×9 grids, how to use the shared overlap boxes, and step-by-step strategy from easy to evil.';
+  const canonical = buildLocalizedUrl(locale, PATH);
 
   return {
     title,
@@ -28,12 +29,10 @@ export async function generateMetadata({ params }: HowToPlayPageProps): Promise<
       ? ['武士数独规则', '武士数独怎么玩', '武士数独技巧', '武士数独攻略', '数独教程']
       : ['how to play samurai sudoku', 'samurai sudoku rules', 'samurai sudoku tips', 'samurai sudoku strategy', 'samurai sudoku guide'],
     alternates: {
-      canonical: `/${locale}${PATH}`,
-      languages: Object.fromEntries(
-        locales.map((loc) => [loc === 'zh' ? 'zh-CN' : 'en-US', `/${loc}${PATH}`])
-      ),
+      canonical,
+      languages: buildLanguageAlternates(PATH),
     },
-    openGraph: { title, description, url: `/${locale}${PATH}`, type: 'article' },
+    openGraph: { title, description, url: canonical, type: 'article' },
     twitter: { card: 'summary', title, description },
   };
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { locales } from "@/i18n";
+import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface ContactPageProps {
@@ -11,6 +11,7 @@ interface ContactPageProps {
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const { locale } = await params;
   const isZh = locale === "zh";
+  const canonical = buildLocalizedUrl(locale, "/contact");
 
   return {
     title: isZh ? "联系我们 - 武士数独" : "Contact Samurai Sudoku",
@@ -18,16 +19,8 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
       ? "报告武士数独题目问题、体验故障或隐私疑问。"
       : "Report a Samurai Sudoku puzzle issue, experience problem, or privacy question.",
     alternates: {
-      canonical: buildAbsoluteUrl(`/${locale}/contact`),
-      languages: {
-        ...Object.fromEntries(
-          locales.map((locale) => [
-            locale === "zh" ? "zh-CN" : "en-US",
-            buildAbsoluteUrl(`/${locale}/contact`),
-          ]),
-        ),
-        "x-default": buildAbsoluteUrl("/en/contact"),
-      },
+      canonical,
+      languages: buildLanguageAlternates("/contact"),
     },
   };
 }

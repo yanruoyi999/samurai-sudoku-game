@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 
-import { locales } from '@/i18n';
 import { getPuzzle, getPuzzleIndex } from '@/lib/puzzles';
-import { buildAbsoluteUrl } from '@/lib/site-url';
+import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import SamuraiGameClient from './SamuraiGameClient';
 
 interface SamuraiGamePageProps {
@@ -16,7 +15,7 @@ export async function generateMetadata({ params }: SamuraiGamePageProps): Promis
   const description = isZh
     ? '在线游玩武士数独，挑战五个互相重叠的 9x9 网格，支持候选标记、提示、计时和本地进度记录。'
     : 'Play Samurai Sudoku online across five overlapping 9x9 grids with notes, hints, timer, and local progress tracking.';
-  const canonical = buildAbsoluteUrl(`/${locale}/games/samurai`);
+  const canonical = buildLocalizedUrl(locale, '/games/samurai');
 
   return {
     title,
@@ -34,12 +33,7 @@ export async function generateMetadata({ params }: SamuraiGamePageProps): Promis
         ],
     alternates: {
       canonical,
-      languages: Object.fromEntries(
-        locales.map((loc) => [
-          loc === 'zh' ? 'zh-CN' : 'en-US',
-          buildAbsoluteUrl(`/${loc}/games/samurai`),
-        ]),
-      ),
+      languages: buildLanguageAlternates('/games/samurai'),
     },
     openGraph: {
       title,

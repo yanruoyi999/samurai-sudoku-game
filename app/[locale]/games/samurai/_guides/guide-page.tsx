@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { isLocale, locales, type Locale } from '@/i18n';
-import { buildAbsoluteUrl } from '@/lib/site-url';
+import { isLocale, type Locale } from '@/i18n';
+import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 
 type GuideKey = 'beginners' | 'strategy' | 'paperPractice' | 'difficulty';
 
@@ -299,19 +299,14 @@ export function generateGuideMetadata(guide: GuideKey, locale: string): Metadata
   const normalizedLocale = normalizeLocale(locale);
   const definition = guidePages[guide];
   const content = definition.content[normalizedLocale];
-  const canonical = buildAbsoluteUrl(localizedHref(normalizedLocale, definition.path));
+  const canonical = buildLocalizedUrl(normalizedLocale, definition.path);
 
   return {
     title: content.title,
     description: content.description,
     alternates: {
       canonical,
-      languages: {
-        ...Object.fromEntries(
-          locales.map((loc) => [loc, buildAbsoluteUrl(localizedHref(loc, definition.path))]),
-        ),
-        'x-default': buildAbsoluteUrl(localizedHref('en', definition.path)),
-      },
+      languages: buildLanguageAlternates(definition.path),
     },
     openGraph: {
       title: content.title,

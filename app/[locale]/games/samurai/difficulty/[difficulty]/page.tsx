@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { locales, type Locale } from '@/i18n';
+import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import type { Difficulty } from '@/lib/sudoku/types';
@@ -67,7 +68,8 @@ export async function generateMetadata({ params }: DifficultyPageProps): Promise
   const description = isZh
     ? `在线游玩 ${label}难度武士数独，共 ${count} 道题目，五个互锁 9×9 网格，支持候选标记、提示、计时与本地进度记录。`
     : `Play ${label.toLowerCase()} Samurai Sudoku online — ${count} puzzles across five interlocking 9×9 grids, with notes, hints, a timer, and local progress saving.`;
-  const canonical = `/${locale}/games/samurai/difficulty/${difficulty}`;
+  const path = `/games/samurai/difficulty/${difficulty}`;
+  const canonical = buildLocalizedUrl(locale, path);
 
   return {
     title,
@@ -77,12 +79,7 @@ export async function generateMetadata({ params }: DifficultyPageProps): Promise
       : [`${label.toLowerCase()} samurai sudoku`, 'samurai sudoku', 'online sudoku', 'daily sudoku', `${label.toLowerCase()} sudoku`],
     alternates: {
       canonical,
-      languages: Object.fromEntries(
-        locales.map((loc) => [
-          loc === 'zh' ? 'zh-CN' : 'en-US',
-          `/${loc}/games/samurai/difficulty/${difficulty}`,
-        ])
-      ),
+      languages: buildLanguageAlternates(path),
     },
     openGraph: { title, description, url: canonical, type: 'website' },
     twitter: { card: 'summary', title, description },
