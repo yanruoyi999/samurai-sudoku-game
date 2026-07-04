@@ -261,6 +261,9 @@ export default async function HomePage() {
           <Link href={`/${locale}/privacy`} className="text-primary hover:text-primary/80">
             {t('privacy')}
           </Link>
+          <Link href={`/${locale}/support`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '支持与订阅' : 'Support / Subscribe'}
+          </Link>
           <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '武士数独介绍' : 'What is Samurai Sudoku?'}
           </Link>

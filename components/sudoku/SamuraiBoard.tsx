@@ -6,37 +6,65 @@ import { useSudokuStore } from "@/stores/sudoku-store";
 import { GlobalPosition, globalToLocal, getAffectedCells, positionsEqual } from "@/lib/sudoku/coordinates";
 import { Cell } from "./Cell";
 
-export function SamuraiBoard() {
-  const t = useTranslations("game");
-  const {
-    board,
-    initial,
-    selectedCell,
-    showConflicts,
-    showCandidates,
-    engine,
-    candidates,
-    selectCell,
-    setCell,
-    clearCell,
-    toggleCandidate,
-    undo,
-    redo,
-  } = useSudokuStore();
+const BOARD_SIZE = 21;
 
-  const validCellKeys = useMemo(() => {
-    const keys = new Set<string>();
+// Origins (row, col) of the five overlapping 9x9 grids
+const SUBGRIDS: ReadonlyArray<readonly [number, number]> = [
+  [0, 0],
+  [0, 12],
+  [12, 0],
+  [12, 12],
+  [6, 6],
+];
 
-    for (let row = 0; row < 21; row++) {
-      for (let col = 0; col < 21; col++) {
-        if (globalToLocal({ row, col }).length > 0) {
-          keys.add(`${row},${col}`);
-        }
+const VALID_CELL_KEYS = (() => {
+  const keys = new Set<string>();
+
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
+      if (globalToLocal({ row, col }).length > 0) {
+        keys.add(`${row},${col}`);
       }
     }
+  }
 
-    return keys;
-  }, []);
+  return keys;
+})();
+
+const BOARD_CELLS: Array<{
+  key: string;
+  coordinateKey: string;
+  isValid: boolean;
+  position: GlobalPosition;
+}> = Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, idx) => {
+  const row = Math.floor(idx / BOARD_SIZE);
+  const col = idx % BOARD_SIZE;
+  const coordinateKey = `${row},${col}`;
+  const position: GlobalPosition = { row, col };
+
+  return {
+    key: `${row}-${col}`,
+    coordinateKey,
+    isValid: VALID_CELL_KEYS.has(coordinateKey),
+    position,
+  };
+});
+
+export function SamuraiBoard() {
+  const t = useTranslations("game");
+  const board = useSudokuStore((state) => state.board);
+  const initial = useSudokuStore((state) => state.initial);
+  const selectedCell = useSudokuStore((state) => state.selectedCell);
+  const showConflicts = useSudokuStore((state) => state.showConflicts);
+  const showCandidates = useSudokuStore((state) => state.showCandidates);
+  const engine = useSudokuStore((state) => state.engine);
+  const candidates = useSudokuStore((state) => state.candidates);
+  const selectCell = useSudokuStore((state) => state.selectCell);
+  const setCell = useSudokuStore((state) => state.setCell);
+  const clearCell = useSudokuStore((state) => state.clearCell);
+  const toggleCandidate = useSudokuStore((state) => state.toggleCandidate);
+  const undo = useSudokuStore((state) => state.undo);
+  const redo = useSudokuStore((state) => state.redo);
 
   const highlightedCellKeys = useMemo(() => {
     if (!selectedCell) return new Set<string>();
@@ -49,13 +77,30 @@ export function SamuraiBoard() {
     );
   }, [selectedCell]);
 
+  const conflictCellKeys = useMemo(() => {
+    if (!showConflicts || !engine) return new Set<string>();
+
+    const conflicts = new Set<string>();
+
+    for (const { coordinateKey, isValid, position } of BOARD_CELLS) {
+      if (!isValid) continue;
+
+      const value = board[position.row][position.col];
+      if (value !== 0 && engine.hasConflict(position, value)) {
+        conflicts.add(coordinateKey);
+      }
+    }
+
+    return conflicts;
+  }, [showConflicts, engine, board]);
+
   const findNextSelectableCell = useCallback(
     (start: GlobalPosition, delta: { row: number; col: number }) => {
       let row = start.row + delta.row;
       let col = start.col + delta.col;
 
-      while (row >= 0 && row < 21 && col >= 0 && col < 21) {
-        if (validCellKeys.has(`${row},${col}`) && !initial[row][col]) {
+      while (row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE) {
+        if (VALID_CELL_KEYS.has(`${row},${col}`) && !initial[row][col]) {
           return { row, col };
         }
 
@@ -65,7 +110,7 @@ export function SamuraiBoard() {
 
       return start;
     },
-    [initial, validCellKeys]
+    [initial]
   );
 
   // Handle cell click
@@ -160,44 +205,6 @@ export function SamuraiBoard() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Check if a cell should be highlighted
-  const isCellHighlighted = useCallback(
-    (pos: GlobalPosition): boolean => {
-      if (!selectedCell) return false;
-      if (positionsEqual(pos, selectedCell)) return false;
-
-      return highlightedCellKeys.has(`${pos.row},${pos.col}`);
-    },
-    [highlightedCellKeys, selectedCell]
-  );
-
-  // Check if a cell has a conflict
-  const hasCellConflict = useCallback(
-    (pos: GlobalPosition): boolean => {
-      if (!showConflicts || !engine) return false;
-
-      const value = board[pos.row][pos.col];
-      if (value === 0) return false;
-
-      return engine.hasConflict(pos, value);
-    },
-    [showConflicts, engine, board]
-  );
-
-  // Check if position is in a valid grid
-  const isValidPosition = useCallback((pos: GlobalPosition): boolean => {
-    return validCellKeys.has(`${pos.row},${pos.col}`);
-  }, [validCellKeys]);
-
-  // Origins (row, col) of the five overlapping 9x9 grids
-  const SUBGRIDS: Array<[number, number]> = [
-    [0, 0],
-    [0, 12],
-    [12, 0],
-    [12, 12],
-    [6, 6],
-  ];
-
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="relative w-full aspect-square">
@@ -207,38 +214,38 @@ export function SamuraiBoard() {
           gridTemplateColumns: 'repeat(21, minmax(0, 1fr))'
         }}
       >
-        {Array.from({ length: 21 * 21 }).map((_, idx) => {
-          const row = Math.floor(idx / 21);
-          const col = idx % 21;
-          const pos = { row, col };
+        {BOARD_CELLS.map(({ coordinateKey, isValid, key, position }) => {
+          const { row, col } = position;
 
           // Skip cells that don't belong to any grid
-          if (!isValidPosition(pos)) {
+          if (!isValid) {
             return (
               <div
-                key={`${row}-${col}`}
+                key={key}
                 className="bg-muted/50"
               />
             );
           }
 
           // Show user-entered candidate notes. Engine candidates are surfaced in the number pad.
-          const candidateNotes = candidates.get(`${row},${col}`);
+          const candidateNotes = candidates.get(coordinateKey);
 
           return (
             <Cell
-              key={`${row}-${col}`}
-              position={pos}
+              key={key}
+              position={position}
               value={board[row][col]}
               isInitial={initial[row][col]}
               isSelected={
                 selectedCell?.row === row && selectedCell?.col === col
               }
-              isHighlighted={isCellHighlighted(pos)}
-              hasConflict={hasCellConflict(pos)}
+              isHighlighted={
+                !!selectedCell && highlightedCellKeys.has(coordinateKey)
+              }
+              hasConflict={conflictCellKeys.has(coordinateKey)}
               candidates={candidateNotes}
               showCandidates={showCandidates}
-              onClick={() => handleCellClick(pos)}
+              onClick={() => handleCellClick(position)}
             />
           );
         })}

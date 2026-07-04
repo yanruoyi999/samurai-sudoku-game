@@ -195,9 +195,9 @@ async function SamuraiGamePageContent({
               <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 {isZh ? '每日免费在线谜题' : 'Free daily online puzzle'}
               </p>
-              <h2 className="text-3xl font-semibold tracking-tight">
+              <h1 className="text-3xl font-semibold tracking-tight">
                 {isZh ? '每日武士数独，五宫格重叠逻辑挑战' : 'Daily Samurai Sudoku for five-grid logic practice'}
-              </h2>
+              </h1>
               <p className="text-muted-foreground leading-relaxed">
                 {isZh
                   ? `今日题目 ${initialPuzzle.id} 是 ${initialPuzzle.difficulty} 难度。先检查四个重叠的 3x3 区域，再用候选数推进中心网格和四角网格。`

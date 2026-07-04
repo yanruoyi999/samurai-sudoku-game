@@ -8,17 +8,14 @@ export function StatsPanel() {
   const t = useTranslations('stats');
   const tGame = useTranslations('game');
 
-  const {
-    elapsedTime,
-    hintsUsed,
-    mistakesMade,
-    engine,
-    difficulty,
-    history
-  } = useSudokuStore();
+  const elapsedTime = useSudokuStore((state) => state.elapsedTime);
+  const hintsUsed = useSudokuStore((state) => state.hintsUsed);
+  const mistakesMade = useSudokuStore((state) => state.mistakesMade);
+  const engine = useSudokuStore((state) => state.engine);
+  const difficulty = useSudokuStore((state) => state.difficulty);
+  const movesCount = useSudokuStore((state) => state.history.length);
 
   const completion = engine?.getCompletionPercentage() || 0;
-  const movesCount = history.length;
 
   const getDifficultyTranslation = (diff: string) => {
     return tGame(`difficulty.${diff}`);

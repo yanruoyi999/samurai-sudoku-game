@@ -1,5 +1,8 @@
+import { memo } from "react";
 import { GlobalPosition } from "@/lib/sudoku/coordinates";
 import { cn } from "@/lib/utils";
+
+const CANDIDATE_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
 interface CellProps {
   position: GlobalPosition;
@@ -13,7 +16,32 @@ interface CellProps {
   onClick: () => void;
 }
 
-export function Cell({
+function areCandidateSetsEqual(a?: Set<number>, b?: Set<number>) {
+  if (a === b) return true;
+  if (!a || !b || a.size !== b.size) return false;
+
+  for (const value of a) {
+    if (!b.has(value)) return false;
+  }
+
+  return true;
+}
+
+function areCellPropsEqual(prev: CellProps, next: CellProps) {
+  return (
+    prev.position.row === next.position.row &&
+    prev.position.col === next.position.col &&
+    prev.value === next.value &&
+    prev.isInitial === next.isInitial &&
+    prev.isSelected === next.isSelected &&
+    prev.isHighlighted === next.isHighlighted &&
+    prev.hasConflict === next.hasConflict &&
+    prev.showCandidates === next.showCandidates &&
+    areCandidateSetsEqual(prev.candidates, next.candidates)
+  );
+}
+
+function CellComponent({
   position,
   value,
   isInitial,
@@ -66,7 +94,7 @@ export function Cell({
       ) : displayCandidates ? (
         // Display candidates in a 3x3 grid
         <div className="grid grid-cols-3 gap-0 w-full h-full p-px text-[clamp(0.3rem,1.1vw,0.65rem)] md:p-0.5">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+          {CANDIDATE_VALUES.map((num) => (
             <div
               key={num}
               className={cn(
@@ -84,3 +112,5 @@ export function Cell({
     </button>
   );
 }
+
+export const Cell = memo(CellComponent, areCellPropsEqual);

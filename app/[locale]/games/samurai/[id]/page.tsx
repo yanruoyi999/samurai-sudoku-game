@@ -18,6 +18,13 @@ const DIFFICULTY_LABELS: Record<Difficulty, { en: string; zh: string }> = {
 };
 const ALL_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
 
+function countGivenEntries(puzzle: NonNullable<Awaited<ReturnType<typeof getPuzzle>>>) {
+  return puzzle.grids.reduce(
+    (total, grid) => total + grid.initial.flat().filter((value) => value !== 0).length,
+    0,
+  );
+}
+
 interface PuzzlePageProps {
   params: Promise<{ locale: string; id: string }>;
 }
@@ -122,6 +129,10 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
   const isZh = resolvedParams.locale === 'zh';
   const difficulty = puzzle.difficulty;
   const diffLabel = isZh ? DIFFICULTY_LABELS[difficulty].zh : DIFFICULTY_LABELS[difficulty].en;
+  const givenEntries = countGivenEntries(puzzle);
+  const puzzleTitle = isZh
+    ? `${puzzle.id} ${diffLabel}在线武士数独`
+    : `${puzzle.id} ${diffLabel} Samurai Sudoku Online`;
 
   // Prev/next within the same difficulty for crawlable internal linking.
   const index = await getPuzzleIndex();
@@ -157,6 +168,70 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <PuzzleClient puzzleId={resolvedParams.id} initialPuzzle={puzzle} />
+
+      <section className="border-t bg-background px-4 py-10">
+        <div className="container mx-auto grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-4">
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              {isZh ? '每日可索引题目' : 'Daily indexed puzzle'}
+            </p>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              {puzzleTitle}
+            </h1>
+            <p className="leading-relaxed text-muted-foreground">
+              {isZh
+                ? `这是一道 ${diffLabel} 难度的每日武士数独，预计 ${puzzle.metadata.estimatedTime} 分钟完成。五个 9x9 网格共享四个重叠 3x3 区域，适合先从重叠宫和给定数密集区域开始。`
+                : `This is a ${diffLabel.toLowerCase()} daily Samurai Sudoku puzzle with an estimated solve time of ${puzzle.metadata.estimatedTime} minutes. The five 9x9 grids share four overlapping 3x3 boxes, so start with the overlap boxes and the densest given areas.`}
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-secondary/30 p-5">
+            <h2 className="font-semibold">
+              {isZh ? '题目事实' : 'Puzzle facts'}
+            </h2>
+            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <dt className="text-muted-foreground">{isZh ? '日期' : 'Date'}</dt>
+                <dd className="font-medium">{puzzle.id}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">{isZh ? '难度' : 'Difficulty'}</dt>
+                <dd className="font-medium">{diffLabel}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">{isZh ? '预计时间' : 'Estimated time'}</dt>
+                <dd className="font-medium">{puzzle.metadata.estimatedTime} {isZh ? '分钟' : 'min'}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">{isZh ? '给定数' : 'Given entries'}</dt>
+                <dd className="font-medium">{givenEntries}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div className="space-y-3 lg:col-span-2">
+            <h2 className="text-xl font-semibold">
+              {isZh ? '建议解题顺序' : 'Suggested solving path'}
+            </h2>
+            <p className="leading-relaxed text-muted-foreground">
+              {isZh
+                ? '先扫描中心网格与四角网格的重叠区域，再记录候选数。若某个数字同时限制中心网格和角落网格，优先处理它；如果卡住，可以回到同难度归档页继续练习相邻日期题。'
+                : 'Scan the four overlap boxes first, then add candidate notes. Prioritize numbers that constrain both the center grid and a corner grid; if the puzzle stalls, use the same-difficulty archive links below to practice nearby dates.'}
+            </p>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <Link href={`/${resolvedParams.locale}/games/samurai/how-to-play`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+                {isZh ? '规则说明' : 'How to play'}
+              </Link>
+              <Link href={`/${resolvedParams.locale}/games/samurai/strategy-guide`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+                {isZh ? '解题策略' : 'Strategy guide'}
+              </Link>
+              <Link href={`/${resolvedParams.locale}/games/samurai/archive`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
+                {isZh ? '全部题库' : 'Full archive'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Server-rendered internal links (crawlable; the game UI above is client-only) */}
       <footer className="border-t bg-muted/20">

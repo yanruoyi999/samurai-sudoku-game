@@ -5,6 +5,8 @@ import { useSudokuStore } from "@/stores/sudoku-store";
 import { trackInteraction } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
+const NUMBER_PAD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+
 interface NumberPadProps {
   onNumberSelect?: (num: number) => void;
   showCandidates?: boolean;
@@ -13,17 +15,15 @@ interface NumberPadProps {
 export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadProps) {
   const t = useTranslations("game");
   const tActions = useTranslations("actions");
-  const {
-    selectedCell,
-    setCell,
-    clearCell,
-    toggleCandidate,
-    engine,
-    candidates,
-    difficulty,
-    showCandidates: noteMode,
-    puzzleId,
-  } = useSudokuStore();
+  const selectedCell = useSudokuStore((state) => state.selectedCell);
+  const setCell = useSudokuStore((state) => state.setCell);
+  const clearCell = useSudokuStore((state) => state.clearCell);
+  const toggleCandidate = useSudokuStore((state) => state.toggleCandidate);
+  const engine = useSudokuStore((state) => state.engine);
+  const candidates = useSudokuStore((state) => state.candidates);
+  const noteMode = useSudokuStore((state) => state.showCandidates);
+  const difficulty = useSudokuStore((state) => state.difficulty);
+  const puzzleId = useSudokuStore((state) => state.puzzleId);
 
   const handleNumberClick = (num: number) => {
     if (selectedCell) {
@@ -80,7 +80,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
       <div className="max-w-md mx-auto">
         {/* Number Grid */}
         <div className="grid grid-cols-5 gap-2 mb-3">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => {
+          {NUMBER_PAD_VALUES.map((num) => {
             const isPossibleValue = possibleValues.has(num);
             const isMarkedCandidate = selectedCandidateMarks.has(num);
             const isDisabled = !selectedCell;

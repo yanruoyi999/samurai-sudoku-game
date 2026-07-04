@@ -25,26 +25,24 @@ export function ActionBar() {
   const tGame = useTranslations('game');
   const locale = useLocale();
 
-  const {
-    undo,
-    redo,
-    reset,
-    togglePause,
-    toggleShowConflicts,
-    toggleShowCandidates,
-    showConflicts,
-    showCandidates,
-    isPaused,
-    history,
-    historyIndex,
-    engine,
-    incrementHints,
-    selectCell,
-    loadPuzzle,
-    loadInProgressGame,
-    difficulty,
-    puzzleId,
-  } = useSudokuStore();
+  const undo = useSudokuStore((state) => state.undo);
+  const redo = useSudokuStore((state) => state.redo);
+  const reset = useSudokuStore((state) => state.reset);
+  const togglePause = useSudokuStore((state) => state.togglePause);
+  const toggleShowConflicts = useSudokuStore((state) => state.toggleShowConflicts);
+  const toggleShowCandidates = useSudokuStore((state) => state.toggleShowCandidates);
+  const showConflicts = useSudokuStore((state) => state.showConflicts);
+  const showCandidates = useSudokuStore((state) => state.showCandidates);
+  const isPaused = useSudokuStore((state) => state.isPaused);
+  const historyLength = useSudokuStore((state) => state.history.length);
+  const historyIndex = useSudokuStore((state) => state.historyIndex);
+  const engine = useSudokuStore((state) => state.engine);
+  const incrementHints = useSudokuStore((state) => state.incrementHints);
+  const selectCell = useSudokuStore((state) => state.selectCell);
+  const loadPuzzle = useSudokuStore((state) => state.loadPuzzle);
+  const loadInProgressGame = useSudokuStore((state) => state.loadInProgressGame);
+  const difficulty = useSudokuStore((state) => state.difficulty);
+  const puzzleId = useSudokuStore((state) => state.puzzleId);
 
   const [hintMessage, setHintMessage] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium');
@@ -81,7 +79,7 @@ export function ActionBar() {
   }, [difficulty]);
 
   const canUndo = historyIndex >= 0;
-  const canRedo = historyIndex < history.length - 1;
+  const canRedo = historyIndex < historyLength - 1;
 
   const handleReset = () => {
     if (confirm(t('resetConfirm') || "Are you sure you want to reset the puzzle? All progress will be lost.")) {

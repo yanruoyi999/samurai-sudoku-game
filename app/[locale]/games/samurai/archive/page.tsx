@@ -6,14 +6,27 @@ import { GameHistoryArchive } from '@/components/GameHistoryArchive';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 
+type ArchiveSearchParams = {
+  difficulty?: string;
+  page?: string;
+};
+
+const EMPTY_SEARCH_PARAMS: ArchiveSearchParams = {};
+
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<ArchiveSearchParams>;
 }): Promise<Metadata> {
-  const { locale } = await params;
+  const [{ locale }, resolvedSearchParams] = await Promise.all([
+    params,
+    searchParams ?? Promise.resolve(EMPTY_SEARCH_PARAMS),
+  ]);
   const isZh = locale === 'zh';
   const canonical = buildLocalizedUrl(locale, '/games/samurai/archive');
+  const hasFilteredView = Boolean(resolvedSearchParams.difficulty || resolvedSearchParams.page);
 
   return {
     title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
@@ -24,6 +37,12 @@ export async function generateMetadata({
       canonical,
       languages: buildLanguageAlternates('/games/samurai/archive'),
     },
+    robots: hasFilteredView
+      ? {
+          index: false,
+          follow: true,
+        }
+      : undefined,
     openGraph: {
       title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
       description: isZh
@@ -47,7 +66,7 @@ export default async function ArchivePage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ difficulty?: string; page?: string }>;
+  searchParams: Promise<ArchiveSearchParams>;
 }) {
   const [{ locale }, resolvedSearchParams] = await Promise.all([params, searchParams]);
   const t = await getTranslations('archive');
@@ -293,11 +312,13 @@ function DifficultyFilter({
   locale: string;
 }) {
   const isActive = difficulty === currentDifficulty || (!difficulty && !currentDifficulty);
-  const basePath = `/${locale}/games/samurai/archive`;
+  const href = difficulty
+    ? `/${locale}/games/samurai/difficulty/${difficulty}`
+    : `/${locale}/games/samurai/archive`;
 
   return (
     <Link
-      href={difficulty ? `${basePath}?difficulty=${difficulty}` : basePath}
+      href={href}
       className={`px-3 py-1 text-sm rounded border transition-colors ${
         isActive
           ? 'bg-primary text-primary-foreground'
