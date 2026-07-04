@@ -7,6 +7,7 @@ import type { Puzzle } from "@/lib/sudoku/types";
 import { TimerDisplay } from "@/components/sudoku/TimerDisplay";
 import { useLocale, useTranslations } from 'next-intl';
 import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
 import { trackInteraction } from "@/lib/analytics/events";
@@ -124,12 +125,22 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
       )}
 
       <header className="border-b px-4 py-3 flex items-center justify-between flex-wrap gap-2">
-        <Link
-          href={`/${locale}`}
-          className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground border px-3 py-1 rounded-md transition-colors"
-        >
-          {t('backToHome')}
-        </Link>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href={`/${locale}`}
+            className="inline-flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground border px-3 py-1 rounded-md transition-colors"
+          >
+            {t('backToHome')}
+          </Link>
+          <TrackedLink
+            href={`/${locale}/support`}
+            eventName="support_cta_click"
+            eventProperties={{ locale, location: 'game_header', puzzle_id: puzzleId }}
+            className="inline-flex items-center gap-2 text-xs md:text-sm text-primary border border-primary/40 px-3 py-1 rounded-md transition-colors hover:bg-primary/10"
+          >
+            {locale === 'zh' ? '支持/订阅' : 'Support'}
+          </TrackedLink>
+        </div>
 
         <div className="flex items-center gap-2 md:gap-4 flex-wrap">
           <LanguageSwitcher />
