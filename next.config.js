@@ -175,6 +175,46 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/daily',
+        destination: '/en/games/samurai',
+        permanent: true,
+      },
+      {
+        source: '/daily/:path*',
+        destination: '/en/games/samurai/:path*',
+        permanent: true,
+      },
+      {
+        source: '/today',
+        destination: '/en/games/samurai',
+        permanent: true,
+      },
+      {
+        source: '/today/:path*',
+        destination: '/en/games/samurai/:path*',
+        permanent: true,
+      },
+      {
+        source: '/en/daily',
+        destination: '/en/games/samurai',
+        permanent: true,
+      },
+      {
+        source: '/en/daily/:path*',
+        destination: '/en/games/samurai/:path*',
+        permanent: true,
+      },
+      {
+        source: '/zh/daily',
+        destination: '/zh/games/samurai',
+        permanent: true,
+      },
+      {
+        source: '/zh/daily/:path*',
+        destination: '/zh/games/samurai/:path*',
+        permanent: true,
+      },
+      {
         source: '/about',
         destination: '/en/about',
         permanent: true,

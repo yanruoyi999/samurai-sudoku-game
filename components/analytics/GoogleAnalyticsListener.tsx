@@ -2,7 +2,12 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { GA_TRACKING_ID, pageview } from "@/lib/gtag";
+import {
+  GA_READY_EVENT,
+  GA_TRACKING_ID,
+  isGoogleAnalyticsReady,
+  pageview,
+} from "@/lib/gtag";
 
 export function GoogleAnalyticsListener() {
   const pathname = usePathname();
@@ -13,7 +18,18 @@ export function GoogleAnalyticsListener() {
     if (!GA_TRACKING_ID || !pathname) return;
 
     const url = search ? `${pathname}?${search}` : pathname;
-    pageview(url);
+
+    const sendPageview = () => pageview(url);
+
+    if (isGoogleAnalyticsReady()) {
+      sendPageview();
+      return;
+    }
+
+    window.addEventListener(GA_READY_EVENT, sendPageview, { once: true });
+    return () => {
+      window.removeEventListener(GA_READY_EVENT, sendPageview);
+    };
   }, [pathname, search]);
 
   return null;

@@ -4,6 +4,8 @@ export const GA_TRACKING_ID =
   process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ||
   "";
 
+export const GA_READY_EVENT = "samurai-ga-ready";
+
 type GtagParams = {
   page_path: string;
 };
@@ -12,14 +14,30 @@ declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
+    __samuraiGaReady?: boolean;
   }
 }
 
 type EventParams = Record<string, string | number | boolean | undefined>;
 
-export const pageview = (url: string) => {
+function ensureGtagQueue() {
   if (!GA_TRACKING_ID || typeof window === "undefined") return;
-  if (typeof window.gtag !== "function") return;
+
+  window.dataLayer = window.dataLayer || [];
+
+  if (typeof window.gtag !== "function") {
+    window.gtag = (...args: unknown[]) => {
+      window.dataLayer?.push(args);
+    };
+  }
+}
+
+export const isGoogleAnalyticsReady = () =>
+  typeof window !== "undefined" && window.__samuraiGaReady === true;
+
+export const pageview = (url: string) => {
+  ensureGtagQueue();
+  if (!GA_TRACKING_ID || typeof window === "undefined" || typeof window.gtag !== "function") return;
 
   window.gtag("config", GA_TRACKING_ID, {
     page_path: url,
@@ -27,8 +45,8 @@ export const pageview = (url: string) => {
 };
 
 export const trackEvent = (action: string, params: EventParams = {}) => {
-  if (!GA_TRACKING_ID || typeof window === "undefined") return;
-  if (typeof window.gtag !== "function") return;
+  ensureGtagQueue();
+  if (!GA_TRACKING_ID || typeof window === "undefined" || typeof window.gtag !== "function") return;
 
   window.gtag("event", action, params);
 };
