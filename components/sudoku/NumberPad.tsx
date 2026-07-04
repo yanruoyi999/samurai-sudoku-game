@@ -1,7 +1,9 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useRef } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
+import { trackInteraction } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 const NUMBER_PAD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
@@ -14,6 +16,8 @@ interface NumberPadProps {
 export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadProps) {
   const t = useTranslations("game");
   const tActions = useTranslations("actions");
+  const locale = useLocale();
+  const puzzleId = useSudokuStore((state) => state.puzzleId);
   const selectedCell = useSudokuStore((state) => state.selectedCell);
   const setCell = useSudokuStore((state) => state.setCell);
   const clearCell = useSudokuStore((state) => state.clearCell);
@@ -21,6 +25,8 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const engine = useSudokuStore((state) => state.engine);
   const candidates = useSudokuStore((state) => state.candidates);
   const noteMode = useSudokuStore((state) => state.showCandidates);
+  const trackedFirstNumberPadInputPuzzleId = useRef<string | null>(null);
+  const trackedNumberWithoutCellPuzzleId = useRef<string | null>(null);
 
   const handleNumberClick = (num: number) => {
     if (selectedCell) {
@@ -29,6 +35,25 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
       } else {
         setCell(selectedCell, num);
       }
+
+      if (puzzleId && trackedFirstNumberPadInputPuzzleId.current !== puzzleId) {
+        trackedFirstNumberPadInputPuzzleId.current = puzzleId;
+        trackInteraction("sudoku_first_number_input", {
+          locale,
+          puzzle_id: puzzleId,
+          value: num,
+          note_mode: noteMode,
+          source: "number_pad",
+        });
+      }
+    } else if (puzzleId && trackedNumberWithoutCellPuzzleId.current !== puzzleId) {
+      trackedNumberWithoutCellPuzzleId.current = puzzleId;
+      trackInteraction("sudoku_number_without_cell", {
+        locale,
+        puzzle_id: puzzleId,
+        value: num,
+        source: "number_pad",
+      });
     }
 
     if (onNumberSelect) {
