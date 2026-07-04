@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 
@@ -75,7 +76,12 @@ export default async function SupportPage({ params }: SupportPageProps) {
   const { locale } = await params;
   const isZh = locale === 'zh';
   const supportHref = buildSupportHref(locale);
-  const isExternalSupportHref = supportHref.startsWith('http');
+  const supportDestination = supportHref || `/${locale}/contact`;
+  const supportSource = supportHref.startsWith('http')
+    ? 'typeform'
+    : supportHref.startsWith('mailto:')
+    ? 'email'
+    : 'contact_page';
   const pageUrl = buildAbsoluteUrl(`/${locale}${PATH}`);
 
   const benefits = isZh
@@ -187,17 +193,22 @@ export default async function SupportPage({ params }: SupportPageProps) {
             : 'We are evaluating two monetization paths: compliant ads and a lightweight subscription. Your feedback decides whether we build ad-free play, printable packs, advanced stats, or more hard puzzle archives first.'}
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href={supportHref || `/${locale}/contact`}
-            target={isExternalSupportHref ? '_blank' : undefined}
-            rel={isExternalSupportHref ? 'noopener noreferrer' : undefined}
+          <TrackedLink
+            href={supportDestination}
+            eventName="support_waitlist_click"
+            eventProperties={{ locale, location: 'support_hero', destination: supportSource }}
             className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
           >
             {isZh ? '加入支持者候补名单' : 'Join the supporter waitlist'}
-          </a>
-          <Link href={`/${locale}/games/samurai`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
+          </TrackedLink>
+          <TrackedLink
+            href={`/${locale}/games/samurai`}
+            eventName="support_continue_play_click"
+            eventProperties={{ locale, location: 'support_hero' }}
+            className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10"
+          >
             {isZh ? '继续玩今日题目' : "Play today's puzzle"}
-          </Link>
+          </TrackedLink>
         </div>
       </section>
 
