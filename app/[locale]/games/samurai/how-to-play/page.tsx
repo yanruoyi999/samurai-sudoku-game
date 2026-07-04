@@ -156,7 +156,10 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
           <Link href={`/${locale}/games/samurai`} className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">
             {isZh ? '开始今日谜题' : "Play today's puzzle"}
           </Link>
-          <Link href={`/${locale}/games/samurai/archive`} className="px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition-colors">
+          <Link href={`/${locale}/games/samurai/difficulty/easy`} className="px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition-colors">
+            {isZh ? '从简单题开始' : 'Start with Easy'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/archive`} className="px-6 py-3 border border-muted-foreground/30 rounded-lg font-medium hover:bg-accent transition-colors">
             {isZh ? '浏览题库' : 'Browse the archive'}
           </Link>
         </div>
@@ -172,12 +175,30 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
 
         <section className="mt-12">
           <h2 className="text-2xl font-semibold">{isZh ? '解题策略（分步）' : 'Solving strategy (step by step)'}</h2>
-          <div className="mt-4 space-y-5">
-            {steps.map((s) => (
-              <div key={s.h}>
-                <h3 className="text-lg font-medium text-foreground">{s.h}</h3>
-                <p className="mt-1 text-muted-foreground leading-relaxed">{s.body.join(' ')}</p>
-              </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {isZh
+              ? '每个步骤标题都可以点击展开/收起；读完第一步后可直接进入简单题练习重叠区。'
+              : 'Each step heading can be tapped to expand or collapse. After the first step, jump into an Easy puzzle to practice overlap zones.'}
+          </p>
+          <div className="mt-4 space-y-4">
+            {steps.map((s, index) => (
+              <details key={s.h} open className="group rounded-xl border bg-background p-4 transition hover:border-primary/60">
+                <summary className="cursor-pointer list-none text-lg font-medium text-foreground flex items-center justify-between gap-3">
+                  <span>{s.h}</span>
+                  <span className="text-primary transition-transform group-open:rotate-90" aria-hidden>➤</span>
+                </summary>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{s.body.join(' ')}</p>
+                {index === 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link href={`/${locale}/games/samurai/difficulty/easy`} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+                      {isZh ? '练习重叠区：简单题' : 'Practice overlap zones: Easy'}
+                    </Link>
+                    <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="rounded-md border px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
+                      {isZh ? '再看布局图解' : 'View the layout diagram'}
+                    </Link>
+                  </div>
+                )}
+              </details>
             ))}
           </div>
         </section>
@@ -193,6 +214,23 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
                 {label}
               </Link>
             ))}
+          </div>
+        </section>
+
+        <section className="mt-12 rounded-2xl border bg-primary/5 p-6 text-center">
+          <h2 className="text-2xl font-semibold">{isZh ? '准备开始了吗？' : 'Ready to try it?'}</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+            {isZh
+              ? '规则看完后不要停在教程页。先选简单题，把重叠区作为第一步练习。'
+              : 'Do not stop on the guide page. Start with Easy and use the overlap boxes as your first move.'}
+          </p>
+          <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href={`/${locale}/games/samurai/difficulty/easy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
+              {isZh ? '从简单题开始' : 'Start with Easy'}
+            </Link>
+            <Link href={`/${locale}/games/samurai`} className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90">
+              {isZh ? '开始今日谜题' : "Play today's puzzle"}
+            </Link>
           </div>
         </section>
 
