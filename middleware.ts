@@ -38,6 +38,6 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/', '/(zh|en)/:path*']
+  // Match internationalized pathnames and crawl-entry files that need canonical host redirects.
+  matcher: ['/', '/(zh|en)/:path*', '/sitemap.xml', '/robots.txt', '/ads.txt', '/llms.txt']
 };
