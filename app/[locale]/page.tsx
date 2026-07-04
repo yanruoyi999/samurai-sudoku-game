@@ -58,6 +58,30 @@ export default async function HomePage() {
     },
   ];
 
+  const quickStartLinks = [
+    {
+      href: `/${locale}/games/samurai/what-is-samurai-sudoku`,
+      title: locale === 'zh' ? '先看规则图解' : 'Learn the rules first',
+      body: locale === 'zh'
+        ? '用 30 秒看懂五个 9×9 网格和重叠区。'
+        : 'Understand the five 9×9 grids and overlap zones in 30 seconds.',
+    },
+    {
+      href: `/${locale}/games/samurai`,
+      title: locale === 'zh' ? '直接开始今日谜题' : "Play today's puzzle",
+      body: locale === 'zh'
+        ? '已经知道规则？从今日挑战开始。'
+        : 'Already know the rules? Start the daily challenge.',
+    },
+    {
+      href: `/${locale}/games/samurai/difficulty/easy`,
+      title: locale === 'zh' ? '从简单题开始' : 'Start with Easy',
+      body: locale === 'zh'
+        ? '第一次玩武士数独，建议先用简单题练重叠区。'
+        : 'New to Samurai Sudoku? Practice overlap logic on easier boards.',
+    },
+  ];
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -77,18 +101,26 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-        <p className="text-sm md:text-base font-medium tracking-[0.25em] uppercase text-primary">
-          {locale === 'zh' ? '每日逻辑挑战' : 'Daily logic challenge'}
-        </p>
-        <h1 className="font-display text-6xl md:text-8xl font-semibold tracking-tight leading-[0.95]">
-          Samurai Sudoku
-        </h1>
+          <Link
+            href={`/${locale}/games/samurai`}
+            className="group inline-block rounded-2xl px-3 py-2 transition hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            aria-label={locale === 'zh' ? '打开今日武士数独谜题' : "Open today's Samurai Sudoku puzzle"}
+          >
+            <p className="text-sm md:text-base font-medium tracking-[0.25em] uppercase text-primary">
+              {locale === 'zh' ? '每日逻辑挑战' : 'Daily logic challenge'}
+            </p>
+            <h1 className="mt-3 font-display text-6xl md:text-8xl font-semibold tracking-tight leading-[0.95] group-hover:text-primary transition-colors">
+              Samurai Sudoku
+            </h1>
+            <p className="mt-5 text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
+              {t('description')}
+            </p>
+            <span className="mt-4 inline-flex text-sm font-medium text-primary opacity-80 group-hover:opacity-100">
+              {locale === 'zh' ? '点击标题即可开始今日谜题 →' : "Tap the title to start today's puzzle →"}
+            </span>
+          </Link>
 
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-            {t('description')}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Link
               href={`/${locale}/games/samurai`}
               className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
@@ -104,8 +136,26 @@ export default async function HomePage() {
             </Link>
           </div>
 
+          <section className="pt-8 text-left" aria-labelledby="quick-start-heading">
+            <h2 id="quick-start-heading" className="text-2xl md:text-3xl font-semibold text-center">
+              {locale === 'zh' ? '你想先做什么？' : 'What would you like to do first?'}
+            </h2>
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              {quickStartLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-xl border bg-background/90 p-5 shadow-sm transition hover:border-primary hover:bg-primary/5"
+                >
+                  <h3 className="text-lg font-semibold text-primary">{link.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{link.body}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
           {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
             <FeatureCard
               icon="📱"
               title={t('features.offline')}
@@ -240,6 +290,25 @@ export default async function HomePage() {
                   </p>
                 </details>
               ))}
+            </div>
+          </section>
+
+          <section className="mt-12 rounded-2xl border bg-primary/5 p-6 text-center">
+            <h2 className="text-2xl md:text-3xl font-semibold">
+              {locale === 'zh' ? '读完规则，下一步开始一局。' : 'Ready after reading? Start a puzzle next.'}
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+              {locale === 'zh'
+                ? '如果是第一次玩，建议先点简单题；如果已经了解规则，可以直接进入今日谜题。'
+                : 'If this is your first time, start with Easy. If you already know the rules, jump into today’s puzzle.'}
+            </p>
+            <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link href={`/${locale}/games/samurai/difficulty/easy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
+                {locale === 'zh' ? '先做简单题' : 'Start with Easy'}
+              </Link>
+              <Link href={`/${locale}/games/samurai`} className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90">
+                {locale === 'zh' ? '开始今日谜题' : "Play today's puzzle"}
+              </Link>
             </div>
           </section>
         </div>
