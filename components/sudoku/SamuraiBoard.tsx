@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { GlobalPosition, globalToLocal, getAffectedCells, positionsEqual } from "@/lib/sudoku/coordinates";
 import { trackInteraction } from "@/lib/analytics/events";
+import { trackInteractionOncePerPuzzle } from "@/lib/analytics/once";
 import { Cell } from "./Cell";
 
 const BOARD_SIZE = 21;
@@ -69,7 +70,6 @@ export function SamuraiBoard() {
   const undo = useSudokuStore((state) => state.undo);
   const redo = useSudokuStore((state) => state.redo);
   const trackedFirstSelectionPuzzleId = useRef<string | null>(null);
-  const trackedFirstKeyboardInputPuzzleId = useRef<string | null>(null);
 
   const highlightedCellKeys = useMemo(() => {
     if (!selectedCell) return new Set<string>();
@@ -136,12 +136,8 @@ export function SamuraiBoard() {
 
   const trackFirstKeyboardInput = useCallback(
     (value: number) => {
-      if (!puzzleId || trackedFirstKeyboardInputPuzzleId.current === puzzleId) return;
-
-      trackedFirstKeyboardInputPuzzleId.current = puzzleId;
-      trackInteraction("sudoku_first_number_input", {
+      trackInteractionOncePerPuzzle("sudoku_first_number_input", puzzleId, {
         locale,
-        puzzle_id: puzzleId,
         value,
         note_mode: showCandidates,
         source: "keyboard",

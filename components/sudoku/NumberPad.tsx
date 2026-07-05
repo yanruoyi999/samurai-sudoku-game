@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { trackInteraction } from "@/lib/analytics/events";
+import { trackInteractionOncePerPuzzle } from "@/lib/analytics/once";
 import { cn } from "@/lib/utils";
 
 const NUMBER_PAD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
@@ -26,18 +26,12 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const noteMode = useSudokuStore((state) => state.showCandidates);
   const difficulty = useSudokuStore((state) => state.difficulty);
   const puzzleId = useSudokuStore((state) => state.puzzleId);
-  const trackedFirstNumberPadInputPuzzleId = useRef<string | null>(null);
-  const trackedNumberWithoutCellPuzzleId = useRef<string | null>(null);
 
   const trackFirstNumberPadInput = (num: number) => {
-    if (!puzzleId || trackedFirstNumberPadInputPuzzleId.current === puzzleId) return;
-
-    trackedFirstNumberPadInputPuzzleId.current = puzzleId;
-    trackInteraction("sudoku_first_number_input", {
+    trackInteractionOncePerPuzzle("sudoku_first_number_input", puzzleId, {
       difficulty: difficulty ?? "",
       locale,
       note_mode: noteMode,
-      puzzle_id: puzzleId,
       source: "number_pad",
       value: num,
     });
@@ -63,15 +57,6 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
         });
       }
       trackFirstNumberPadInput(num);
-    } else if (puzzleId && trackedNumberWithoutCellPuzzleId.current !== puzzleId) {
-      trackedNumberWithoutCellPuzzleId.current = puzzleId;
-      trackInteraction("sudoku_number_without_cell", {
-        difficulty: difficulty ?? "",
-        locale,
-        puzzle_id: puzzleId,
-        source: "number_pad",
-        value: num,
-      });
     }
 
     if (onNumberSelect) {
@@ -117,7 +102,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
               <button
                 key={num}
                 onClick={() => handleNumberClick(num)}
-                aria-disabled={isDisabled || undefined}
+                disabled={isDisabled}
                 aria-label={
                   noteMode
                     ? `${tActions('candidates')} ${num}`

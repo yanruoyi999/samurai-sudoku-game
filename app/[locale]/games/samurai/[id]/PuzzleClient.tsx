@@ -41,7 +41,9 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
   const tArchive = useTranslations('archive');
   const locale = useLocale();
 
-  const { puzzleId: currentPuzzleId, loadPuzzle, status } = useSudokuStore();
+  const currentPuzzleId = useSudokuStore((state) => state.puzzleId);
+  const loadPuzzle = useSudokuStore((state) => state.loadPuzzle);
+  const status = useSudokuStore((state) => state.status);
   const loadedRoutePuzzleId = useRef<string | null>(null);
   const [loading, setLoading] = useState(true);
   const trackedOpenPuzzleId = useRef<string | null>(null);
@@ -85,12 +87,6 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
     }
 
     trackedCompletedPuzzleId.current = puzzleId;
-    trackInteraction("sudoku_puzzle_complete", {
-      difficulty: initialPuzzle.difficulty,
-      locale,
-      puzzle_id: puzzleId,
-      source: "archive",
-    });
     trackInteraction("sudoku_puzzle_completed", {
       difficulty: initialPuzzle.difficulty,
       locale,

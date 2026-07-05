@@ -380,17 +380,21 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         // Update engine
         engine.setValue(pos, value);
 
-        // Add to history
+        const newBoard = engine.getBoard();
+        const newCandidates = removePlacedValueFromCandidates(candidates, pos, value);
+        const candidatesBefore = serializeCandidates(candidates);
+        const candidatesAfter = serializeCandidates(newCandidates);
+
+        // Add to history after candidate changes are known so undo restores notes exactly.
         const newHistory = history.slice(0, historyIndex + 1);
         newHistory.push({
           position: pos,
           oldValue,
           newValue: value,
           timestamp: Date.now(),
+          candidatesBefore,
+          candidatesAfter,
         });
-
-        const newBoard = engine.getBoard();
-        const newCandidates = removePlacedValueFromCandidates(candidates, pos, value);
 
         set({
           board: newBoard,
@@ -433,7 +437,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Clear cell
       clearCell: (pos) => {
-        const { engine, candidates, isPaused, status } = get();
+        const { engine, candidates, history, historyIndex, isPaused, status } = get();
         if (isPaused || status === 'completed') return;
         if (!engine || engine.isInitial(pos)) return;
 
@@ -444,7 +448,20 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           if (!candidates.has(key)) return;
           const newCandidates = new Map(candidates);
           newCandidates.delete(key);
-          set({ candidates: newCandidates });
+          const newHistory = history.slice(0, historyIndex + 1);
+          newHistory.push({
+            position: pos,
+            oldValue: 0,
+            newValue: 0,
+            timestamp: Date.now(),
+            candidatesBefore: serializeCandidates(candidates),
+            candidatesAfter: serializeCandidates(newCandidates),
+          });
+          set({
+            candidates: newCandidates,
+            history: newHistory,
+            historyIndex: newHistory.length - 1,
+          });
           saveCurrentProgress(get());
           return;
         }
@@ -459,7 +476,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
       // Toggle candidate
       toggleCandidate: (pos, value) => {
-        const { candidates, engine, isPaused, status } = get();
+        const { candidates, engine, history, historyIndex, isPaused, status } = get();
         if (isPaused || status === 'completed') return;
         if (!engine || engine.isInitial(pos) || engine.getValue(pos) !== 0) return;
         if (!Number.isInteger(value) || value < 1 || value > 9) return;
@@ -480,7 +497,21 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           newCandidates.delete(key);
         }
 
-        set({ candidates: newCandidates });
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push({
+          position: pos,
+          oldValue: 0,
+          newValue: 0,
+          timestamp: Date.now(),
+          candidatesBefore: serializeCandidates(candidates),
+          candidatesAfter: serializeCandidates(newCandidates),
+        });
+
+        set({
+          candidates: newCandidates,
+          history: newHistory,
+          historyIndex: newHistory.length - 1,
+        });
         saveCurrentProgress(get());
       },
 
@@ -493,11 +524,13 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
         const move = history[historyIndex];
         engine.setValue(move.position, move.oldValue);
-        const newCandidates = removePlacedValueFromCandidates(
-          candidates,
-          move.position,
-          move.oldValue
-        );
+        const newCandidates = move.candidatesBefore
+          ? deserializeCandidates(move.candidatesBefore)
+          : removePlacedValueFromCandidates(
+              candidates,
+              move.position,
+              move.oldValue
+            );
 
         set({
           board: engine.getBoard(),
@@ -516,11 +549,13 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
 
         const move = history[historyIndex + 1];
         engine.setValue(move.position, move.newValue);
-        const newCandidates = removePlacedValueFromCandidates(
-          candidates,
-          move.position,
-          move.newValue
-        );
+        const newCandidates = move.candidatesAfter
+          ? deserializeCandidates(move.candidatesAfter)
+          : removePlacedValueFromCandidates(
+              candidates,
+              move.position,
+              move.newValue
+            );
 
         set({
           board: engine.getBoard(),

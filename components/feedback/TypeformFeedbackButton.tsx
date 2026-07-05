@@ -58,7 +58,9 @@ interface TypeformFeedbackButtonProps {
 
 export function TypeformFeedbackButton({ locale }: TypeformFeedbackButtonProps) {
   const pathname = usePathname();
-  const { difficulty, puzzleId, status } = useSudokuStore();
+  const difficulty = useSudokuStore((state) => state.difficulty);
+  const puzzleId = useSudokuStore((state) => state.puzzleId);
+  const status = useSudokuStore((state) => state.status);
   const isZh = locale === "zh";
   const routePuzzleId = pathname?.match(/\/games\/samurai\/(\d{4}-\d{2}-\d{2})/)?.[1];
   const effectivePuzzleId = puzzleId ?? routePuzzleId;

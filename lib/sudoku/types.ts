@@ -56,6 +56,8 @@ export interface Move {
   oldValue: number;
   newValue: number;
   timestamp: number;
+  candidatesBefore?: Array<[string, number[]]>;
+  candidatesAfter?: Array<[string, number[]]>;
 }
 
 /**

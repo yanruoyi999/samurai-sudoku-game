@@ -10,6 +10,7 @@ import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import type { Difficulty } from '@/lib/sudoku/types';
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
+const MAX_VISIBLE_PUZZLES = 48;
 
 interface DifficultyPageProps {
   params: Promise<{ locale: string; difficulty: string }>;
@@ -102,6 +103,8 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
   const puzzles = index.puzzles
     .filter((p) => p.difficulty === difficulty)
     .sort((a, b) => (a.id < b.id ? 1 : -1));
+  const visiblePuzzles = puzzles.slice(0, MAX_VISIBLE_PUZZLES);
+  const hasMorePuzzles = puzzles.length > visiblePuzzles.length;
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -121,7 +124,7 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: puzzles.length,
-      itemListElement: puzzles.slice(0, 100).map((p, i) => ({
+      itemListElement: visiblePuzzles.map((p, i) => ({
         '@type': 'ListItem',
         position: i + 1,
         url: buildAbsoluteUrl(`/${locale}/games/samurai/${p.id}`),
@@ -193,25 +196,49 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <h2 className="text-xl font-semibold mb-4">
-          {isZh ? `全部 ${puzzles.length} 道${label}题目` : `All ${puzzles.length} ${label.toLowerCase()} puzzles`}
+          {isZh
+            ? `最新 ${visiblePuzzles.length} 道${label}题目`
+            : `Latest ${visiblePuzzles.length} ${label.toLowerCase()} puzzles`}
         </h2>
 
         {puzzles.length === 0 ? (
           <p className="text-muted-foreground">{isZh ? '暂无题目。' : 'No puzzles yet.'}</p>
         ) : (
-          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {puzzles.map((p) => (
-              <li key={p.id}>
+          <>
+            <p className="mb-4 text-sm text-muted-foreground">
+              {isZh
+                ? `本页聚焦最近题目，完整 ${puzzles.length} 道${label}题目可在题库归档中筛选。`
+                : `This page focuses on recent puzzles. Filter the full archive for all ${puzzles.length} ${label.toLowerCase()} puzzles.`}
+            </p>
+            <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {visiblePuzzles.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    href={`/${locale}/games/samurai/${p.id}`}
+                    className="flex items-center justify-between rounded-lg border px-4 py-3 hover:border-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <span className="font-medium tabular">{p.id}</span>
+                    <span className="text-sm text-muted-foreground">{p.estimatedTime} {isZh ? '分钟' : 'min'}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {hasMorePuzzles && (
+              <div className="mt-6 rounded-lg border bg-secondary/30 p-4 text-sm text-muted-foreground">
+                <p>
+                  {isZh
+                    ? `还有 ${puzzles.length - visiblePuzzles.length} 道较早的${label}题目。`
+                    : `${puzzles.length - visiblePuzzles.length} older ${label.toLowerCase()} puzzles are still available.`}
+                </p>
                 <Link
-                  href={`/${locale}/games/samurai/${p.id}`}
-                  className="flex items-center justify-between rounded-lg border px-4 py-3 hover:border-primary hover:bg-primary/5 transition-colors"
+                  href={`/${locale}/games/samurai/archive?difficulty=${difficulty}`}
+                  className="mt-3 inline-flex rounded-md border px-3 py-2 font-medium text-primary hover:bg-primary/10"
                 >
-                  <span className="font-medium tabular">{p.id}</span>
-                  <span className="text-sm text-muted-foreground">{p.estimatedTime} {isZh ? '分钟' : 'min'}</span>
+                  {isZh ? '在完整题库中筛选' : 'Filter the full archive'}
                 </Link>
-              </li>
-            ))}
-          </ul>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

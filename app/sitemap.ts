@@ -3,6 +3,41 @@ import type { MetadataRoute } from 'next';
 import { locales } from '@/i18n';
 import { getPuzzleIndex } from '@/lib/puzzles';
 import { buildAbsoluteUrl } from '@/lib/site-url';
+import type { Difficulty, PuzzleMetadata } from '@/lib/sudoku/types';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const HIGH_INTENT_DIFFICULTIES = new Set<Difficulty>(['hard', 'evil']);
+
+function getPuzzleAgeDays(puzzleId: string, referenceDate: Date) {
+  const puzzleDate = new Date(`${puzzleId}T00:00:00.000Z`);
+  if (Number.isNaN(puzzleDate.getTime())) return Number.POSITIVE_INFINITY;
+
+  return Math.max(0, Math.floor((referenceDate.getTime() - puzzleDate.getTime()) / DAY_MS));
+}
+
+function getPuzzleSitemapHints(puzzle: PuzzleMetadata, referenceDate: Date) {
+  const ageDays = getPuzzleAgeDays(puzzle.id, referenceDate);
+  const isHighIntent = HIGH_INTENT_DIFFICULTIES.has(puzzle.difficulty);
+
+  if (ageDays <= 14) {
+    return {
+      changeFrequency: 'weekly' as const,
+      priority: isHighIntent ? 0.72 : 0.68,
+    };
+  }
+
+  if (ageDays <= 90) {
+    return {
+      changeFrequency: 'monthly' as const,
+      priority: isHighIntent ? 0.58 : 0.54,
+    };
+  }
+
+  return {
+    changeFrequency: 'yearly' as const,
+    priority: isHighIntent ? 0.44 : 0.4,
+  };
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const difficulties = ['easy', 'medium', 'hard', 'evil'];
@@ -51,11 +86,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     for (const puzzle of index.puzzles) {
       const path = `/games/samurai/${puzzle.id}`;
+      const hints = getPuzzleSitemapHints(puzzle, indexLastModified);
       entries.push({
         url: buildAbsoluteUrl(`/${locale}${path}`),
         lastModified: new Date(`${puzzle.id}T00:00:00.000Z`),
-        changeFrequency: 'monthly',
-        priority: puzzle.difficulty === 'evil' || puzzle.difficulty === 'hard' ? 0.82 : 0.78,
+        changeFrequency: hints.changeFrequency,
+        priority: hints.priority,
         alternates: {
           languages: {
             ...Object.fromEntries(
