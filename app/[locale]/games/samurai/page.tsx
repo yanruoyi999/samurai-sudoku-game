@@ -234,6 +234,9 @@ async function SamuraiGamePageContent({
                 <Link href={`/${locale}/games/samurai/archive`} className="text-primary hover:underline">
                   {isZh ? '全部武士数独题库' : 'Full Samurai Sudoku archive'}
                 </Link>
+                <Link href={`/${locale}/games/minesweeper`} className="text-primary hover:underline">
+                  {isZh ? '在线扫雷' : 'Minesweeper Online'}
+                </Link>
               </div>
             </div>
           </div>

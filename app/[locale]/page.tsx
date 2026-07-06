@@ -2,6 +2,8 @@ import Link from "next/link";
 import Script from "next/script";
 import { getLocale, getTranslations, getMessages } from 'next-intl/server';
 
+import { TrackedLink } from "@/components/analytics/TrackedLink";
+
 interface HomeMessages {
   seoSection?: {
     pointHeading?: string;
@@ -110,6 +112,25 @@ export default async function HomePage() {
     },
   ];
 
+  const logicGameLinks = [
+    {
+      href: `/${locale}/games/samurai`,
+      title: 'Samurai Sudoku',
+      body: locale === 'zh'
+        ? '站点主入口：每日五宫格重叠数独、题库、难度页和纸笔打印。'
+        : 'The main game hub: daily five-grid Sudoku, archive, difficulty pages, and printable practice.',
+      game: 'samurai_sudoku',
+    },
+    {
+      href: `/${locale}/games/minesweeper`,
+      title: locale === 'zh' ? '在线扫雷' : 'Minesweeper Online',
+      body: locale === 'zh'
+        ? '新增高频逻辑游戏实验：三种经典难度、计时、旗帜模式和第一步安全。'
+        : 'A new high-frequency logic game test with classic boards, timer, flag mode, and a safe first click.',
+      game: 'minesweeper',
+    },
+  ];
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -200,6 +221,31 @@ export default async function HomePage() {
               description={t('features.progressDesc')}
             />
           </div>
+
+          <section className="mt-20 space-y-6 text-left">
+            <h2 className="text-3xl md:text-4xl font-semibold text-foreground text-center">
+              {locale === 'zh' ? '更多高频逻辑游戏' : 'More high-frequency logic games'}
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center">
+              {locale === 'zh'
+                ? '保留武士数独作为核心，同时测试扫雷这类更高频、低门槛的益智游戏入口。'
+                : 'Samurai Sudoku remains the core game while Minesweeper tests a lower-friction repeat-play entry point.'}
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {logicGameLinks.map((link) => (
+                <TrackedLink
+                  key={link.href}
+                  href={link.href}
+                  eventName="home_logic_game_click"
+                  eventProperties={{ game: link.game, locale }}
+                  className="rounded-lg border bg-background/80 p-5 text-left shadow-sm transition hover:border-primary hover:bg-primary/5"
+                >
+                  <h3 className="text-lg font-medium text-primary mb-2">{link.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{link.body}</p>
+                </TrackedLink>
+              ))}
+            </div>
+          </section>
 
           {/* Browse by difficulty — internal links to difficulty hubs */}
           <section className="mt-20 space-y-6">
@@ -375,6 +421,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? 'PDF 打印包' : 'PDF pack'}
+          </Link>
+          <Link href={`/${locale}/games/minesweeper`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '在线扫雷' : 'Minesweeper'}
           </Link>
         </nav>
       </footer>

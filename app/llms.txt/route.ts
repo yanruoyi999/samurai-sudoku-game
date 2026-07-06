@@ -34,6 +34,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Beginner guide: ${baseUrl}/en/games/samurai/beginners
 - Difficulty guide: ${baseUrl}/en/games/samurai/difficulty-guide
 - Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
+- Minesweeper Online: ${baseUrl}/en/games/minesweeper
 - Supporter waitlist: ${baseUrl}/en/support
 
 ## Concise facts
@@ -47,6 +48,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
 - The PDF pack page is the purchase-intent page for bundled printable puzzles and answer keys; it can point to checkout when NEXT_PUBLIC_SUDOKU_PDF_PACK_URL is configured.
 - The free PDF sample pack includes four printable puzzles, one per difficulty, plus answer keys.
+- The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.
 - Solver-style help should explain the next logical step with candidates and overlap checks, not just reveal a full answer.
 
 ## Content use notes
