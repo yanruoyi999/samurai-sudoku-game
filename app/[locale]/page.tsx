@@ -77,6 +77,13 @@ export default async function HomePage() {
         ? '按难度选择日期题，打印后纸笔推理，再回到线上检查。'
         : 'Choose dated puzzles by difficulty, print for paper solving, then check online.',
     },
+    {
+      href: `/${locale}/games/samurai/pdf`,
+      title: locale === 'zh' ? 'PDF 打印包' : 'PDF pack',
+      body: locale === 'zh'
+        ? '批量保存题面和答案，验证纸笔练习的付费需求。'
+        : 'Save bundled puzzle sheets and answer keys for offline practice.',
+    },
   ];
 
   const quickStartLinks = [
@@ -365,6 +372,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/printable`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '可打印题目' : 'Printable puzzles'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? 'PDF 打印包' : 'PDF pack'}
           </Link>
         </nav>
       </footer>

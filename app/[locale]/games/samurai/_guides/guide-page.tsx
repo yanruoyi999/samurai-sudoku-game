@@ -383,7 +383,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
     path: '/games/samurai/printable',
     backHref: '/games/samurai/paper-practice',
     primaryHref: '/games/samurai/archive',
-    secondaryHref: '/games/samurai/paper-practice',
+    secondaryHref: '/games/samurai/pdf',
     numbered: true,
     keywords: {
       en: ['printable samurai sudoku', 'samurai sudoku pdf', 'printable sudoku puzzles', 'samurai sudoku with answers'],
@@ -416,7 +416,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
           },
         ],
         primaryCta: 'Choose a printable puzzle',
-        secondaryCta: 'Read paper practice guide',
+        secondaryCta: 'Get the PDF pack',
       },
       zh: {
         title: '可打印武士数独',
@@ -442,7 +442,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
           },
         ],
         primaryCta: '选择可打印题目',
-        secondaryCta: '查看纸笔练习指南',
+        secondaryCta: '查看 PDF 打印包',
       },
     },
   },

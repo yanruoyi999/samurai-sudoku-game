@@ -122,6 +122,14 @@ export default async function ArchivePage({
                   {tGame(`difficulty.${d}`)}
                 </Link>
               ))}
+              <TrackedLink
+                href={`/${locale}/games/samurai/pdf`}
+                eventName="pdf_pack_archive_cta_click"
+                eventProperties={{ locale, location: 'archive_header' }}
+                className="rounded-md border border-primary/40 px-3 py-1 font-medium text-primary hover:bg-primary/10 transition-colors"
+              >
+                {locale === 'zh' ? 'PDF 打印包' : 'PDF pack'}
+              </TrackedLink>
             </div>
           </div>
 

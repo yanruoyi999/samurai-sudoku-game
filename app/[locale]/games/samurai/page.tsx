@@ -222,6 +222,9 @@ async function SamuraiGamePageContent({
                 <Link href={`/${locale}/games/samurai/printable`} className="text-primary hover:underline">
                   {isZh ? '可打印武士数独' : 'Printable Samurai Sudoku'}
                 </Link>
+                <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:underline">
+                  {isZh ? 'PDF 打印包' : 'Samurai Sudoku PDF pack'}
+                </Link>
                 <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:underline">
                   {isZh ? '武士数独解题策略' : 'Samurai Sudoku strategy guide'}
                 </Link>

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { PrintButton } from "@/components/printable/PrintButton";
 import { locales } from "@/i18n";
 import { isPuzzleId } from "@/lib/puzzle-id";
@@ -247,6 +248,19 @@ export default async function PrintablePuzzlePage({
           >
             {isZh ? "返回题库" : "Back to archive"}
           </Link>
+          <TrackedLink
+            href={`/${locale}/games/samurai/pdf`}
+            eventName="pdf_pack_printable_page_click"
+            eventProperties={{
+              locale,
+              puzzle_id: id,
+              difficulty: puzzle.difficulty,
+              location: "printable_puzzle_page",
+            }}
+            className="rounded-lg border px-5 py-3 font-semibold transition-colors hover:bg-accent"
+          >
+            {isZh ? "查看 PDF 打印包" : "View PDF pack"}
+          </TrackedLink>
         </div>
 
         <dl className="grid gap-3 text-sm sm:grid-cols-3 print:grid-cols-3 print:text-xs">
