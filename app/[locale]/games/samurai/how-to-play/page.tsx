@@ -151,6 +151,17 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
             {isZh ? '先看武士数独图解介绍。' : 'Start with the visual explanation of Samurai Sudoku.'}
           </Link>
         </p>
+        <nav className="mt-5 flex flex-wrap gap-2 text-sm" aria-label={isZh ? '武士数独细分指南' : 'Samurai Sudoku focused guides'}>
+          <Link href={`/${locale}/games/samurai/overlap-boxes`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
+            {isZh ? '重叠宫详解' : 'Overlap boxes'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/candidate-notes`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
+            {isZh ? '候选数笔记' : 'Candidate notes'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/evil-solving-path`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
+            {isZh ? 'Evil 解题路径' : 'Evil solving path'}
+          </Link>
+        </nav>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href={`/${locale}/games/samurai`} className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors">

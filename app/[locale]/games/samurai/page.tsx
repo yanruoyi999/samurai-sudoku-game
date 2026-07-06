@@ -216,6 +216,12 @@ async function SamuraiGamePageContent({
                 <Link href={`/${locale}/games/samurai/how-to-play`} className="text-primary hover:underline">
                   {isZh ? '如何玩武士数独' : 'How to play Samurai Sudoku'}
                 </Link>
+                <Link href={`/${locale}/games/samurai/overlap-boxes`} className="text-primary hover:underline">
+                  {isZh ? '重叠宫详解' : 'Overlap boxes explained'}
+                </Link>
+                <Link href={`/${locale}/games/samurai/candidate-notes`} className="text-primary hover:underline">
+                  {isZh ? '候选数笔记指南' : 'Candidate notes guide'}
+                </Link>
                 <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:underline">
                   {isZh ? '提示与求解指南' : 'Solver-style hint guide'}
                 </Link>
@@ -230,6 +236,9 @@ async function SamuraiGamePageContent({
                 </Link>
                 <Link href={`/${locale}/games/samurai/difficulty/evil`} className="text-primary hover:underline">
                   {isZh ? 'Evil 极难武士数独' : 'Evil Samurai Sudoku puzzles'}
+                </Link>
+                <Link href={`/${locale}/games/samurai/evil-solving-path`} className="text-primary hover:underline">
+                  {isZh ? 'Evil 解题路径' : 'Evil solving path'}
                 </Link>
                 <Link href={`/${locale}/games/samurai/archive`} className="text-primary hover:underline">
                   {isZh ? '全部武士数独题库' : 'Full Samurai Sudoku archive'}

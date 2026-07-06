@@ -10,6 +10,9 @@ import { buildAbsoluteUrl } from '@/lib/site-url';
 type GuideKey =
   | 'beginners'
   | 'strategy'
+  | 'overlapBoxes'
+  | 'candidateNotes'
+  | 'evilSolvingPath'
   | 'paperPractice'
   | 'difficulty'
   | 'daily'
@@ -244,6 +247,207 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
         ],
         primaryCta: '开始今日谜题',
         secondaryCta: '浏览题库',
+      },
+    },
+  },
+  overlapBoxes: {
+    path: '/games/samurai/overlap-boxes',
+    backHref: '/games/samurai/how-to-play',
+    primaryHref: '/games/samurai/what-is-samurai-sudoku',
+    secondaryHref: '/games/samurai/strategy-guide',
+    numbered: true,
+    keywords: {
+      en: ['samurai sudoku overlap boxes', 'samurai sudoku overlapping grids', 'samurai sudoku layout', 'five grid sudoku overlap'],
+      zh: ['武士数独重叠宫', '武士数独重叠区', '五宫数独布局', '武士数独结构'],
+    },
+    content: {
+      en: {
+        title: 'Samurai Sudoku Overlap Boxes Explained',
+        description:
+          'Understand the four shared 3x3 overlap boxes in Samurai Sudoku and how they connect the center grid with each corner grid.',
+        intro:
+          'The overlap boxes are the reason Samurai Sudoku feels different from regular Sudoku. Each shared 3x3 box belongs to two grids, so every placement can unlock or block deductions in both places.',
+        backLabel: 'Back to rules',
+        items: [
+          {
+            title: 'There are four shared boxes',
+            body: 'The center grid shares one corner 3x3 box with each outer grid. These four boxes are not extra cells; they are visible cells counted by two different Sudoku grids.',
+          },
+          {
+            title: 'Read each overlap twice',
+            body: 'When you inspect an overlap box, check the row, column, and box constraints in the center grid first, then repeat the same check in the connected corner grid.',
+          },
+          {
+            title: 'Prioritize overlap givens',
+            body: 'Given numbers inside or near an overlap usually remove more candidates than givens in an isolated corner. Scan them early before filling easier single-grid cells.',
+          },
+          {
+            title: 'Re-scan after every overlap placement',
+            body: 'A digit placed in a shared box can create a hidden single in the other grid. Make overlap re-scanning a habit, especially on Hard and Evil puzzles.',
+          },
+        ],
+        primaryCta: 'View the layout guide',
+        secondaryCta: 'Read strategy guide',
+      },
+      zh: {
+        title: '武士数独重叠宫详解',
+        description: '理解武士数独四个共享 3x3 重叠宫，以及它们如何连接中心网格和四角网格。',
+        intro: '重叠宫是武士数独区别于普通数独的核心。每个共享 3x3 宫同时属于两个网格，因此一个数字可能同时推进或限制两个区域。',
+        backLabel: '返回规则说明',
+        items: [
+          {
+            title: '一共有四个共享宫',
+            body: '中心网格的四个角落 3x3 宫分别与四个外侧网格共享。这些不是额外格子，而是同时被两个数独网格计算的可见格。',
+          },
+          {
+            title: '每个重叠宫都要读两遍',
+            body: '检查重叠宫时，先看它在中心网格里的行、列、宫约束，再看它在对应角落网格里的行、列、宫约束。',
+          },
+          {
+            title: '优先扫描重叠区给定数',
+            body: '重叠区内或附近的给定数，通常比孤立角落里的数字排除更多候选。先扫这些位置，再处理单一网格里的简单格。',
+          },
+          {
+            title: '每填一个重叠格都要复查',
+            body: '共享宫里填入一个数字，可能在另一个网格制造新的唯一位置。困难和 Evil 题尤其要养成立刻复查重叠区的习惯。',
+          },
+        ],
+        primaryCta: '查看布局图解',
+        secondaryCta: '继续看策略指南',
+      },
+    },
+  },
+  candidateNotes: {
+    path: '/games/samurai/candidate-notes',
+    backHref: '/games/samurai/strategy-guide',
+    primaryHref: '/games/samurai',
+    secondaryHref: '/games/samurai/solver',
+    numbered: true,
+    keywords: {
+      en: ['samurai sudoku candidates', 'samurai sudoku candidate notes', 'sudoku pencil marks', 'samurai sudoku notes'],
+      zh: ['武士数独候选数', '武士数独笔记', '数独候选标记', '武士数独铅笔标记'],
+    },
+    content: {
+      en: {
+        title: 'Samurai Sudoku Candidate Notes Guide',
+        description:
+          'Use candidate notes and pencil marks in Samurai Sudoku without cluttering the five-grid board or missing overlap constraints.',
+        intro:
+          'Candidate notes turn a large Samurai Sudoku board into manageable logic. The trick is to write only useful candidates and refresh them whenever an overlap changes.',
+        backLabel: 'Back to strategy',
+        items: [
+          {
+            title: 'Add notes after easy singles dry up',
+            body: 'Do not fill every empty cell immediately. First solve obvious singles, then add candidates around the active overlap and high-clue areas.',
+          },
+          {
+            title: 'Treat overlap cells as stricter cells',
+            body: 'An overlap cell must survive constraints from two grids. Remove any candidate that conflicts with either grid, even if it looks legal in only one of them.',
+          },
+          {
+            title: 'Refresh notes after each placement',
+            body: 'A stale candidate is worse than no candidate. After filling a digit, remove it from the affected rows, columns, boxes, and the connected overlap grid.',
+          },
+          {
+            title: 'Look for pairs and locked candidates',
+            body: 'On harder puzzles, two cells sharing the same pair can remove those digits elsewhere. Candidate notes make these patterns visible.',
+          },
+        ],
+        primaryCta: "Practice with today's puzzle",
+        secondaryCta: 'Use hint guide',
+      },
+      zh: {
+        title: '武士数独候选数笔记指南',
+        description: '学习如何在武士数独里使用候选数和铅笔标记，避免五宫棋盘混乱，同时不漏掉重叠区约束。',
+        intro: '候选数能把巨大的武士数独棋盘拆成可管理的逻辑问题。关键是只写有价值的候选，并在重叠区变化后及时刷新。',
+        backLabel: '返回解题策略',
+        items: [
+          {
+            title: '简单唯一数做完后再写候选',
+            body: '不要一开始就给所有空格写满候选。先解决明显单一候选，再围绕重叠区和线索密集区域补候选。',
+          },
+          {
+            title: '把重叠格当作约束更强的格子',
+            body: '重叠格必须同时满足两个网格。某个候选只要在其中一个网格冲突，就要删除，不能只看单边是否合法。',
+          },
+          {
+            title: '每填一个数字都刷新候选',
+            body: '过期候选比没有候选更危险。填入数字后，要从相关行、列、宫以及连接的重叠网格中删除它。',
+          },
+          {
+            title: '寻找候选对和锁定候选',
+            body: '困难题里，两个格子共享同一组候选时，可以排除其他位置。候选笔记能让这些模式变得可见。',
+          },
+        ],
+        primaryCta: '用今日题练习',
+        secondaryCta: '查看提示指南',
+      },
+    },
+  },
+  evilSolvingPath: {
+    path: '/games/samurai/evil-solving-path',
+    backHref: '/games/samurai/difficulty/evil',
+    primaryHref: '/games/samurai/difficulty/evil',
+    secondaryHref: '/games/samurai/candidate-notes',
+    numbered: true,
+    keywords: {
+      en: ['evil samurai sudoku strategy', 'hard samurai sudoku solving path', 'evil sudoku solving steps', 'advanced samurai sudoku'],
+      zh: ['Evil 武士数独策略', '困难武士数独解题路径', '极难数独步骤', '高级武士数独'],
+    },
+    content: {
+      en: {
+        title: 'Evil Samurai Sudoku Solving Path',
+        description:
+          'A practical solving path for hard and evil Samurai Sudoku puzzles: overlap scan, candidate notes, pairs, contradiction review, and pacing.',
+        intro:
+          'Evil Samurai Sudoku is less about speed and more about preserving clean logic. Use this path when easy singles disappear and the board starts to feel stuck.',
+        backLabel: 'Back to Evil puzzles',
+        items: [
+          {
+            title: 'Reset the board mentally',
+            body: 'Before guessing, re-scan every overlap box and confirm which grid each unresolved cell belongs to. Many evil puzzles reopen after one missed overlap deduction.',
+          },
+          {
+            title: 'Rebuild candidates in one region',
+            body: 'Pick the most constrained overlap or center-grid area and rebuild candidates carefully. Avoid spreading shallow notes across the whole 369-cell board.',
+          },
+          {
+            title: 'Search for pairs before chains',
+            body: 'Naked pairs, hidden pairs, and locked candidates are usually enough to restart progress. Use them before trying long speculative chains.',
+          },
+          {
+            title: 'Treat contradictions as audit signals',
+            body: 'If a conflict appears, do not push forward. Clear the unsupported step, compare it with the last candidate change, and rebuild from a confirmed placement.',
+          },
+        ],
+        primaryCta: 'Open Evil puzzles',
+        secondaryCta: 'Review candidate notes',
+      },
+      zh: {
+        title: 'Evil 极难武士数独解题路径',
+        description: '面向困难和 Evil 武士数独的实用解题路径：重叠区扫描、候选数、候选对、冲突复盘和节奏控制。',
+        intro: 'Evil 武士数独考验的不是速度，而是能否保持干净的逻辑链。当简单唯一数消失、棋盘开始卡住时，用这条路径复查。',
+        backLabel: '返回 Evil 题目',
+        items: [
+          {
+            title: '先在脑中重置棋盘',
+            body: '猜之前重新扫描所有重叠宫，确认每个未解格属于哪个网格。很多极难题只是漏掉了一个重叠区排除。',
+          },
+          {
+            title: '只重建一个区域的候选',
+            body: '选择约束最强的重叠区或中心网格区域，认真重建候选。不要在 369 格大棋盘上到处写浅层候选。',
+          },
+          {
+            title: '先找候选对，再考虑链',
+            body: '显性候选对、隐性候选对和锁定候选，通常足够重新打开局面。先用这些，再考虑更长推理链。',
+          },
+          {
+            title: '把冲突当作审计信号',
+            body: '一旦出现冲突，不要继续硬推。清除没有依据的一步，对照上一次候选变化，从确认位置重新建立逻辑。',
+          },
+        ],
+        primaryCta: '打开 Evil 题目',
+        secondaryCta: '复习候选数笔记',
       },
     },
   },

@@ -195,6 +195,26 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/samurai-sudoku-overlap-boxes',
+        destination: '/en/games/samurai/overlap-boxes',
+        permanent: true,
+      },
+      {
+        source: '/samurai-sudoku-candidate-notes',
+        destination: '/en/games/samurai/candidate-notes',
+        permanent: true,
+      },
+      {
+        source: '/samurai-sudoku-candidates',
+        destination: '/en/games/samurai/candidate-notes',
+        permanent: true,
+      },
+      {
+        source: '/evil-samurai-sudoku-strategy',
+        destination: '/en/games/samurai/evil-solving-path',
+        permanent: true,
+      },
+      {
         source: '/minesweeper',
         destination: '/en/games/minesweeper',
         permanent: true,
