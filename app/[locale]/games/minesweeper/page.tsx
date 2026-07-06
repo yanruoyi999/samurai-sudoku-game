@@ -3,6 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 
 import MinesweeperGameClient from "@/components/minesweeper/MinesweeperGameClient";
+import { MINESWEEPER_GUIDES } from "@/lib/minesweeper/guides";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
@@ -157,6 +158,33 @@ export default async function MinesweeperPage({ params }: MinesweeperPageProps) 
 
       <section className="border-t bg-background px-4 py-12">
         <div className="mx-auto max-w-5xl space-y-10">
+          <section className="space-y-4">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold">
+                {isZh ? "扫雷规则与新手策略" : "Minesweeper rules and beginner strategy"}
+              </h2>
+              <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                {isZh
+                  ? "这些页面覆盖在线扫雷、第一下安全、旗帜、数字含义和新手策略等长尾搜索需求。"
+                  : "These guides cover long-tail searches around online Minesweeper, safe first click, flags, numbers, and beginner strategy."}
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {MINESWEEPER_GUIDES.map((guide) => (
+                <Link
+                  key={guide.slug}
+                  href={`/${locale}/games/minesweeper/${guide.slug}`}
+                  className="rounded-lg border bg-background p-5 hover:border-primary hover:bg-primary/5"
+                >
+                  <h3 className="font-semibold text-primary">{guide.title[isZh ? "zh" : "en"]}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {guide.description[isZh ? "zh" : "en"]}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+
           <div className="grid gap-6 md:grid-cols-3">
             {faqItems.map((item) => (
               <section key={item.question} className="rounded-lg border p-5">

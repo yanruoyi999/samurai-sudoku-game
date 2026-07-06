@@ -1,7 +1,7 @@
 "use client";
 
-export const ANALYTICS_OPT_OUT_KEY = "samurai_sudoku_analytics_opt_out";
-export const ANALYTICS_OPT_OUT_VALUE = "1";
+import { ANALYTICS_OPT_OUT_KEY, ANALYTICS_OPT_OUT_VALUE } from "@/lib/analytics/config";
+export { ANALYTICS_OPT_OUT_KEY, ANALYTICS_OPT_OUT_VALUE } from "@/lib/analytics/config";
 
 declare global {
   interface Window {

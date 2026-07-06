@@ -35,6 +35,10 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Difficulty guide: ${baseUrl}/en/games/samurai/difficulty-guide
 - Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
 - Minesweeper Online: ${baseUrl}/en/games/minesweeper
+- How to play Minesweeper: ${baseUrl}/en/games/minesweeper/how-to-play
+- Minesweeper beginner strategy: ${baseUrl}/en/games/minesweeper/beginner-strategy
+- Minesweeper safe first click: ${baseUrl}/en/games/minesweeper/first-click-safe
+- Minesweeper flags and numbers: ${baseUrl}/en/games/minesweeper/flags-and-numbers
 - Supporter waitlist: ${baseUrl}/en/support
 
 ## Concise facts
@@ -49,6 +53,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The PDF pack page is the purchase-intent page for bundled printable puzzles and answer keys; it can point to checkout when NEXT_PUBLIC_SUDOKU_PDF_PACK_URL is configured.
 - The free PDF sample pack includes four printable puzzles, one per difficulty, plus answer keys.
 - The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.
+- Minesweeper long-tail guides explain rules, beginner strategy, safe first click behavior, flags, and number clues.
 - Solver-style help should explain the next logical step with candidates and overlap checks, not just reveal a full answer.
 
 ## Content use notes

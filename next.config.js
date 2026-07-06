@@ -195,6 +195,41 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/minesweeper',
+        destination: '/en/games/minesweeper',
+        permanent: true,
+      },
+      {
+        source: '/play-minesweeper',
+        destination: '/en/games/minesweeper',
+        permanent: true,
+      },
+      {
+        source: '/online-minesweeper',
+        destination: '/en/games/minesweeper',
+        permanent: true,
+      },
+      {
+        source: '/how-to-play-minesweeper',
+        destination: '/en/games/minesweeper/how-to-play',
+        permanent: true,
+      },
+      {
+        source: '/minesweeper-strategy',
+        destination: '/en/games/minesweeper/beginner-strategy',
+        permanent: true,
+      },
+      {
+        source: '/minesweeper-first-click-safe',
+        destination: '/en/games/minesweeper/first-click-safe',
+        permanent: true,
+      },
+      {
+        source: '/minesweeper-flags',
+        destination: '/en/games/minesweeper/flags-and-numbers',
+        permanent: true,
+      },
+      {
         source: '/en/daily',
         destination: '/en/games/samurai',
         permanent: true,

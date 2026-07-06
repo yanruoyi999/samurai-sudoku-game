@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 import { locales } from '@/i18n';
+import { MINESWEEPER_GUIDE_SLUGS } from '@/lib/minesweeper/guides';
 import { getPuzzleIndex } from '@/lib/puzzles';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import type { Difficulty, PuzzleMetadata } from '@/lib/sudoku/types';
@@ -57,6 +58,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/paper-practice', changeFrequency: 'monthly' as const, priority: 0.69 },
     { path: '/games/samurai/difficulty-guide', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/games/minesweeper', changeFrequency: 'weekly' as const, priority: 0.66 },
+    ...MINESWEEPER_GUIDE_SLUGS.map((slug) => ({
+      path: `/games/minesweeper/${slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.58,
+    })),
     ...difficulties.map((difficulty) => ({
       path: `/games/samurai/difficulty/${difficulty}`,
       changeFrequency: 'weekly' as const,
