@@ -210,8 +210,17 @@ async function SamuraiGamePageContent({
                 {isZh ? '继续探索' : 'Next useful pages'}
               </h3>
               <div className="mt-4 grid gap-2 text-sm">
+                <Link href={`/${locale}/games/samurai/daily`} className="text-primary hover:underline">
+                  {isZh ? '每日武士数独练习' : 'Daily Samurai Sudoku practice'}
+                </Link>
                 <Link href={`/${locale}/games/samurai/how-to-play`} className="text-primary hover:underline">
                   {isZh ? '如何玩武士数独' : 'How to play Samurai Sudoku'}
+                </Link>
+                <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:underline">
+                  {isZh ? '提示与求解指南' : 'Solver-style hint guide'}
+                </Link>
+                <Link href={`/${locale}/games/samurai/printable`} className="text-primary hover:underline">
+                  {isZh ? '可打印武士数独' : 'Printable Samurai Sudoku'}
                 </Link>
                 <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:underline">
                   {isZh ? '武士数独解题策略' : 'Samurai Sudoku strategy guide'}

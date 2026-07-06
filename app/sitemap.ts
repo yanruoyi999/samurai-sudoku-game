@@ -44,9 +44,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes = [
     { path: '', changeFrequency: 'daily' as const, priority: 1, followsIndex: true },
     { path: '/games/samurai', changeFrequency: 'daily' as const, priority: 0.9, followsIndex: true },
+    { path: '/games/samurai/daily', changeFrequency: 'daily' as const, priority: 0.86, followsIndex: true },
     { path: '/games/samurai/archive', changeFrequency: 'weekly' as const, priority: 0.85, followsIndex: true },
     { path: '/games/samurai/what-is-samurai-sudoku', changeFrequency: 'monthly' as const, priority: 0.75 },
     { path: '/games/samurai/how-to-play', changeFrequency: 'monthly' as const, priority: 0.7 },
+    { path: '/games/samurai/solver', changeFrequency: 'monthly' as const, priority: 0.74 },
+    { path: '/games/samurai/printable', changeFrequency: 'monthly' as const, priority: 0.73 },
     { path: '/games/samurai/strategy-guide', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/games/samurai/beginners', changeFrequency: 'monthly' as const, priority: 0.71 },
     { path: '/games/samurai/paper-practice', changeFrequency: 'monthly' as const, priority: 0.69 },

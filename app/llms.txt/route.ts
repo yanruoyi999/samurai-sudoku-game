@@ -22,10 +22,13 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 ## Key pages for answer engines
 
 - Play today's Samurai Sudoku: ${baseUrl}/en/games/samurai
+- Daily practice guide: ${baseUrl}/en/games/samurai/daily
 - Puzzle archive: ${baseUrl}/en/games/samurai/archive
 - What is Samurai Sudoku: ${baseUrl}/en/games/samurai/what-is-samurai-sudoku
 - How to play Samurai Sudoku: ${baseUrl}/en/games/samurai/how-to-play
 - Strategy guide: ${baseUrl}/en/games/samurai/strategy-guide
+- Solver and hint guide: ${baseUrl}/en/games/samurai/solver
+- Printable Samurai Sudoku: ${baseUrl}/en/games/samurai/printable
 - Beginner guide: ${baseUrl}/en/games/samurai/beginners
 - Difficulty guide: ${baseUrl}/en/games/samurai/difficulty-guide
 - Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
@@ -39,6 +42,8 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Every row, column, and 3x3 box in each 9x9 grid must contain 1 through 9 without repetition.
 - Overlap cells belong to two grids and must satisfy both grids at the same time.
 - The site provides easy, medium, hard, and evil difficulty landing pages.
+- Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
+- Solver-style help should explain the next logical step with candidates and overlap checks, not just reveal a full answer.
 
 ## Content use notes
 

@@ -36,6 +36,13 @@ export default async function HomePage() {
 
   const learningLinks = [
     {
+      href: `/${locale}/games/samurai/daily`,
+      title: locale === 'zh' ? '每日练习' : 'Daily practice',
+      body: locale === 'zh'
+        ? '把今日题作为固定入口，先完成一题，再进入历史题库补练。'
+        : 'Use the daily puzzle as the main habit loop before browsing older boards.',
+    },
+    {
       href: `/${locale}/games/samurai/beginners`,
       title: locale === 'zh' ? '新手入门' : 'Beginner guide',
       body: locale === 'zh'
@@ -50,11 +57,25 @@ export default async function HomePage() {
         : 'Use candidates, hidden singles, and cross-grid logic for harder puzzles.',
     },
     {
+      href: `/${locale}/games/samurai/solver`,
+      title: locale === 'zh' ? '提示与求解' : 'Solver-style hints',
+      body: locale === 'zh'
+        ? '用候选数、重叠区检查和提示功能理解下一步，而不是直接看答案。'
+        : 'Use candidates, overlap checks, and hints to understand the next logical step.',
+    },
+    {
       href: `/${locale}/games/samurai/paper-practice`,
       title: locale === 'zh' ? '纸笔练习' : 'Paper practice',
       body: locale === 'zh'
         ? '学习如何用纸笔式流程标候选、记录推理并复盘。'
         : 'Practice slower solving with candidate notes, overlap marks, and review habits.',
+    },
+    {
+      href: `/${locale}/games/samurai/printable`,
+      title: locale === 'zh' ? '可打印题目' : 'Printable puzzles',
+      body: locale === 'zh'
+        ? '按难度选择日期题，打印后纸笔推理，再回到线上检查。'
+        : 'Choose dated puzzles by difficulty, print for paper solving, then check online.',
     },
   ];
 
@@ -222,7 +243,7 @@ export default async function HomePage() {
                 ? '如果你想提升解题能力，按新手、策略、纸笔练习的顺序阅读这些原创指南。'
                 : 'If you want to improve, read these original guides in order: beginner basics, strategy, then paper-style practice.'}
             </p>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
               {learningLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -338,6 +359,12 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '解题策略' : 'Strategy guide'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '提示与求解' : 'Solver hints'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/printable`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '可打印题目' : 'Printable puzzles'}
           </Link>
         </nav>
       </footer>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Difficulty } from '@/lib/sudoku/types';
 import { getTranslations } from 'next-intl/server';
+import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { GameHistoryArchive } from '@/components/GameHistoryArchive';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
@@ -234,12 +235,27 @@ export default async function ArchivePage({
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <Link
-                          href={`/${locale}/games/samurai/${puzzle.id}`}
-                          className="inline-flex rounded-md bg-primary px-3 py-1 text-primary-foreground hover:bg-primary/90"
-                        >
-                          {t('play')}
-                        </Link>
+                        <div className="flex justify-end gap-2">
+                          <TrackedLink
+                            href={`/${locale}/games/samurai/printable/${puzzle.id}`}
+                            eventName="printable_puzzle_open_click"
+                            eventProperties={{
+                              locale,
+                              puzzle_id: puzzle.id,
+                              difficulty: puzzle.difficulty,
+                              location: 'archive_table',
+                            }}
+                            className="inline-flex rounded-md border px-3 py-1 font-medium text-primary hover:bg-primary/10"
+                          >
+                            {locale === 'zh' ? '打印' : 'Print'}
+                          </TrackedLink>
+                          <Link
+                            href={`/${locale}/games/samurai/${puzzle.id}`}
+                            className="inline-flex rounded-md bg-primary px-3 py-1 text-primary-foreground hover:bg-primary/90"
+                          >
+                            {t('play')}
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))}
