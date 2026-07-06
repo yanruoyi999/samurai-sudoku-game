@@ -51,6 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/solver', changeFrequency: 'monthly' as const, priority: 0.74 },
     { path: '/games/samurai/printable', changeFrequency: 'monthly' as const, priority: 0.73 },
     { path: '/games/samurai/pdf', changeFrequency: 'monthly' as const, priority: 0.72 },
+    { path: '/games/samurai/pdf/sample', changeFrequency: 'monthly' as const, priority: 0.68 },
     { path: '/games/samurai/strategy-guide', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/games/samurai/beginners', changeFrequency: 'monthly' as const, priority: 0.71 },
     { path: '/games/samurai/paper-practice', changeFrequency: 'monthly' as const, priority: 0.69 },

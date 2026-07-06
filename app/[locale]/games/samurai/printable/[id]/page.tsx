@@ -1,14 +1,16 @@
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { PrintButton } from "@/components/printable/PrintButton";
+import {
+  PrintablePageStyle,
+  PrintableSamuraiBoard,
+} from "@/components/printable/PrintableSamuraiBoard";
 import { locales } from "@/i18n";
 import { isPuzzleId } from "@/lib/puzzle-id";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
-import { globalToLocal } from "@/lib/sudoku/coordinates";
 import {
   getGlobalInitialBoard,
   getGlobalSolutionBoard,
@@ -19,8 +21,6 @@ import { buildAbsoluteUrl } from "@/lib/site-url";
 interface PrintablePuzzlePageProps {
   params: Promise<{ locale: string; id: string }>;
 }
-
-const BOARD_SIZE = 21;
 
 export async function generateStaticParams() {
   const index = await getPuzzleIndex();
@@ -75,75 +75,6 @@ export async function generateMetadata({
   };
 }
 
-function getCellBorderStyle(row: number, col: number): CSSProperties {
-  const locals = globalToLocal({ row, col });
-  const hasTopEdge = locals.some((local) => local.row === 0 || local.row % 3 === 0);
-  const hasLeftEdge = locals.some((local) => local.col === 0 || local.col % 3 === 0);
-  const hasBottomEdge = locals.some((local) => local.row === 8);
-  const hasRightEdge = locals.some((local) => local.col === 8);
-
-  return {
-    borderTopWidth: hasTopEdge ? 2 : 1,
-    borderLeftWidth: hasLeftEdge ? 2 : 1,
-    borderBottomWidth: hasBottomEdge ? 2 : 1,
-    borderRightWidth: hasRightEdge ? 2 : 1,
-  };
-}
-
-function PrintableBoard({
-  board,
-  title,
-  isAnswer = false,
-}: {
-  board: number[][];
-  title: string;
-  isAnswer?: boolean;
-}) {
-  return (
-    <section className={isAnswer ? "break-before-page pt-8 print:pt-0" : ""}>
-      <h2 className="mb-3 text-xl font-semibold print:text-base">{title}</h2>
-      <div
-        className="grid w-full max-w-[9.2in] border-2 border-foreground bg-white text-foreground shadow-sm print:max-w-none print:shadow-none"
-        style={{ gridTemplateColumns: `repeat(${BOARD_SIZE}, minmax(0, 1fr))` }}
-      >
-        {Array.from({ length: BOARD_SIZE * BOARD_SIZE }, (_, index) => {
-          const row = Math.floor(index / BOARD_SIZE);
-          const col = index % BOARD_SIZE;
-          const locals = globalToLocal({ row, col });
-          const isPlayable = locals.length > 0;
-          const value = board[row]?.[col] ?? 0;
-          const isOverlap = locals.length > 1;
-
-          if (!isPlayable) {
-            return (
-              <div
-                key={`${row}-${col}`}
-                className="aspect-square bg-transparent"
-                aria-hidden="true"
-              />
-            );
-          }
-
-          return (
-            <div
-              key={`${row}-${col}`}
-              className={[
-                "flex aspect-square items-center justify-center border-slate-700 text-center font-semibold",
-                "text-[clamp(0.48rem,2.1vw,1.05rem)] print:text-[9px]",
-                isOverlap ? "bg-primary/10" : "bg-white",
-                isAnswer ? "text-slate-700" : "text-slate-950",
-              ].join(" ")}
-              style={getCellBorderStyle(row, col)}
-            >
-              {value === 0 ? "" : value}
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 export default async function PrintablePuzzlePage({
   params,
 }: PrintablePuzzlePageProps) {
@@ -190,15 +121,7 @@ export default async function PrintablePuzzlePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <style>
-        {`
-          @media print {
-            @page { size: letter portrait; margin: 0.35in; }
-            .no-print { display: none !important; }
-            body { background: white !important; }
-          }
-        `}
-      </style>
+      <PrintablePageStyle />
 
       <nav
         className="no-print mb-5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
@@ -282,14 +205,15 @@ export default async function PrintablePuzzlePage({
       </header>
 
       <div className="space-y-8 print:space-y-4">
-        <PrintableBoard
+        <PrintableSamuraiBoard
           board={initialBoard}
           title={isZh ? "题面" : "Puzzle"}
         />
-        <PrintableBoard
+        <PrintableSamuraiBoard
           board={solutionBoard}
           title={isZh ? "答案" : "Answer key"}
           isAnswer
+          forcePageBreak
         />
       </div>
     </main>

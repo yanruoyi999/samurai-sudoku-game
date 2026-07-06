@@ -30,6 +30,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Solver and hint guide: ${baseUrl}/en/games/samurai/solver
 - Printable Samurai Sudoku: ${baseUrl}/en/games/samurai/printable
 - Samurai Sudoku PDF pack: ${baseUrl}/en/games/samurai/pdf
+- Free PDF sample pack: ${baseUrl}/en/games/samurai/pdf/sample
 - Beginner guide: ${baseUrl}/en/games/samurai/beginners
 - Difficulty guide: ${baseUrl}/en/games/samurai/difficulty-guide
 - Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
@@ -45,6 +46,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The site provides easy, medium, hard, and evil difficulty landing pages.
 - Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
 - The PDF pack page is the purchase-intent page for bundled printable puzzles and answer keys; it can point to checkout when NEXT_PUBLIC_SUDOKU_PDF_PACK_URL is configured.
+- The free PDF sample pack includes four printable puzzles, one per difficulty, plus answer keys.
 - Solver-style help should explain the next logical step with candidates and overlap checks, not just reveal a full answer.
 
 ## Content use notes

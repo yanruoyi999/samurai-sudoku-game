@@ -274,6 +274,14 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
               >
                 {isZh ? "先用免费打印题" : "Try free printable puzzles"}
               </TrackedLink>
+              <TrackedLink
+                href={`/${locale}/games/samurai/pdf/sample`}
+                eventName="pdf_pack_sample_click"
+                eventProperties={{ locale, location: "pdf_pack_hero" }}
+                className="rounded-lg border px-6 py-3 text-center font-semibold transition-colors hover:bg-accent"
+              >
+                {isZh ? "查看免费样稿" : "View free sample pack"}
+              </TrackedLink>
             </div>
           </div>
 
@@ -288,8 +296,8 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
                   ? "购买后可获得适合离线练习的武士数独打印包。免费单题打印仍会继续保留。"
                   : "Purchase gives you an offline-friendly Samurai Sudoku print pack. Free single-puzzle printing remains available."
                 : isZh
-                ? "PDF 包正在准备中。先加入候补名单，我们会优先通知愿意购买打印包的玩家。"
-                : "The PDF pack is being prepared. Join the waitlist and we will notify players who want a bundled print pack first."}
+                ? "PDF 包正在准备中。你可以先打印免费样稿，再加入候补名单。"
+                : "The PDF pack is being prepared. Print the free sample first, then join the waitlist."}
             </p>
           </aside>
         </div>
