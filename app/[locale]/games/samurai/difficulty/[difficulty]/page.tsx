@@ -23,6 +23,10 @@ const LABELS: Record<Difficulty, { en: string; zh: string }> = {
   evil: { en: 'Evil', zh: 'Evil 极难' },
 };
 
+function getEnglishArticle(label: string) {
+  return /^[aeiou]/i.test(label) ? 'an' : 'a';
+}
+
 // Keyword-targeted intro copy per difficulty, in both locales.
 const INTRO: Record<Difficulty, { en: string; zh: string }> = {
   easy: {
@@ -40,6 +44,192 @@ const INTRO: Record<Difficulty, { en: string; zh: string }> = {
   evil: {
     en: 'Evil Samurai Sudoku is the toughest clue profile on this site. Every generated board is checked for one solution, but solving it may require patient candidate tracking beyond the built-in basic hints.',
     zh: 'Evil 极难武士数独采用本站最少的提示配置。每道生成题都会验证唯一解，但完成它可能需要超出内置基础提示的耐心候选推理。',
+  },
+};
+
+const PRACTICE_GUIDES: Record<
+  Difficulty,
+  {
+    heading: { en: string; zh: string };
+    body: { en: string; zh: string };
+    steps: Array<{ title: { en: string; zh: string }; body: { en: string; zh: string } }>;
+    links: Array<{ href: string; label: { en: string; zh: string } }>;
+    faq: Array<{ question: { en: string; zh: string }; answer: { en: string; zh: string } }>;
+  }
+> = {
+  easy: {
+    heading: { en: 'Easy practice path', zh: '简单难度练习路径' },
+    body: {
+      en: 'Use easy Samurai Sudoku to learn the five-grid shape before chasing speed.',
+      zh: '用简单武士数独先熟悉五宫结构，不要一开始追求速度。',
+    },
+    steps: [
+      {
+        title: { en: 'Name the five grids first', zh: '先识别五个网格' },
+        body: {
+          en: 'Before filling numbers, identify the center grid and four corner grids so overlap boxes stop feeling confusing.',
+          zh: '填数前先找出中心网格和四角网格，重叠宫会更容易理解。',
+        },
+      },
+      {
+        title: { en: 'Solve visible singles', zh: '先做明显唯一数' },
+        body: {
+          en: 'Easy boards usually contain enough givens for singles without heavy note taking.',
+          zh: '简单题通常给定数足够多，可以先不大量写候选，直接找明显唯一数。',
+        },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/beginners', label: { en: 'Beginner guide', zh: '新手指南' } },
+      { href: '/games/samurai/how-to-play', label: { en: 'How to play', zh: '玩法规则' } },
+    ],
+    faq: [
+      {
+        question: { en: 'Is easy Samurai Sudoku good for beginners?', zh: '简单武士数独适合新手吗？' },
+        answer: {
+          en: 'Yes. Easy puzzles keep more starting digits, which makes the overlap layout easier to learn.',
+          zh: '适合。简单题保留更多起始数字，更容易学习重叠网格结构。',
+        },
+      },
+    ],
+  },
+  medium: {
+    heading: { en: 'Medium practice path', zh: '中等难度练习路径' },
+    body: {
+      en: 'Medium puzzles are the best place to build candidate-note habits without the pressure of evil puzzles.',
+      zh: '中等题最适合建立候选数习惯，还没有 Evil 题那么大的压力。',
+    },
+    steps: [
+      {
+        title: { en: 'Add notes around active areas', zh: '围绕活跃区域写候选' },
+        body: {
+          en: 'Do not fill the whole board with pencil marks; focus on overlap boxes and rows with several givens.',
+          zh: '不要给全盘写满候选，优先围绕重叠宫和给定数密集的行列记录。',
+        },
+      },
+      {
+        title: { en: 'Check both grids after an overlap', zh: '重叠区后检查两边网格' },
+        body: {
+          en: 'A placement in a shared box should trigger a quick rescan of the center grid and the connected corner grid.',
+          zh: '共享宫里填数后，应快速复查中心网格和对应角落网格。',
+        },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes', zh: '候选数笔记' } },
+      { href: '/games/samurai/overlap-boxes', label: { en: 'Overlap boxes', zh: '重叠宫详解' } },
+    ],
+    faq: [
+      {
+        question: { en: 'When should I move from medium to hard?', zh: '什么时候从中等进入困难？' },
+        answer: {
+          en: 'Move up when you can finish medium puzzles with candidate notes and very few guesses.',
+          zh: '当你能用候选数稳定完成中等题，并且很少猜测时，就可以进入困难题。',
+        },
+      },
+    ],
+  },
+  hard: {
+    heading: { en: 'Hard Samurai Sudoku solving path', zh: '困难武士数独解题路径' },
+    body: {
+      en: 'Hard Samurai Sudoku is where overlap discipline matters. Treat each shared box as a two-grid checkpoint before you guess.',
+      zh: '困难武士数独开始真正考验重叠区纪律。猜测前，把每个共享宫都当作双网格检查点。',
+    },
+    steps: [
+      {
+        title: { en: 'Start with overlap boxes and dense givens', zh: '从重叠宫和密集给定数开始' },
+        body: {
+          en: 'The fastest clean progress usually comes from shared boxes and rows near several givens, not from isolated empty corners.',
+          zh: '最干净的推进通常来自共享宫和给定数密集区域，而不是孤立空角落。',
+        },
+      },
+      {
+        title: { en: 'Use candidates in small regions', zh: '小区域使用候选数' },
+        body: {
+          en: 'Build candidates around one overlap, solve what it reveals, then move to the next overlap. This avoids stale notes.',
+          zh: '围绕一个重叠区建立候选，解出它带来的结果，再移动到下一个重叠区，避免候选过期。',
+        },
+      },
+      {
+        title: { en: 'Look for pairs before guessing', zh: '猜之前先找候选对' },
+        body: {
+          en: 'Naked pairs and hidden pairs often unlock hard boards without needing long speculative chains.',
+          zh: '显性候选对和隐性候选对经常能打开困难题，不必过早进入猜测链。',
+        },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes guide', zh: '候选数笔记指南' } },
+      { href: '/games/samurai/overlap-boxes', label: { en: 'Overlap boxes explained', zh: '重叠宫详解' } },
+      { href: '/games/samurai/strategy-guide', label: { en: 'Strategy guide', zh: '解题策略' } },
+    ],
+    faq: [
+      {
+        question: { en: 'Why are hard Samurai Sudoku puzzles difficult?', zh: '困难武士数独难在哪里？' },
+        answer: {
+          en: 'They require more candidate tracking across overlapping grids, so one missed shared-box deduction can stall the whole board.',
+          zh: '它们需要跨重叠网格追踪更多候选数，一个漏掉的共享宫排除就可能让全盘卡住。',
+        },
+      },
+      {
+        question: { en: 'Should I guess on hard puzzles?', zh: '困难题应该猜吗？' },
+        answer: {
+          en: 'Only after checking overlap boxes, candidate pairs, and hidden singles. Most hard puzzles still reward clean logic first.',
+          zh: '只有在检查过重叠宫、候选对和隐性唯一后再考虑。大多数困难题仍然优先奖励干净逻辑。',
+        },
+      },
+    ],
+  },
+  evil: {
+    heading: { en: 'Evil Samurai Sudoku solving path', zh: 'Evil 极难武士数独解题路径' },
+    body: {
+      en: 'Evil puzzles are long-form logic sessions. The goal is not to move fast; it is to keep every candidate and overlap decision auditable.',
+      zh: 'Evil 题是长时间逻辑挑战。目标不是快，而是让每个候选数和重叠区判断都能复查。',
+    },
+    steps: [
+      {
+        title: { en: 'Audit every overlap before adding new notes', zh: '写新候选前先审计所有重叠区' },
+        body: {
+          en: 'Reconfirm the four shared boxes and their connected rows, columns, and boxes before spreading notes across the board.',
+          zh: '在全盘铺开候选前，先重新确认四个共享宫及其连接的行、列、宫约束。',
+        },
+      },
+      {
+        title: { en: 'Work one constrained region at a time', zh: '一次只处理一个高约束区域' },
+        body: {
+          en: 'Pick the tightest overlap or center-grid region, solve its local candidates, then carry the result into the linked grid.',
+          zh: '选择约束最强的重叠区或中心网格区域，先解决局部候选，再把结果带入关联网格。',
+        },
+      },
+      {
+        title: { en: 'Use conflicts as rollback points', zh: '把冲突当作回滚点' },
+        body: {
+          en: 'If a contradiction appears, clear the unsupported placement and return to the last candidate change that was not fully justified.',
+          zh: '如果出现矛盾，清除没有依据的填数，回到上一次未被充分证明的候选变化。',
+        },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/evil-solving-path', label: { en: 'Evil solving path', zh: 'Evil 解题路径' } },
+      { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes guide', zh: '候选数笔记指南' } },
+      { href: '/games/samurai/solver', label: { en: 'Hint guide', zh: '提示指南' } },
+    ],
+    faq: [
+      {
+        question: { en: 'Are evil Samurai Sudoku puzzles uniquely solvable?', zh: 'Evil 武士数独有唯一解吗？' },
+        answer: {
+          en: 'Yes. Public generated puzzles are checked for a unique solution, even when they require patient candidate analysis.',
+          zh: '有。公开生成题会验证唯一解，即使它们需要耐心的候选数分析。',
+        },
+      },
+      {
+        question: { en: 'What is the best first step on evil puzzles?', zh: 'Evil 题第一步最好做什么？' },
+        answer: {
+          en: 'Re-scan all four overlap boxes and build candidates only in the most constrained region first.',
+          zh: '先重新扫描四个重叠宫，并只在约束最强的区域建立候选。',
+        },
+      },
+    ],
   },
 };
 
@@ -105,6 +295,7 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
     .sort((a, b) => (a.id < b.id ? 1 : -1));
   const visiblePuzzles = puzzles.slice(0, MAX_VISIBLE_PUZZLES);
   const hasMorePuzzles = puzzles.length > visiblePuzzles.length;
+  const practiceGuide = PRACTICE_GUIDES[difficulty];
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -131,11 +322,24 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
       })),
     },
   };
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: practiceGuide.faq.map((item) => ({
+      '@type': 'Question',
+      name: item.question[isZh ? 'zh' : 'en'],
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer[isZh ? 'zh' : 'en'],
+      },
+    })),
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
       <header className="border-b px-4 py-6">
         <div className="container mx-auto">
@@ -161,7 +365,9 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
                 href={`/${locale}/games/samurai/${puzzles[0].id}`}
                 className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
-                {isZh ? `开始一道${label}题目` : `Play a ${label.toLowerCase()} puzzle`}
+                {isZh
+                  ? `开始一道${label}题目`
+                  : `Play ${getEnglishArticle(label)} ${label.toLowerCase()} puzzle`}
               </Link>
             )}
             <Link
@@ -195,6 +401,60 @@ export default async function DifficultyLandingPage({ params }: DifficultyPagePr
       </header>
 
       <main className="flex-1 container mx-auto px-4 py-8">
+        <section className="mb-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="rounded-lg border bg-background p-6">
+            <h2 className="text-2xl font-semibold">
+              {practiceGuide.heading[isZh ? 'zh' : 'en']}
+            </h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              {practiceGuide.body[isZh ? 'zh' : 'en']}
+            </p>
+            <ol className="mt-5 space-y-4">
+              {practiceGuide.steps.map((step, index) => (
+                <li key={step.title.en} className="rounded-lg border bg-secondary/20 p-4">
+                  <h3 className="font-semibold">
+                    {index + 1}. {step.title[isZh ? 'zh' : 'en']}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {step.body[isZh ? 'zh' : 'en']}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <aside className="space-y-4">
+            <section className="rounded-lg border bg-primary/5 p-5">
+              <h2 className="font-semibold">{isZh ? '相关指南' : 'Related guides'}</h2>
+              <div className="mt-4 grid gap-2 text-sm">
+                {practiceGuide.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={`/${locale}${link.href}`}
+                    className="rounded-md border bg-background px-3 py-2 text-primary hover:border-primary hover:bg-primary/5"
+                  >
+                    {link.label[isZh ? 'zh' : 'en']}
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-lg border bg-background p-5">
+              <h2 className="font-semibold">{isZh ? '常见问题' : 'FAQ'}</h2>
+              <div className="mt-3 space-y-3">
+                {practiceGuide.faq.map((item) => (
+                  <section key={item.question.en}>
+                    <h3 className="text-sm font-semibold">{item.question[isZh ? 'zh' : 'en']}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {item.answer[isZh ? 'zh' : 'en']}
+                    </p>
+                  </section>
+                ))}
+              </div>
+            </section>
+          </aside>
+        </section>
+
         <h2 className="text-xl font-semibold mb-4">
           {isZh
             ? `最新 ${visiblePuzzles.length} 道${label}题目`

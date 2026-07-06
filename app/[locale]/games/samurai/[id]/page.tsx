@@ -18,6 +18,90 @@ const DIFFICULTY_LABELS: Record<Difficulty, { en: string; zh: string }> = {
 };
 const ALL_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
 
+function getEnglishArticle(label: string) {
+  return /^[aeiou]/i.test(label) ? 'an' : 'a';
+}
+
+const PRACTICE_PATHS: Record<
+  Difficulty,
+  {
+    heading: { en: string; zh: string };
+    steps: Array<{ title: { en: string; zh: string }; body: { en: string; zh: string } }>;
+    links: Array<{ href: string; label: { en: string; zh: string } }>;
+  }
+> = {
+  easy: {
+    heading: { en: 'Easy puzzle practice path', zh: '简单题练习路径' },
+    steps: [
+      {
+        title: { en: 'Identify the five grids', zh: '识别五个网格' },
+        body: { en: 'Start by locating the center grid, four corner grids, and shared boxes.', zh: '先找到中心网格、四角网格和共享宫。' },
+      },
+      {
+        title: { en: 'Fill obvious singles', zh: '填写明显唯一数' },
+        body: { en: 'Easy puzzles usually reveal enough singles before candidate notes are needed.', zh: '简单题通常先能找出足够多的明显唯一数。' },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/beginners', label: { en: 'Beginner guide', zh: '新手指南' } },
+      { href: '/games/samurai/difficulty-guide', label: { en: 'Difficulty guide', zh: '难度指南' } },
+    ],
+  },
+  medium: {
+    heading: { en: 'Medium puzzle practice path', zh: '中等题练习路径' },
+    steps: [
+      {
+        title: { en: 'Add notes near overlaps', zh: '围绕重叠区写候选' },
+        body: { en: 'Use candidates around the overlap boxes instead of marking every empty cell.', zh: '围绕重叠宫写候选，不要给全盘空格都写满。' },
+      },
+      {
+        title: { en: 'Re-scan both connected grids', zh: '复查连接的两个网格' },
+        body: { en: 'Each overlap placement can change the center grid and one corner grid.', zh: '每个重叠区填数都会影响中心网格和一个角落网格。' },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes', zh: '候选数笔记' } },
+      { href: '/games/samurai/overlap-boxes', label: { en: 'Overlap boxes', zh: '重叠宫详解' } },
+    ],
+  },
+  hard: {
+    heading: { en: 'Hard puzzle practice path', zh: '困难题练习路径' },
+    steps: [
+      {
+        title: { en: 'Work one overlap region', zh: '一次处理一个重叠区' },
+        body: { en: 'Choose the most constrained overlap box, rebuild candidates, then carry deductions into the linked grid.', zh: '选择约束最强的重叠宫，重建候选，再把推理带入关联网格。' },
+      },
+      {
+        title: { en: 'Find pairs before guessing', zh: '猜之前先找候选对' },
+        body: { en: 'Hard puzzles often reopen with naked pairs, hidden pairs, or locked candidates.', zh: '困难题经常通过显性候选对、隐性候选对或锁定候选重新打开局面。' },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes', zh: '候选数笔记' } },
+      { href: '/games/samurai/overlap-boxes', label: { en: 'Overlap boxes', zh: '重叠宫详解' } },
+      { href: '/games/samurai/solver', label: { en: 'Hint guide', zh: '提示指南' } },
+    ],
+  },
+  evil: {
+    heading: { en: 'Evil puzzle practice path', zh: 'Evil 题练习路径' },
+    steps: [
+      {
+        title: { en: 'Audit overlaps before expanding notes', zh: '铺开候选前审计重叠区' },
+        body: { en: 'Confirm all four shared boxes before writing broad candidates across the board.', zh: '在全盘铺开候选前，先确认四个共享宫的所有约束。' },
+      },
+      {
+        title: { en: 'Use conflicts as rollback points', zh: '把冲突当作回滚点' },
+        body: { en: 'If the board contradicts itself, return to the last unsupported candidate or placement.', zh: '如果棋盘出现矛盾，回到上一次没有充分证明的候选或填数。' },
+      },
+    ],
+    links: [
+      { href: '/games/samurai/evil-solving-path', label: { en: 'Evil solving path', zh: 'Evil 解题路径' } },
+      { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes', zh: '候选数笔记' } },
+      { href: '/games/samurai/solver', label: { en: 'Hint guide', zh: '提示指南' } },
+    ],
+  },
+};
+
 function countGivenEntries(puzzle: NonNullable<Awaited<ReturnType<typeof getPuzzle>>>) {
   return puzzle.grids.reduce(
     (total, grid) => total + grid.initial.flat().filter((value) => value !== 0).length,
@@ -143,6 +227,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
   const newer = pos > 0 ? sameDifficulty[pos - 1] : null;
   const older = pos >= 0 && pos < sameDifficulty.length - 1 ? sameDifficulty[pos + 1] : null;
   const related = sameDifficulty.filter((p) => p.id !== puzzle.id).slice(0, 6);
+  const practicePath = PRACTICE_PATHS[difficulty];
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -181,7 +266,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
             <p className="leading-relaxed text-muted-foreground">
               {isZh
                 ? `这是一道 ${diffLabel} 难度的每日武士数独，预计 ${puzzle.metadata.estimatedTime} 分钟完成。五个 9x9 网格共享四个重叠 3x3 区域，适合先从重叠宫和给定数密集区域开始。`
-                : `This is a ${diffLabel.toLowerCase()} daily Samurai Sudoku puzzle with an estimated solve time of ${puzzle.metadata.estimatedTime} minutes. The five 9x9 grids share four overlapping 3x3 boxes, so start with the overlap boxes and the densest given areas.`}
+                : `This is ${getEnglishArticle(diffLabel)} ${diffLabel.toLowerCase()} daily Samurai Sudoku puzzle with an estimated solve time of ${puzzle.metadata.estimatedTime} minutes. The five 9x9 grids share four overlapping 3x3 boxes, so start with the overlap boxes and the densest given areas.`}
             </p>
           </div>
 
@@ -218,6 +303,21 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
                 ? '先扫描中心网格与四角网格的重叠区域，再记录候选数。若某个数字同时限制中心网格和角落网格，优先处理它；如果卡住，可以回到同难度归档页继续练习相邻日期题。'
                 : 'Scan the four overlap boxes first, then add candidate notes. Prioritize numbers that constrain both the center grid and a corner grid; if the puzzle stalls, use the same-difficulty archive links below to practice nearby dates.'}
             </p>
+            <section className="rounded-lg border bg-secondary/20 p-4">
+              <h3 className="font-semibold">{practicePath.heading[isZh ? 'zh' : 'en']}</h3>
+              <ol className="mt-3 grid gap-3 md:grid-cols-2">
+                {practicePath.steps.map((step, index) => (
+                  <li key={step.title.en} className="rounded-md bg-background p-3">
+                    <h4 className="text-sm font-semibold">
+                      {index + 1}. {step.title[isZh ? 'zh' : 'en']}
+                    </h4>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {step.body[isZh ? 'zh' : 'en']}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </section>
             <div className="flex flex-wrap gap-2 text-sm">
               <Link href={`/${resolvedParams.locale}/games/samurai/how-to-play`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
                 {isZh ? '规则说明' : 'How to play'}
@@ -228,6 +328,15 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
               <Link href={`/${resolvedParams.locale}/games/samurai/archive`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
                 {isZh ? '全部题库' : 'Full archive'}
               </Link>
+              {practicePath.links.map((link) => (
+                <Link
+                  key={link.href}
+                  href={`/${resolvedParams.locale}${link.href}`}
+                  className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10 transition-colors"
+                >
+                  {link.label[isZh ? 'zh' : 'en']}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
