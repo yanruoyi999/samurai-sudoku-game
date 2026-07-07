@@ -227,9 +227,27 @@ const saveCurrentProgress = (
 const loadCurrentProgress = (puzzle: Puzzle): Partial<SudokuStore> | null => {
   if (typeof window === 'undefined') return null;
 
+  const loadMatchingInProgressGame = () => {
+    const matchingGame = getInProgressGames().find(
+      (game) => game.puzzle.id === puzzle.id
+    );
+    if (!matchingGame) return null;
+
+    const savedAt = new Date(matchingGame.savedAt ?? matchingGame.lastPlayed).getTime();
+    if (
+      Number.isNaN(savedAt) ||
+      Date.now() - savedAt > MAX_IN_PROGRESS_AGE_MS
+    ) {
+      removeInProgressGame(puzzle.id);
+      return null;
+    }
+
+    return buildStateFromInProgressGame(matchingGame);
+  };
+
   try {
     const data = localStorage.getItem(CURRENT_PROGRESS_KEY);
-    if (!data) return null;
+    if (!data) return loadMatchingInProgressGame();
 
     const progress = JSON.parse(data) as PersistedSudokuProgress;
     const savedAt = new Date(progress.savedAt).getTime();
@@ -240,7 +258,10 @@ const loadCurrentProgress = (puzzle: Puzzle): Partial<SudokuStore> | null => {
       Number.isNaN(savedAt) ||
       Date.now() - savedAt > MAX_IN_PROGRESS_AGE_MS
     ) {
-      return null;
+      if (progress.puzzleId === puzzle.id) {
+        localStorage.removeItem(CURRENT_PROGRESS_KEY);
+      }
+      return loadMatchingInProgressGame();
     }
 
     const engine = rebuildEngine(puzzle, progress.board);

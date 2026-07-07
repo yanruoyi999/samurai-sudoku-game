@@ -30,6 +30,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Overlap boxes explained: ${baseUrl}/en/games/samurai/overlap-boxes
 - Candidate notes guide: ${baseUrl}/en/games/samurai/candidate-notes
 - Evil solving path: ${baseUrl}/en/games/samurai/evil-solving-path
+- Evil stuck after two grids guide: ${baseUrl}/en/games/samurai/evil-stuck-after-two-grids
 - Solver and hint guide: ${baseUrl}/en/games/samurai/solver
 - Printable Samurai Sudoku: ${baseUrl}/en/games/samurai/printable
 - Samurai Sudoku PDF pack: ${baseUrl}/en/games/samurai/pdf
@@ -55,6 +56,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The overlap boxes guide explains the four shared 3x3 boxes that connect the center grid with the corner grids.
 - The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles.
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
+- The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
 - Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
 - The PDF pack page is the purchase-intent page for bundled printable puzzles and answer keys; it can point to checkout when NEXT_PUBLIC_SUDOKU_PDF_PACK_URL is configured.
 - The free PDF sample pack includes four printable puzzles, one per difficulty, plus answer keys.

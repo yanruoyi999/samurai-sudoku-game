@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { SudokuSolver } from "@/lib/sudoku/solver";
 import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
+import { isPuzzleId } from "@/lib/puzzle-id";
 import type { Difficulty } from "@/lib/sudoku/types";
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -24,6 +26,8 @@ export function ActionBar() {
   const tHints = useTranslations('hints');
   const tGame = useTranslations('game');
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const undo = useSudokuStore((state) => state.undo);
   const redo = useSudokuStore((state) => state.redo);
@@ -182,6 +186,21 @@ export function ActionBar() {
       difficulty: difficulty ?? '',
       puzzle_id: puzzleId ?? '',
     });
+  };
+
+  const handleResumeGame = (game: InProgressGame) => {
+    loadInProgressGame(game);
+    trackInteraction('sudoku_saved_game_resume', {
+      difficulty: game.difficulty,
+      puzzle_id: game.puzzle.id,
+    });
+
+    if (!isPuzzleId(game.puzzle.id)) return;
+
+    const targetPath = `/${locale}/games/samurai/${game.puzzle.id}`;
+    if (pathname !== targetPath) {
+      router.push(targetPath);
+    }
   };
 
   return (
@@ -401,7 +420,7 @@ export function ActionBar() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => loadInProgressGame(game)}
+                    onClick={() => handleResumeGame(game)}
                     className="mt-2 w-full rounded border border-yellow-300 px-2 py-1 text-[11px] font-medium text-yellow-800 transition-colors hover:bg-yellow-100 dark:border-yellow-700 dark:text-yellow-200 dark:hover:bg-yellow-900/30"
                   >
                     {t('resumeGame')}

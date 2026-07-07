@@ -215,6 +215,26 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/samurai-sudoku-stuck',
+        destination: '/en/games/samurai/evil-stuck-after-two-grids',
+        permanent: true,
+      },
+      {
+        source: '/evil-samurai-sudoku-stuck',
+        destination: '/en/games/samurai/evil-stuck-after-two-grids',
+        permanent: true,
+      },
+      {
+        source: '/samurai-sudoku-stuck-after-two-grids',
+        destination: '/en/games/samurai/evil-stuck-after-two-grids',
+        permanent: true,
+      },
+      {
+        source: '/samurai-sudoku-third-grid-stuck',
+        destination: '/en/games/samurai/evil-stuck-after-two-grids',
+        permanent: true,
+      },
+      {
         source: '/minesweeper',
         destination: '/en/games/minesweeper',
         permanent: true,

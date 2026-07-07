@@ -53,6 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/overlap-boxes', changeFrequency: 'monthly' as const, priority: 0.69 },
     { path: '/games/samurai/candidate-notes', changeFrequency: 'monthly' as const, priority: 0.69 },
     { path: '/games/samurai/evil-solving-path', changeFrequency: 'monthly' as const, priority: 0.7 },
+    { path: '/games/samurai/evil-stuck-after-two-grids', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/games/samurai/printable', changeFrequency: 'monthly' as const, priority: 0.73 },
     { path: '/games/samurai/pdf', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/games/samurai/pdf/sample', changeFrequency: 'monthly' as const, priority: 0.68 },

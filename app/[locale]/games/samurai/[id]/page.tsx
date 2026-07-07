@@ -95,6 +95,7 @@ const PRACTICE_PATHS: Record<
       },
     ],
     links: [
+      { href: '/games/samurai/evil-stuck-after-two-grids', label: { en: 'Stuck after two grids', zh: '两个网格后卡住' } },
       { href: '/games/samurai/evil-solving-path', label: { en: 'Evil solving path', zh: 'Evil 解题路径' } },
       { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes', zh: '候选数笔记' } },
       { href: '/games/samurai/solver', label: { en: 'Hint guide', zh: '提示指南' } },

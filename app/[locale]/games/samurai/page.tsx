@@ -240,6 +240,9 @@ async function SamuraiGamePageContent({
                 <Link href={`/${locale}/games/samurai/evil-solving-path`} className="text-primary hover:underline">
                   {isZh ? 'Evil 解题路径' : 'Evil solving path'}
                 </Link>
+                <Link href={`/${locale}/games/samurai/evil-stuck-after-two-grids`} className="text-primary hover:underline">
+                  {isZh ? 'Evil 两个网格后卡住' : 'Evil stuck after two grids'}
+                </Link>
                 <Link href={`/${locale}/games/samurai/archive`} className="text-primary hover:underline">
                   {isZh ? '全部武士数独题库' : 'Full Samurai Sudoku archive'}
                 </Link>
