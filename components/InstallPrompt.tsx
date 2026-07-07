@@ -12,6 +12,8 @@ interface InstallPromptProps {
   locale: string;
 }
 
+const INSTALL_PROMPT_DELAY_MS = 90_000;
+
 export function InstallPrompt({ locale }: InstallPromptProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -47,8 +49,10 @@ export function InstallPrompt({ locale }: InstallPromptProps) {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       showTimer = setTimeout(() => {
-        setShowInstallBanner(true);
-      }, 15000);
+        if (document.visibilityState === 'visible') {
+          setShowInstallBanner(true);
+        }
+      }, INSTALL_PROMPT_DELAY_MS);
     };
 
     const handleAppInstalled = () => {

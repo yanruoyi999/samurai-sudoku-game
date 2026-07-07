@@ -58,7 +58,7 @@
     "undoShortcut": "撤销 (Ctrl+Z)",
     "redoShortcut": "重做 (Ctrl+Y)",
     "gameHistory": "游戏历史",
-    "viewAll": "全部题库",
+    "viewAll": "题库归档",
     "inProgress": "进行中",
     "completed": "已完成",
     "noGameHistory": "暂无游戏历史",

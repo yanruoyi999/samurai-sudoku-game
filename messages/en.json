@@ -38,7 +38,7 @@
     "undoShortcut": "Undo (Ctrl+Z)",
     "redoShortcut": "Redo (Ctrl+Y)",
     "gameHistory": "Game History",
-    "viewAll": "All Puzzles",
+    "viewAll": "Puzzle archive",
     "inProgress": "In Progress",
     "completed": "Completed",
     "noGameHistory": "No game history yet",

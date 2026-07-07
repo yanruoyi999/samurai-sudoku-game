@@ -110,6 +110,11 @@ export function ActionBar() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const selectedDifficultyGuide = DIFFICULTY_GUIDANCE[selectedDifficulty][locale === 'zh' ? 'zh' : 'en'];
+  const selectedDifficultyLabel = tGame(`difficulty.${selectedDifficulty}`);
+  const newGameLabel = locale === 'zh'
+    ? `开始${selectedDifficultyLabel}新题`
+    : `Start ${selectedDifficultyLabel} Puzzle`;
+  const archiveCtaLabel = locale === 'zh' ? '更多日期题目' : 'More dated puzzles';
 
   // Load game history
   useEffect(() => {
@@ -154,10 +159,14 @@ export function ActionBar() {
   const handleNewGame = () => {
     if (isGenerating || isPending) return; // Prevent rapid clicks
 
-    if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
+    const hasEnteredAnything = historyIndex >= 0;
+    const canStart = !hasEnteredAnything || confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.");
+
+    if (canStart) {
       setIsGenerating(true);
       trackInteraction('new_game_started', {
         current_difficulty: difficulty ?? '',
+        has_entered_anything: hasEnteredAnything,
         puzzle_id: puzzleId ?? '',
         selected_difficulty: selectedDifficulty,
         source: 'action_bar',
@@ -341,8 +350,21 @@ export function ActionBar() {
             disabled={isGenerating}
             className="w-full px-4 py-3 text-sm font-medium rounded-md border-2 border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-60 disabled:cursor-wait"
           >
-            {isGenerating ? '…' : '✨'} {t('newGame')}
+            {isGenerating ? '…' : '✨'} {newGameLabel}
           </button>
+
+          <Link
+            href={`/${locale}/games/samurai/archive`}
+            onClick={() => trackInteraction('archive_cta_click', {
+              difficulty: difficulty ?? '',
+              location: 'action_bar_controls',
+              puzzle_id: puzzleId ?? '',
+              selected_difficulty: selectedDifficulty,
+            })}
+            className="block w-full px-4 py-2 text-sm font-medium rounded-md border text-center hover:bg-accent transition-colors"
+          >
+            {archiveCtaLabel}
+          </Link>
 
           <Link
             href={`/${locale}`}
@@ -631,8 +653,20 @@ export function ActionBar() {
               disabled={isGenerating}
               className="px-3 py-2 text-xs font-medium rounded-md border border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors whitespace-nowrap disabled:opacity-60 disabled:cursor-wait"
             >
-              {isGenerating ? '…' : '✨'} {t('newGame')}
+              {isGenerating ? '…' : '✨'} {newGameLabel}
             </button>
+            <Link
+              href={`/${locale}/games/samurai/archive`}
+              onClick={() => trackInteraction('archive_cta_click', {
+                difficulty: difficulty ?? '',
+                location: 'mobile_action_bar_controls',
+                puzzle_id: puzzleId ?? '',
+                selected_difficulty: selectedDifficulty,
+              })}
+              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent transition-colors whitespace-nowrap"
+            >
+              {archiveCtaLabel}
+            </Link>
             <Link
               href={`/${locale}`}
               className="px-3 py-2 text-xs font-medium rounded-md border border-primary text-primary hover:bg-primary/10 transition-colors whitespace-nowrap"
