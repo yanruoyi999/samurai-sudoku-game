@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
+import { GameOnboardingPrompt } from "@/components/sudoku/GameOnboardingPrompt";
 import { trackInteraction } from "@/lib/analytics/events";
 
 const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
@@ -143,6 +144,7 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
           <div className="flex-1 overflow-y-auto p-4">
             <div className="max-w-3xl mx-auto space-y-4">
               <StatsPanel />
+              <GameOnboardingPrompt />
               <SamuraiBoard key={puzzleId} />
               <div className="flex justify-center">
                 <Link
@@ -166,6 +168,7 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
         <div className="hidden md:block lg:hidden h-full overflow-y-auto">
           <div className="container mx-auto px-4 py-6 space-y-6">
             <StatsPanel />
+            <GameOnboardingPrompt />
             <SamuraiBoard key={puzzleId} />
             <NumberPad showCandidates />
             <ActionBar />
@@ -175,6 +178,7 @@ export default function PuzzleClient({ puzzleId, initialPuzzle }: PuzzleClientPr
         <div className="md:hidden h-full flex flex-col">
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
             <StatsPanel />
+            <GameOnboardingPrompt />
             <SamuraiBoard key={puzzleId} />
           </div>
 

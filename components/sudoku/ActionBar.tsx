@@ -19,6 +19,61 @@ import { trackInteraction } from '@/lib/analytics/events';
 import Link from 'next/link';
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
+const DIFFICULTY_GUIDANCE: Record<
+  Difficulty,
+  {
+    en: { badge: string; body: string };
+    zh: { badge: string; body: string };
+  }
+> = {
+  easy: {
+    en: {
+      badge: 'Recommended first',
+      body: 'Best for first-time Samurai Sudoku players. Expect more givens and a shorter 5-10 minute start.',
+    },
+    zh: {
+      badge: '推荐先玩',
+      body: '适合第一次玩武士数独。给数更多，通常 5-10 分钟能建立手感。',
+    },
+  },
+  medium: {
+    en: {
+      badge: 'Regular Sudoku ready',
+      body: 'Choose this if you know standard Sudoku and want to practice overlap boxes without heavy pressure.',
+    },
+    zh: {
+      badge: '会普通数独',
+      body: '适合已经会普通数独的玩家，用来练重叠区，不会一上来压力太大。',
+    },
+  },
+  hard: {
+    en: {
+      badge: 'Use candidates',
+      body: 'Pick Hard when you are comfortable using candidate notes and checking cross-grid effects.',
+    },
+    zh: {
+      badge: '需要候选数',
+      body: '适合已经会用候选数，并愿意反复检查重叠区影响的玩家。',
+    },
+  },
+  evil: {
+    en: {
+      badge: 'Expert challenge',
+      body: 'For long sessions. Rebuild candidates around overlap boxes before guessing.',
+    },
+    zh: {
+      badge: '专家挑战',
+      body: '适合长时间挑战。猜之前先围绕重叠区重建候选。',
+    },
+  },
+};
+
+const DIFFICULTY_ACTIVE_CLASS: Record<Difficulty, string> = {
+  easy: 'bg-green-500 text-white',
+  medium: 'bg-yellow-500 text-white',
+  hard: 'bg-red-500 text-white',
+  evil: 'bg-purple-600 text-white',
+};
 
 export function ActionBar() {
   const t = useTranslations('actions');
@@ -54,6 +109,7 @@ export function ActionBar() {
   const [inProgressGames, setInProgressGames] = useState<InProgressGame[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const selectedDifficultyGuide = DIFFICULTY_GUIDANCE[selectedDifficulty][locale === 'zh' ? 'zh' : 'en'];
 
   // Load game history
   useEffect(() => {
@@ -100,6 +156,12 @@ export function ActionBar() {
 
     if (confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.")) {
       setIsGenerating(true);
+      trackInteraction('new_game_started', {
+        current_difficulty: difficulty ?? '',
+        puzzle_id: puzzleId ?? '',
+        selected_difficulty: selectedDifficulty,
+        source: 'action_bar',
+      });
 
       window.setTimeout(() => {
         try {
@@ -122,6 +184,19 @@ export function ActionBar() {
         }
       }, 0);
     }
+  };
+
+  const handleDifficultySelect = (nextDifficulty: Difficulty, source: 'desktop' | 'mobile') => {
+    if (nextDifficulty === selectedDifficulty) return;
+
+    trackInteraction('difficulty_changed', {
+      current_puzzle_difficulty: difficulty ?? '',
+      from_difficulty: selectedDifficulty,
+      puzzle_id: puzzleId ?? '',
+      source,
+      to_difficulty: nextDifficulty,
+    });
+    setSelectedDifficulty(nextDifficulty);
   };
 
   const getCompletionPercentage = () => {
@@ -233,46 +308,27 @@ export function ActionBar() {
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">{tGame('difficulty.label')}</h3>
           <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setSelectedDifficulty('easy')}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                selectedDifficulty === 'easy'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-secondary hover:bg-secondary/80'
-              }`}
-            >
-              {tGame('difficulty.easy')}
-            </button>
-            <button
-              onClick={() => setSelectedDifficulty('medium')}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                selectedDifficulty === 'medium'
-                  ? 'bg-yellow-500 text-white'
-                  : 'bg-secondary hover:bg-secondary/80'
-              }`}
-            >
-              {tGame('difficulty.medium')}
-            </button>
-            <button
-              onClick={() => setSelectedDifficulty('hard')}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                selectedDifficulty === 'hard'
-                  ? 'bg-red-500 text-white'
-                  : 'bg-secondary hover:bg-secondary/80'
-              }`}
-            >
-              {tGame('difficulty.hard')}
-            </button>
-            <button
-              onClick={() => setSelectedDifficulty('evil')}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                selectedDifficulty === 'evil'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-secondary hover:bg-secondary/80'
-              }`}
-            >
-              {tGame('difficulty.evil')}
-            </button>
+            {DIFFICULTIES.map((diff) => (
+              <button
+                key={diff}
+                onClick={() => handleDifficultySelect(diff, 'desktop')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  selectedDifficulty === diff
+                    ? DIFFICULTY_ACTIVE_CLASS[diff]
+                    : 'bg-secondary hover:bg-secondary/80'
+                }`}
+              >
+                {tGame(`difficulty.${diff}`)}
+              </button>
+            ))}
+          </div>
+          <div className="rounded-md border bg-secondary/40 p-3">
+            <p className="text-xs font-semibold text-foreground">
+              {selectedDifficultyGuide.badge}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              {selectedDifficultyGuide.body}
+            </p>
           </div>
         </div>
 
@@ -499,13 +555,10 @@ export function ActionBar() {
               {DIFFICULTIES.map((diff) => (
                 <button
                   key={diff}
-                  onClick={() => setSelectedDifficulty(diff)}
+                  onClick={() => handleDifficultySelect(diff, 'mobile')}
                   className={`px-3 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
                     selectedDifficulty === diff
-                      ? diff === 'easy' ? 'bg-green-500 text-white'
-                        : diff === 'medium' ? 'bg-yellow-500 text-white'
-                        : diff === 'hard' ? 'bg-red-500 text-white'
-                        : 'bg-purple-600 text-white'
+                      ? DIFFICULTY_ACTIVE_CLASS[diff]
                       : 'bg-secondary hover:bg-secondary/80'
                   }`}
                 >
@@ -513,6 +566,14 @@ export function ActionBar() {
                 </button>
               ))}
             </div>
+          </div>
+          <div className="rounded-md border bg-secondary/40 px-3 py-2">
+            <p className="text-xs font-semibold text-foreground">
+              {selectedDifficultyGuide.badge}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              {selectedDifficultyGuide.body}
+            </p>
           </div>
 
           {/* Action Buttons - Scrollable on mobile */}

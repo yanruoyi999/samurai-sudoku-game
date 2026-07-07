@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { trackInteraction } from "@/lib/analytics/events";
@@ -7,6 +8,22 @@ import { trackInteractionOncePerPuzzle } from "@/lib/analytics/once";
 import { cn } from "@/lib/utils";
 
 const NUMBER_PAD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+const FEEDBACK_DURATION_MS = 1600;
+
+const FEEDBACK_COPY = {
+  en: {
+    candidateAdded: (value: number) => `Candidate ${value} added`,
+    candidateRemoved: (value: number) => `Candidate ${value} removed`,
+    cleared: "Cell cleared",
+    entered: (value: number) => `Entered ${value}`,
+  },
+  zh: {
+    candidateAdded: (value: number) => `已添加候选 ${value}`,
+    candidateRemoved: (value: number) => `已移除候选 ${value}`,
+    cleared: "已清除",
+    entered: (value: number) => `已填入 ${value}`,
+  },
+};
 
 interface NumberPadProps {
   onNumberSelect?: (num: number) => void;
@@ -17,6 +34,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const t = useTranslations("game");
   const tActions = useTranslations("actions");
   const locale = useLocale();
+  const feedbackCopy = locale === "zh" ? FEEDBACK_COPY.zh : FEEDBACK_COPY.en;
   const selectedCell = useSudokuStore((state) => state.selectedCell);
   const setCell = useSudokuStore((state) => state.setCell);
   const clearCell = useSudokuStore((state) => state.clearCell);
@@ -26,9 +44,39 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const noteMode = useSudokuStore((state) => state.showCandidates);
   const difficulty = useSudokuStore((state) => state.difficulty);
   const puzzleId = useSudokuStore((state) => state.puzzleId);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current) {
+        clearTimeout(feedbackTimerRef.current);
+      }
+    };
+  }, []);
+
+  const showFeedback = (message: string) => {
+    setFeedbackMessage(message);
+
+    if (feedbackTimerRef.current) {
+      clearTimeout(feedbackTimerRef.current);
+    }
+
+    feedbackTimerRef.current = setTimeout(() => {
+      setFeedbackMessage(null);
+      feedbackTimerRef.current = null;
+    }, FEEDBACK_DURATION_MS);
+  };
 
   const trackFirstNumberPadInput = (num: number) => {
     trackInteractionOncePerPuzzle("sudoku_first_number_input", puzzleId, {
+      difficulty: difficulty ?? "",
+      locale,
+      note_mode: noteMode,
+      source: "number_pad",
+      value: num,
+    });
+    trackInteractionOncePerPuzzle("first_number_entered", puzzleId, {
       difficulty: difficulty ?? "",
       locale,
       note_mode: noteMode,
@@ -39,7 +87,13 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
 
   const handleNumberClick = (num: number) => {
     if (selectedCell) {
+      const currentValue = engine?.getValue(selectedCell) ?? 0;
+
       if (noteMode) {
+        if (currentValue !== 0) return;
+
+        const key = `${selectedCell.row},${selectedCell.col}`;
+        const hadCandidate = candidates.get(key)?.has(num) ?? false;
         toggleCandidate(selectedCell, num);
         trackInteraction("sudoku_candidate_toggle", {
           difficulty: difficulty ?? "",
@@ -47,7 +101,14 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           puzzle_id: puzzleId ?? "",
           value: num,
         });
+        showFeedback(
+          hadCandidate
+            ? feedbackCopy.candidateRemoved(num)
+            : feedbackCopy.candidateAdded(num)
+        );
       } else {
+        if (currentValue === num) return;
+
         setCell(selectedCell, num);
         trackInteraction("sudoku_cell_input", {
           difficulty: difficulty ?? "",
@@ -55,6 +116,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           puzzle_id: puzzleId ?? "",
           value: num,
         });
+        showFeedback(feedbackCopy.entered(num));
       }
       trackFirstNumberPadInput(num);
     }
@@ -71,12 +133,24 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
 
   const handleClear = () => {
     if (selectedCell) {
+      const key = `${selectedCell.row},${selectedCell.col}`;
+      const hasValue = (engine?.getValue(selectedCell) ?? 0) !== 0;
+      const hasCandidates = candidates.has(key);
+
+      if (!hasValue && !hasCandidates) return;
+
       clearCell(selectedCell);
       trackInteraction("sudoku_cell_clear", {
         difficulty: difficulty ?? "",
         input_method: "number_pad",
         puzzle_id: puzzleId ?? "",
       });
+      trackInteraction("cell_cleared", {
+        difficulty: difficulty ?? "",
+        input_method: "number_pad",
+        puzzle_id: puzzleId ?? "",
+      });
+      showFeedback(feedbackCopy.cleared);
     }
   };
 
@@ -157,6 +231,16 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
             {noteMode
               ? t("noteMode")
               : t("possibleValues", { values: Array.from(possibleValues).sort().join(", ") })}
+          </p>
+        )}
+
+        {feedbackMessage && (
+          <p
+            className="mt-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-center text-xs font-medium text-primary"
+            role="status"
+            aria-live="polite"
+          >
+            {feedbackMessage}
           </p>
         )}
       </div>

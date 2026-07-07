@@ -69,6 +69,7 @@ export function SamuraiBoard() {
   const toggleCandidate = useSudokuStore((state) => state.toggleCandidate);
   const undo = useSudokuStore((state) => state.undo);
   const redo = useSudokuStore((state) => state.redo);
+  const difficulty = useSudokuStore((state) => state.difficulty);
   const trackedFirstSelectionPuzzleId = useRef<string | null>(null);
 
   const highlightedCellKeys = useMemo(() => {
@@ -130,6 +131,12 @@ export function SamuraiBoard() {
         col: pos.col + 1,
         source,
       });
+      trackInteractionOncePerPuzzle("first_cell_selected", puzzleId, {
+        locale,
+        row: pos.row + 1,
+        col: pos.col + 1,
+        source,
+      });
     },
     [locale, puzzleId]
   );
@@ -137,6 +144,12 @@ export function SamuraiBoard() {
   const trackFirstKeyboardInput = useCallback(
     (value: number) => {
       trackInteractionOncePerPuzzle("sudoku_first_number_input", puzzleId, {
+        locale,
+        value,
+        note_mode: showCandidates,
+        source: "keyboard",
+      });
+      trackInteractionOncePerPuzzle("first_number_entered", puzzleId, {
         locale,
         value,
         note_mode: showCandidates,
@@ -192,10 +205,28 @@ export function SamuraiBoard() {
       if (e.key >= "1" && e.key <= "9") {
         e.preventDefault();
         const num = parseInt(e.key);
+        const currentValue = engine?.getValue(selectedCell) ?? 0;
+
         if (showCandidates) {
+          if (currentValue !== 0) return;
+
           toggleCandidate(selectedCell, num);
+          trackInteraction("sudoku_candidate_toggle", {
+            difficulty: difficulty ?? "",
+            input_method: "keyboard",
+            puzzle_id: puzzleId ?? "",
+            value: num,
+          });
         } else {
+          if (currentValue === num) return;
+
           setCell(selectedCell, num);
+          trackInteraction("sudoku_cell_input", {
+            difficulty: difficulty ?? "",
+            input_method: "keyboard",
+            puzzle_id: puzzleId ?? "",
+            value: num,
+          });
         }
         trackFirstKeyboardInput(num);
         return;
@@ -204,7 +235,23 @@ export function SamuraiBoard() {
       // Backspace or Delete to clear
       if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
         e.preventDefault();
+        const key = `${selectedCell.row},${selectedCell.col}`;
+        const hasValue = (engine?.getValue(selectedCell) ?? 0) !== 0;
+        const hasCandidates = candidates.has(key);
+
+        if (!hasValue && !hasCandidates) return;
+
         clearCell(selectedCell);
+        trackInteraction("sudoku_cell_clear", {
+          difficulty: difficulty ?? "",
+          input_method: "keyboard",
+          puzzle_id: puzzleId ?? "",
+        });
+        trackInteraction("cell_cleared", {
+          difficulty: difficulty ?? "",
+          input_method: "keyboard",
+          puzzle_id: puzzleId ?? "",
+        });
         return;
       }
 
@@ -230,11 +277,15 @@ export function SamuraiBoard() {
       clearCell,
       toggleCandidate,
       selectCell,
+      difficulty,
+      puzzleId,
       findNextSelectableCell,
       trackFirstCellSelection,
       trackFirstKeyboardInput,
       undo,
       redo,
+      engine,
+      candidates,
     ]
   );
 
