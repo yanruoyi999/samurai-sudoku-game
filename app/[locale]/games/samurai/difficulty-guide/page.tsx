@@ -1,19 +1,12 @@
-import type { Metadata } from 'next';
-
-import { generateGuideMetadata, SamuraiGuidePage } from '../_guides/guide-page';
+import { permanentRedirect } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
 }
 
-const GUIDE = 'difficulty';
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export default async function DifficultyGuideRedirect({ params }: PageProps) {
   const { locale } = await params;
-  return generateGuideMetadata(GUIDE, locale);
-}
+  const normalizedLocale = locale === 'zh' ? 'zh' : 'en';
 
-export default async function DifficultyGuidePage({ params }: PageProps) {
-  const { locale } = await params;
-  return <SamuraiGuidePage guide={GUIDE} locale={locale} />;
+  permanentRedirect(`/${normalizedLocale}/games/samurai/choose-difficulty`);
 }

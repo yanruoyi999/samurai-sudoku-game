@@ -44,7 +44,7 @@ const PRACTICE_PATHS: Record<
     ],
     links: [
       { href: '/games/samurai/beginners', label: { en: 'Beginner guide', zh: '新手指南' } },
-      { href: '/games/samurai/difficulty-guide', label: { en: 'Difficulty guide', zh: '难度指南' } },
+      { href: '/games/samurai/choose-difficulty', label: { en: 'Difficulty guide', zh: '难度指南' } },
     ],
   },
   medium: {

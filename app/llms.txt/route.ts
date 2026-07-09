@@ -39,7 +39,6 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Samurai Sudoku PDF pack: ${baseUrl}/en/games/samurai/pdf
 - Free PDF sample pack: ${baseUrl}/en/games/samurai/pdf/sample
 - Beginner guide: ${baseUrl}/en/games/samurai/beginners
-- Difficulty guide: ${baseUrl}/en/games/samurai/difficulty-guide
 - Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
 - Minesweeper Online: ${baseUrl}/en/games/minesweeper
 - How to play Minesweeper: ${baseUrl}/en/games/minesweeper/how-to-play

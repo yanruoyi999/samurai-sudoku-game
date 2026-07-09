@@ -210,9 +210,6 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
                 <p className="mt-3 text-muted-foreground leading-relaxed">{s.body.join(' ')}</p>
                 {index === 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <Link href={`/${locale}/games/samurai/solving-tips`} className="rounded-md border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
-                      {isZh ? '看通关技巧总纲' : 'Read solving tips'}
-                    </Link>
                     <Link href={`/${locale}/games/samurai/first-move-strategy`} className="rounded-md border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
                       {isZh ? '先看第一步攻略' : 'Read first-move guide'}
                     </Link>
@@ -253,9 +250,6 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href={`/${locale}/games/samurai/solving-tips`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
               {isZh ? '看通关技巧' : 'Read solving tips'}
-            </Link>
-            <Link href={`/${locale}/games/samurai/first-move-strategy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
-              {isZh ? '看第一步攻略' : 'Read first-move guide'}
             </Link>
             <Link href={`/${locale}/games/samurai/difficulty/easy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
               {isZh ? '从简单题开始' : 'Start with Easy'}

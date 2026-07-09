@@ -14,7 +14,6 @@ type GuideKey =
   | 'candidateNotes'
   | 'evilSolvingPath'
   | 'paperPractice'
-  | 'difficulty'
   | 'daily'
   | 'printable'
   | 'solver';
@@ -514,72 +513,6 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
         ],
         primaryCta: '选择一道题',
         secondaryCta: '查看解题策略',
-      },
-    },
-  },
-  difficulty: {
-    path: '/games/samurai/difficulty-guide',
-    backHref: '/games/samurai',
-    primaryHref: '/games/samurai/difficulty/easy',
-    secondaryHref: '/games/samurai/strategy-guide',
-    keywords: {
-      en: ['samurai sudoku difficulty', 'hard samurai sudoku', 'evil samurai sudoku'],
-      zh: ['武士数独难度', '困难武士数独', 'Evil 武士数独'],
-    },
-    content: {
-      en: {
-        title: 'Samurai Sudoku Difficulty Guide',
-        description:
-          'Understand Easy, Medium, Hard, and Evil Samurai Sudoku difficulty levels and choose the right practice path.',
-        intro:
-          'Choosing the right difficulty keeps practice sustainable. Start with structure, then add candidates and cross-grid reasoning as you improve.',
-        backLabel: 'Back to game',
-        items: [
-          {
-            title: 'Easy',
-            body: 'Best for first-time Samurai Sudoku players. More givens help you learn the five-grid layout and overlap boxes.',
-          },
-          {
-            title: 'Medium',
-            body: 'Best once the rules feel natural. You will use more candidates and cross-grid eliminations.',
-          },
-          {
-            title: 'Hard',
-            body: 'Best for players comfortable with candidates, hidden singles, and candidate pairs.',
-          },
-          {
-            title: 'Evil',
-            body: 'Best for long reasoning sessions. Expect careful note management and patient review.',
-          },
-        ],
-        primaryCta: 'Start with Easy',
-        secondaryCta: 'Read strategy guide',
-      },
-      zh: {
-        title: '武士数独难度选择指南',
-        description: '了解 Easy、Medium、Hard、Evil 武士数独难度差异，选择适合自己的练习路线。',
-        intro: '选择合适难度能让练习更稳定。先用简单题熟悉结构，再逐步增加候选数和跨网格推理。',
-        backLabel: '返回游戏',
-        items: [
-          {
-            title: 'Easy',
-            body: '适合第一次接触武士数独，给出数字更多，重点是熟悉五个网格和重叠宫。',
-          },
-          {
-            title: 'Medium',
-            body: '适合已经理解规则的玩家，需要更多候选数和跨网格排除。',
-          },
-          {
-            title: 'Hard',
-            body: '适合稳定使用候选数、唯一位置和候选对的玩家。',
-          },
-          {
-            title: 'Evil',
-            body: '适合想要长时间推理挑战的玩家，需要耐心复盘和更严格的候选管理。',
-          },
-        ],
-        primaryCta: '从 Easy 开始',
-        secondaryCta: '查看策略指南',
       },
     },
   },

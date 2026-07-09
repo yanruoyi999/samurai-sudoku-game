@@ -63,7 +63,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/strategy-guide', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/games/samurai/beginners', changeFrequency: 'monthly' as const, priority: 0.71 },
     { path: '/games/samurai/paper-practice', changeFrequency: 'monthly' as const, priority: 0.69 },
-    { path: '/games/samurai/difficulty-guide', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/games/minesweeper', changeFrequency: 'weekly' as const, priority: 0.66 },
     ...MINESWEEPER_GUIDE_SLUGS.map((slug) => ({
       path: `/games/minesweeper/${slug}`,
