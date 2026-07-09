@@ -66,6 +66,13 @@ export default async function HomePage() {
         : 'Learn when to use Easy, Medium, Hard, Evil, New Game, and All Puzzles.',
     },
     {
+      href: `/${locale}/games/samurai/solving-tips`,
+      title: locale === 'zh' ? '通关技巧' : 'Solving tips',
+      body: locale === 'zh'
+        ? '从开局、重叠宫、候选数到卡题复查，建立完整通关流程。'
+        : 'Follow a complete path from first move to overlap scans, notes, and final review.',
+    },
+    {
       href: `/${locale}/games/samurai/strategy-guide`,
       title: locale === 'zh' ? '解题策略' : 'Strategy guide',
       body: locale === 'zh'
@@ -123,6 +130,13 @@ export default async function HomePage() {
       body: locale === 'zh'
         ? '先判断简单、新游戏和全部题库分别适合什么场景。'
         : 'Compare Easy, New Game, and All Puzzles before switching randomly.',
+    },
+    {
+      href: `/${locale}/games/samurai/solving-tips`,
+      title: locale === 'zh' ? '想知道怎么通关？' : 'Want solving tips?',
+      body: locale === 'zh'
+        ? '从开局到完成，按稳定流程推进，不靠盲猜。'
+        : 'Use a complete solving workflow from first move to finish without guessing.',
     },
     {
       href: `/${locale}/games/samurai`,
@@ -217,7 +231,7 @@ export default async function HomePage() {
             <h2 id="quick-start-heading" className="text-2xl md:text-3xl font-semibold text-center">
               {locale === 'zh' ? '你想先做什么？' : 'What would you like to do first?'}
             </h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {quickStartLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -320,6 +334,13 @@ export default async function HomePage() {
                 <span aria-hidden>→</span>
               </Link>
               <Link
+                href={`/${locale}/games/samurai/solving-tips`}
+                className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
+              >
+                {locale === 'zh' ? '通关技巧' : 'Solving tips'}
+                <span aria-hidden>→</span>
+              </Link>
+              <Link
                 href={`/${locale}/games/samurai/how-to-play`}
                 className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
               >
@@ -335,8 +356,8 @@ export default async function HomePage() {
             </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-center">
               {locale === 'zh'
-                ? '如果你想提升解题能力，按每日练习、新手、第一步、难度选择、策略、提示、纸笔练习的顺序阅读这些原创指南。'
-                : 'If you want to improve, read these original guides in order: daily practice, beginner basics, first move, difficulty choice, strategy, hints, then paper-style practice.'}
+                ? '如果你想提升解题能力，按每日练习、新手、第一步、难度选择、通关技巧、提示、纸笔练习的顺序阅读这些原创指南。'
+                : 'If you want to improve, read these original guides in order: daily practice, beginner basics, first move, difficulty choice, solving tips, hints, then paper-style practice.'}
             </p>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {learningLinks.map((link) => (
@@ -415,8 +436,8 @@ export default async function HomePage() {
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
               {locale === 'zh'
-                ? '如果是第一次玩，建议先看第一步攻略或难度选择指南；如果已经了解规则，可以直接进入今日谜题。'
-                : 'If this is your first time, read the first-move or difficulty guide. If you already know the rules, jump into today’s puzzle.'}
+                ? '如果是第一次玩，建议先看第一步攻略、难度选择或通关技巧；如果已经了解规则，可以直接进入今日谜题。'
+                : 'If this is your first time, read the first-move, difficulty, or solving tips guide. If you already know the rules, jump into today’s puzzle.'}
             </p>
             <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href={`/${locale}/games/samurai/first-move-strategy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
@@ -424,6 +445,9 @@ export default async function HomePage() {
               </Link>
               <Link href={`/${locale}/games/samurai/choose-difficulty`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
                 {locale === 'zh' ? '看难度选择' : 'Choose difficulty'}
+              </Link>
+              <Link href={`/${locale}/games/samurai/solving-tips`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
+                {locale === 'zh' ? '看通关技巧' : 'Read solving tips'}
               </Link>
               <Link href={`/${locale}/games/samurai/difficulty/easy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
                 {locale === 'zh' ? '先做简单题' : 'Start with Easy'}
@@ -463,6 +487,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/choose-difficulty`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '难度选择' : 'Choose difficulty'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/solving-tips`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '通关技巧' : 'Solving tips'}
           </Link>
           <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '解题策略' : 'Strategy guide'}
