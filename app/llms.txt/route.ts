@@ -28,6 +28,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - How to play Samurai Sudoku: ${baseUrl}/en/games/samurai/how-to-play
 - First move strategy: ${baseUrl}/en/games/samurai/first-move-strategy
 - Difficulty selection guide: ${baseUrl}/en/games/samurai/choose-difficulty
+- Solving tips guide: ${baseUrl}/en/games/samurai/solving-tips
 - Strategy guide: ${baseUrl}/en/games/samurai/strategy-guide
 - Overlap boxes explained: ${baseUrl}/en/games/samurai/overlap-boxes
 - Candidate notes guide: ${baseUrl}/en/games/samurai/candidate-notes
@@ -57,6 +58,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The site provides easy, medium, hard, and evil difficulty landing pages.
 - The first move strategy guide explains how new players should select a cell before tapping a number, scan overlap boxes first, and use Easy puzzles before moving to harder boards.
 - The difficulty selection guide explains when to choose Easy, Medium, Hard, or Evil, how New Game behaves, and when to use the All Puzzles archive instead of random switching.
+- The solving tips guide gives a start-to-finish workflow: choose the right difficulty, start near overlap boxes, use naked and hidden singles, switch to candidate notes when stuck, and rescan connected grids after each overlap placement.
 - The overlap boxes guide explains the four shared 3x3 boxes that connect the center grid with the corner grids.
 - The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles.
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
