@@ -155,6 +155,12 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
           <Link href={`/${locale}/games/samurai/first-move-strategy`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
             {isZh ? '第一步攻略' : 'First move guide'}
           </Link>
+          <Link href={`/${locale}/games/samurai/choose-difficulty`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
+            {isZh ? '难度选择' : 'Choose difficulty'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/solving-tips`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
+            {isZh ? '通关技巧' : 'Solving tips'}
+          </Link>
           <Link href={`/${locale}/games/samurai/overlap-boxes`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
             {isZh ? '重叠宫详解' : 'Overlap boxes'}
           </Link>
@@ -191,8 +197,8 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
           <h2 className="text-2xl font-semibold">{isZh ? '解题策略（分步）' : 'Solving strategy (step by step)'}</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {isZh
-              ? '每个步骤标题都可以点击展开/收起；如果还不知道第一步点哪里，先看第一步攻略。'
-              : 'Each step heading can be tapped to expand or collapse. If you are not sure where to begin, read the first-move guide first.'}
+              ? '每个步骤标题都可以点击展开/收起；如果想看完整通关流程，先看通关技巧总纲。'
+              : 'Each step heading can be tapped to expand or collapse. For the complete path from first move to finish, read the solving tips guide.'}
           </p>
           <div className="mt-4 space-y-4">
             {steps.map((s, index) => (
@@ -204,6 +210,9 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
                 <p className="mt-3 text-muted-foreground leading-relaxed">{s.body.join(' ')}</p>
                 {index === 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
+                    <Link href={`/${locale}/games/samurai/solving-tips`} className="rounded-md border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
+                      {isZh ? '看通关技巧总纲' : 'Read solving tips'}
+                    </Link>
                     <Link href={`/${locale}/games/samurai/first-move-strategy`} className="rounded-md border border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/10">
                       {isZh ? '先看第一步攻略' : 'Read first-move guide'}
                     </Link>
@@ -238,10 +247,13 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
           <h2 className="text-2xl font-semibold">{isZh ? '准备开始了吗？' : 'Ready to try it?'}</h2>
           <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
             {isZh
-              ? '规则看完后不要停在教程页。先看第一步攻略，或直接选简单题练重叠区。'
-              : 'Do not stop on the guide page. Read the first-move guide, or start with Easy and use the overlap boxes as your first move.'}
+              ? '规则看完后不要停在教程页。先看通关技巧，或直接选简单题练重叠区。'
+              : 'Do not stop on the guide page. Read the solving tips guide, or start with Easy and use the overlap boxes as your first move.'}
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href={`/${locale}/games/samurai/solving-tips`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
+              {isZh ? '看通关技巧' : 'Read solving tips'}
+            </Link>
             <Link href={`/${locale}/games/samurai/first-move-strategy`} className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10">
               {isZh ? '看第一步攻略' : 'Read first-move guide'}
             </Link>
