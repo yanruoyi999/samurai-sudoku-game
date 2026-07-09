@@ -50,6 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/what-is-samurai-sudoku', changeFrequency: 'monthly' as const, priority: 0.75 },
     { path: '/games/samurai/how-to-play', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/games/samurai/first-move-strategy', changeFrequency: 'monthly' as const, priority: 0.74 },
+    { path: '/games/samurai/choose-difficulty', changeFrequency: 'monthly' as const, priority: 0.73 },
     { path: '/games/samurai/solver', changeFrequency: 'monthly' as const, priority: 0.74 },
     { path: '/games/samurai/overlap-boxes', changeFrequency: 'monthly' as const, priority: 0.69 },
     { path: '/games/samurai/candidate-notes', changeFrequency: 'monthly' as const, priority: 0.69 },
