@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 
-const MIN_INTERNAL_LINKS = 2;
+const MIN_OUTBOUND_INTERNAL_LINKS = 2;
+const MIN_INBOUND_INTERNAL_LINKS = 2;
 const CONCURRENCY = 16;
 const MAX_PAGES = 1000;
 const LOCALIZED_PATH = /^\/(en|zh)(?:\/|$)/;
@@ -129,25 +130,56 @@ async function main() {
     }
   }
 
-  const failures = audits
-    .filter((audit) => audit.error || audit.internalLinks.length < MIN_INTERNAL_LINKS)
+  const outboundFailures = audits
+    .filter((audit) => audit.error || audit.internalLinks.length < MIN_OUTBOUND_INTERNAL_LINKS)
     .sort((left, right) => left.path.localeCompare(right.path));
+  const sitemapPathSet = new Set(sitemapPaths);
+  const inboundSources = new Map(
+    sitemapPaths.map((path) => [path, new Set<string>()]),
+  );
+
+  for (const audit of audits) {
+    if (!sitemapPathSet.has(audit.path)) continue;
+
+    for (const targetPath of audit.internalLinks) {
+      if (sitemapPathSet.has(targetPath)) {
+        inboundSources.get(targetPath)?.add(audit.path);
+      }
+    }
+  }
+
+  const inboundFailures = [...inboundSources]
+    .filter(([, sources]) => sources.size < MIN_INBOUND_INTERNAL_LINKS)
+    .sort(([left], [right]) => left.localeCompare(right));
 
   console.log(`Audited ${audits.length} localized HTML pages at ${origin}.`);
-  console.log(`Required unique internal links per page: ${MIN_INTERNAL_LINKS}.`);
+  console.log(`Required unique outbound internal links per page: ${MIN_OUTBOUND_INTERNAL_LINKS}.`);
+  console.log(`Required inbound links per sitemap page: ${MIN_INBOUND_INTERNAL_LINKS}.`);
 
-  if (failures.length > 0) {
-    console.error(`Found ${failures.length} page(s) below the internal-link requirement:`);
-    for (const failure of failures) {
+  if (outboundFailures.length > 0) {
+    console.error(`Found ${outboundFailures.length} page(s) below the outbound-link requirement:`);
+    for (const failure of outboundFailures) {
       const detail = failure.error ?? `${failure.internalLinks.length} unique internal link(s)`;
       console.error(`- ${failure.path}: ${detail}`);
     }
+  }
+
+  if (inboundFailures.length > 0) {
+    console.error(`Found ${inboundFailures.length} sitemap page(s) below the inbound-link requirement:`);
+    for (const [path, sources] of inboundFailures) {
+      console.error(`- ${path}: ${sources.size} inbound link source(s)`);
+    }
+  }
+
+  if (outboundFailures.length > 0 || inboundFailures.length > 0) {
     process.exitCode = 1;
     return;
   }
 
-  const minimum = Math.min(...audits.map((audit) => audit.internalLinks.length));
-  console.log(`All pages passed. Lowest observed count: ${minimum}.`);
+  const minimumOutbound = Math.min(...audits.map((audit) => audit.internalLinks.length));
+  const minimumInbound = Math.min(...[...inboundSources.values()].map((sources) => sources.size));
+  console.log(`All pages passed. Lowest outbound count: ${minimumOutbound}.`);
+  console.log(`All sitemap pages passed. Lowest inbound count: ${minimumInbound}.`);
 }
 
 void main().catch((error) => {

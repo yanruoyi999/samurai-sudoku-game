@@ -7,6 +7,7 @@ import { locales, type Locale } from '@/i18n';
 import { buildLanguageAlternates } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { getPuzzle, getPuzzleIndex, getPuzzleMetadata } from '@/lib/puzzles';
+import { getNearbyPuzzles } from '@/lib/puzzle-links';
 import type { Difficulty } from '@/lib/sudoku/types';
 import PuzzleClient from './PuzzleClient';
 
@@ -227,7 +228,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
   const pos = sameDifficulty.findIndex((p) => p.id === puzzle.id);
   const newer = pos > 0 ? sameDifficulty[pos - 1] : null;
   const older = pos >= 0 && pos < sameDifficulty.length - 1 ? sameDifficulty[pos + 1] : null;
-  const related = sameDifficulty.filter((p) => p.id !== puzzle.id).slice(0, 6);
+  const related = getNearbyPuzzles(sameDifficulty, puzzle.id, 6);
   const practicePath = PRACTICE_PATHS[difficulty];
 
   const breadcrumbJsonLd = {
@@ -259,7 +260,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
         <div className="container mx-auto grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-4">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              {isZh ? '每日可索引题目' : 'Daily indexed puzzle'}
+              {isZh ? '题目概览' : 'Puzzle profile'}
             </p>
             <h1 className="text-3xl font-semibold tracking-tight">
               {puzzleTitle}
