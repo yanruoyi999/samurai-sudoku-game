@@ -133,6 +133,28 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           {isZh ? "。" : "."}
         </p>
       </section>
+
+      <nav
+        className="mt-10 border-t pt-6"
+        aria-label={isZh ? "隐私政策相关页面" : "Privacy policy related pages"}
+      >
+        <p className="text-sm text-muted-foreground">
+          {isZh
+            ? "需要进一步了解本站、联系团队，或继续解题？"
+            : "Learn more about the site, contact the team, or continue solving."}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium">
+          <Link href={`/${locale}/contact`} className="text-primary hover:text-primary/80">
+            {isZh ? "联系与反馈" : "Contact and feedback"}
+          </Link>
+          <Link href={`/${locale}/about`} className="text-primary hover:text-primary/80">
+            {isZh ? "关于武士数独" : "About Samurai Sudoku"}
+          </Link>
+          <Link href={`/${locale}/games/samurai`} className="text-primary hover:text-primary/80">
+            {isZh ? "继续今日谜题" : "Continue today's puzzle"}
+          </Link>
+        </div>
+      </nav>
     </main>
   );
 }
