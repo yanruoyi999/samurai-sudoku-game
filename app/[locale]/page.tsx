@@ -66,6 +66,13 @@ export default async function HomePage() {
         : 'Learn when to use Easy, Medium, Hard, Evil, New Game, and All Puzzles.',
     },
     {
+      href: `/${locale}/games/samurai/common-mistakes`,
+      title: locale === 'zh' ? '常见错误排查' : 'Common mistakes',
+      body: locale === 'zh'
+        ? '针对频繁切难度、开新局、填了又清、两三个区域后卡住的恢复流程。'
+        : 'Recover from difficulty switching, restarts, cleared entries, and mid-puzzle stalls.',
+    },
+    {
       href: `/${locale}/games/samurai/solving-tips`,
       title: locale === 'zh' ? '通关技巧' : 'Solving tips',
       body: locale === 'zh'
@@ -447,6 +454,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '解题策略' : 'Strategy guide'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/common-mistakes`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '常见错误' : 'Common mistakes'}
           </Link>
           <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '提示与求解' : 'Solver hints'}

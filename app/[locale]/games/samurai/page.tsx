@@ -222,6 +222,9 @@ async function SamuraiGamePageContent({
                 <Link href={`/${locale}/games/samurai/candidate-notes`} className="text-primary hover:underline">
                   {isZh ? '候选数笔记指南' : 'Candidate notes guide'}
                 </Link>
+                <Link href={`/${locale}/games/samurai/common-mistakes`} className="text-primary hover:underline">
+                  {isZh ? '常见错误与卡点恢复' : 'Common mistakes and stuck recovery'}
+                </Link>
                 <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:underline">
                   {isZh ? '提示与求解指南' : 'Solver-style hint guide'}
                 </Link>
