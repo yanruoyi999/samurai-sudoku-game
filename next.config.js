@@ -3,6 +3,7 @@ const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
+  publicExcludes: ['!puzzles/**/*.json'],
   fallbacks: {
     document: '/offline.html',
   },
@@ -76,7 +77,19 @@ const withPWA = require('@ducanh2912/next-pwa').default({
         }
       },
       {
-        urlPattern: /\/puzzles\/.*/i,
+        urlPattern: /\/puzzles\/index\.json$/i,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'puzzle-index',
+          expiration: {
+            maxEntries: 1,
+            maxAgeSeconds: 60 * 60 // 1 hour
+          },
+          networkTimeoutSeconds: 5
+        }
+      },
+      {
+        urlPattern: /\/puzzles\/\d{4}\/\d{4}-\d{2}-\d{2}\.json$/i,
         handler: 'CacheFirst',
         options: {
           cacheName: 'puzzle-data',

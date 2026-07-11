@@ -8,6 +8,11 @@ import { buildLanguageAlternates } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { getPuzzle, getPuzzleIndex, getPuzzleMetadata } from '@/lib/puzzles';
 import { getNearbyPuzzles } from '@/lib/puzzle-links';
+import {
+  countOverlapGivenEntries,
+  countUniqueGivenEntries,
+  getDensestGivenGrid,
+} from '@/lib/puzzle-metrics';
 import type { Difficulty } from '@/lib/sudoku/types';
 import PuzzleClient from './PuzzleClient';
 
@@ -18,6 +23,13 @@ const DIFFICULTY_LABELS: Record<Difficulty, { en: string; zh: string }> = {
   evil: { en: 'Evil', zh: 'Evil 极难' },
 };
 const ALL_DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
+const GRID_LABELS = [
+  { en: 'top-left grid', zh: '左上网格' },
+  { en: 'top-right grid', zh: '右上网格' },
+  { en: 'center grid', zh: '中心网格' },
+  { en: 'bottom-left grid', zh: '左下网格' },
+  { en: 'bottom-right grid', zh: '右下网格' },
+] as const;
 
 function getEnglishArticle(label: string) {
   return /^[aeiou]/i.test(label) ? 'an' : 'a';
@@ -103,13 +115,6 @@ const PRACTICE_PATHS: Record<
     ],
   },
 };
-
-function countGivenEntries(puzzle: NonNullable<Awaited<ReturnType<typeof getPuzzle>>>) {
-  return puzzle.grids.reduce(
-    (total, grid) => total + grid.initial.flat().filter((value) => value !== 0).length,
-    0,
-  );
-}
 
 interface PuzzlePageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -215,7 +220,10 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
   const isZh = resolvedParams.locale === 'zh';
   const difficulty = puzzle.difficulty;
   const diffLabel = isZh ? DIFFICULTY_LABELS[difficulty].zh : DIFFICULTY_LABELS[difficulty].en;
-  const givenEntries = countGivenEntries(puzzle);
+  const givenEntries = countUniqueGivenEntries(puzzle);
+  const overlapGivens = countOverlapGivenEntries(puzzle);
+  const densestGrid = getDensestGivenGrid(puzzle);
+  const densestGridLabel = GRID_LABELS[densestGrid.grid][isZh ? 'zh' : 'en'];
   const puzzleTitle = isZh
     ? `${puzzle.id} ${diffLabel}在线武士数独`
     : `${puzzle.id} ${diffLabel} Samurai Sudoku Online`;
@@ -267,8 +275,8 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
             </h1>
             <p className="leading-relaxed text-muted-foreground">
               {isZh
-                ? `这是一道 ${diffLabel} 难度的每日武士数独，预计 ${puzzle.metadata.estimatedTime} 分钟完成。五个 9x9 网格共享四个重叠 3x3 区域，适合先从重叠宫和给定数密集区域开始。`
-                : `This is ${getEnglishArticle(diffLabel)} ${diffLabel.toLowerCase()} daily Samurai Sudoku puzzle with an estimated solve time of ${puzzle.metadata.estimatedTime} minutes. The five 9x9 grids share four overlapping 3x3 boxes, so start with the overlap boxes and the densest given areas.`}
+                ? `这是一道 ${diffLabel} 难度的每日武士数独，预计 ${puzzle.metadata.estimatedTime} 分钟完成。全局共有 ${givenEntries} 个唯一给定数，其中 ${overlapGivens} 个落在重叠区；建议先看 ${densestGridLabel}，这里有 ${densestGrid.givenCount} 个局部给定数。`
+                : `This is ${getEnglishArticle(diffLabel)} ${diffLabel.toLowerCase()} daily Samurai Sudoku puzzle with an estimated solve time of ${puzzle.metadata.estimatedTime} minutes. It has ${givenEntries} unique global givens, including ${overlapGivens} in overlap cells; start with the ${densestGridLabel}, which has ${densestGrid.givenCount} local givens.`}
             </p>
           </div>
 
@@ -293,6 +301,14 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
                 <dt className="text-muted-foreground">{isZh ? '给定数' : 'Given entries'}</dt>
                 <dd className="font-medium">{givenEntries}</dd>
               </div>
+              <div>
+                <dt className="text-muted-foreground">{isZh ? '重叠区给定数' : 'Overlap givens'}</dt>
+                <dd className="font-medium">{overlapGivens}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">{isZh ? '建议起手' : 'Suggested start'}</dt>
+                <dd className="font-medium">{densestGridLabel}</dd>
+              </div>
             </dl>
           </div>
 
@@ -302,8 +318,8 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
             </h2>
             <p className="leading-relaxed text-muted-foreground">
               {isZh
-                ? '先扫描中心网格与四角网格的重叠区域，再记录候选数。若某个数字同时限制中心网格和角落网格，优先处理它；如果卡住，可以回到同难度归档页继续练习相邻日期题。'
-                : 'Scan the four overlap boxes first, then add candidate notes. Prioritize numbers that constrain both the center grid and a corner grid; if the puzzle stalls, use the same-difficulty archive links below to practice nearby dates.'}
+                ? `先扫描 ${densestGridLabel} 与四个重叠区域，再记录候选数。若某个数字同时限制中心网格和角落网格，优先处理它；如果卡住，可以回到同难度归档页继续练习相邻日期题。`
+                : `Scan the ${densestGridLabel} and the four overlap boxes first, then add candidate notes. Prioritize numbers that constrain both the center grid and a corner grid; if the puzzle stalls, use the same-difficulty archive links below to practice nearby dates.`}
             </p>
             <section className="rounded-lg border bg-secondary/20 p-4">
               <h3 className="font-semibold">{practicePath.heading[isZh ? 'zh' : 'en']}</h3>

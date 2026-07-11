@@ -430,7 +430,7 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           const state = get();
           const timeSpent = getCurrentElapsedTime(state);
 
-          set({ status: 'completed', elapsedTime: timeSpent });
+          set({ status: 'completed', elapsedTime: timeSpent, startTime: null });
 
           // Save to completed history
           const completedState = get();

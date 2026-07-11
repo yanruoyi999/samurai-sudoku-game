@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { SAMPLE_PUZZLE } from "@/lib/sudoku/sample-puzzle";
 import type { GlobalPosition } from "@/lib/sudoku/coordinates";
@@ -25,6 +25,25 @@ function candidateKey(pos: GlobalPosition) {
   return `${pos.row},${pos.col}`;
 }
 
+function completeCurrentPuzzle() {
+  const state = useSudokuStore.getState();
+  const solution = state.engine?.getSolution();
+  if (!solution) throw new Error("sample puzzle must include a solution");
+
+  for (let row = 0; row < solution.length; row += 1) {
+    for (let col = 0; col < solution[row].length; col += 1) {
+      const pos = { row, col };
+      if (
+        !useSudokuStore.getState().initial[row][col] &&
+        useSudokuStore.getState().board[row][col] === 0 &&
+        solution[row][col] !== 0
+      ) {
+        useSudokuStore.getState().setCell(pos, solution[row][col]);
+      }
+    }
+  }
+}
+
 function installBrowserStorage() {
   const store = new Map<string, string>();
   const localStorage = {
@@ -45,6 +64,7 @@ function installBrowserStorage() {
 }
 
 afterEach(() => {
+  vi.useRealTimers();
   delete (globalThis as { window?: Window }).window;
   delete (globalThis as { localStorage?: unknown }).localStorage;
 });
@@ -120,5 +140,24 @@ describe("sudoku store in-progress recovery", () => {
 
     expect(useSudokuStore.getState().puzzleId).toBe(SAMPLE_PUZZLE.id);
     expect(useSudokuStore.getState().board[pos.row][pos.col]).toBe(value);
+  });
+});
+
+describe("sudoku store completion timer", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-11T00:00:00.000Z"));
+    useSudokuStore.getState().loadPuzzle(SAMPLE_PUZZLE);
+  });
+
+  it("stops the active timer when the final cell completes the puzzle", () => {
+    vi.setSystemTime(new Date("2026-07-11T00:02:05.000Z"));
+
+    completeCurrentPuzzle();
+
+    const state = useSudokuStore.getState();
+    expect(state.status).toBe("completed");
+    expect(state.elapsedTime).toBe(125);
+    expect(state.startTime).toBeNull();
   });
 });

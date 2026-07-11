@@ -6,6 +6,10 @@ import {
   applyAnalyticsOptOutFromUrl,
   isAnalyticsOptedOut,
 } from "@/lib/analytics/opt-out";
+import {
+  getClarityAnalyticsStorage,
+  type ClarityAnalyticsStorage,
+} from "@/lib/analytics/clarity-consent";
 
 declare global {
   interface Window {
@@ -18,14 +22,12 @@ interface QueuedClarityFunction {
   q?: unknown[][];
 }
 
-const storageKey = "samurai_sudoku_clarity_consent";
-type AnalyticsConsent = "granted" | "denied";
 const clarityProjectId =
   process.env.NEXT_PUBLIC_SUDOKU_CLARITY_PROJECT_ID ||
   process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
   "";
 
-function setClarityConsent(analyticsStorage: AnalyticsConsent) {
+function setClarityConsent(analyticsStorage: ClarityAnalyticsStorage) {
   const clarity = window.clarity;
 
   if (typeof clarity === "function") {
@@ -36,7 +38,7 @@ function setClarityConsent(analyticsStorage: AnalyticsConsent) {
   }
 }
 
-function loadClarity(projectId: string, analyticsStorage: AnalyticsConsent) {
+function loadClarity(projectId: string, analyticsStorage: ClarityAnalyticsStorage) {
   if (!projectId) return;
 
   if (!window.clarity) {
@@ -62,13 +64,8 @@ function loadClarity(projectId: string, analyticsStorage: AnalyticsConsent) {
 export function ClarityConsent() {
   useEffect(() => {
     if (!clarityProjectId) return;
-    if (applyAnalyticsOptOutFromUrl() || isAnalyticsOptedOut()) {
-      setClarityConsent("denied");
-      return;
-    }
-
-    const saved = window.localStorage.getItem(storageKey);
-    loadClarity(clarityProjectId, saved === "granted" ? "granted" : "denied");
+    const optedOut = applyAnalyticsOptOutFromUrl() || isAnalyticsOptedOut();
+    loadClarity(clarityProjectId, getClarityAnalyticsStorage(optedOut));
   }, []);
 
   return null;

@@ -2,6 +2,7 @@
 
 import { useSudokuStore } from "@/stores/sudoku-store";
 import { formatTime } from "@/lib/utils";
+import { getVisibleMoveCount } from "@/lib/sudoku/player-stats";
 import { useTranslations } from 'next-intl';
 
 export function StatsPanel() {
@@ -13,7 +14,9 @@ export function StatsPanel() {
   const mistakesMade = useSudokuStore((state) => state.mistakesMade);
   const engine = useSudokuStore((state) => state.engine);
   const difficulty = useSudokuStore((state) => state.difficulty);
-  const movesCount = useSudokuStore((state) => state.history.length);
+  const movesCount = useSudokuStore((state) =>
+    getVisibleMoveCount(state.history.length, state.historyIndex)
+  );
 
   const completion = engine?.getCompletionPercentage() || 0;
 
