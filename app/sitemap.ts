@@ -8,6 +8,15 @@ import type { Difficulty, PuzzleMetadata } from '@/lib/sudoku/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HIGH_INTENT_DIFFICULTIES = new Set<Difficulty>(['hard', 'evil']);
+type SitemapChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>;
+
+interface StaticSitemapRoute {
+  path: string;
+  changeFrequency: SitemapChangeFrequency;
+  priority: number;
+  followsIndex?: boolean;
+  lastModified?: Date;
+}
 
 function getPuzzleAgeDays(puzzleId: string, referenceDate: Date) {
   const puzzleDate = new Date(`${puzzleId}T00:00:00.000Z`);
@@ -40,9 +49,27 @@ function getPuzzleSitemapHints(puzzle: PuzzleMetadata, referenceDate: Date) {
   };
 }
 
+function getDifficultyLastModifiedDates(puzzles: PuzzleMetadata[]) {
+  const dates = new Map<Difficulty, Date>();
+
+  for (const puzzle of puzzles) {
+    const puzzleDate = new Date(`${puzzle.id}T00:00:00.000Z`);
+    const currentDate = dates.get(puzzle.difficulty);
+
+    if (!currentDate || puzzleDate > currentDate) {
+      dates.set(puzzle.difficulty, puzzleDate);
+    }
+  }
+
+  return dates;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const difficulties = ['easy', 'medium', 'hard', 'evil'];
-  const routes = [
+  const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'evil'];
+  const index = await getPuzzleIndex();
+  const indexLastModified = new Date(index.lastUpdated);
+  const difficultyLastModifiedDates = getDifficultyLastModifiedDates(index.puzzles);
+  const routes: StaticSitemapRoute[] = [
     { path: '', changeFrequency: 'daily' as const, priority: 1, followsIndex: true },
     { path: '/games/samurai', changeFrequency: 'daily' as const, priority: 0.9, followsIndex: true },
     { path: '/games/samurai/daily', changeFrequency: 'daily' as const, priority: 0.86, followsIndex: true },
@@ -73,22 +100,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       path: `/games/samurai/difficulty/${difficulty}`,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
-      followsIndex: true,
+      lastModified: difficultyLastModifiedDates.get(difficulty) ?? indexLastModified,
     })),
     { path: '/support', changeFrequency: 'monthly' as const, priority: 0.55 },
     { path: '/about', changeFrequency: 'yearly' as const, priority: 0.4 },
     { path: '/contact', changeFrequency: 'yearly' as const, priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.3 },
   ];
-  const index = await getPuzzleIndex();
-  const indexLastModified = new Date(index.lastUpdated);
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of locales) {
     for (const route of routes) {
       entries.push({
         url: buildAbsoluteUrl(`/${locale}${route.path}`),
-        ...(route.followsIndex ? { lastModified: indexLastModified } : {}),
+        ...(route.lastModified
+          ? { lastModified: route.lastModified }
+          : route.followsIndex
+            ? { lastModified: indexLastModified }
+            : {}),
         changeFrequency: route.changeFrequency,
         priority: route.priority,
         alternates: {

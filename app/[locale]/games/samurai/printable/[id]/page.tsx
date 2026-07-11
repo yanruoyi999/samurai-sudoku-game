@@ -8,9 +8,8 @@ import {
   PrintablePageStyle,
   PrintableSamuraiBoard,
 } from "@/components/printable/PrintableSamuraiBoard";
-import { locales } from "@/i18n";
 import { isPuzzleId } from "@/lib/puzzle-id";
-import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
+import { getPuzzle } from "@/lib/puzzles";
 import {
   getGlobalInitialBoard,
   getGlobalSolutionBoard,
@@ -22,16 +21,8 @@ interface PrintablePuzzlePageProps {
   params: Promise<{ locale: string; id: string }>;
 }
 
-export async function generateStaticParams() {
-  const index = await getPuzzleIndex();
-
-  return locales.flatMap((locale) =>
-    index.puzzles.map((puzzle) => ({
-      locale,
-      id: puzzle.id,
-    })),
-  );
-}
+export const dynamicParams = true;
+export const revalidate = 86_400;
 
 export async function generateMetadata({
   params,
