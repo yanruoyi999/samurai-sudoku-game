@@ -336,6 +336,28 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
                 ))}
               </ol>
             </section>
+            <section className="rounded-lg border bg-background p-5">
+              <h3 className="font-semibold">
+                {isZh ? '本题复盘重点' : 'Review focus for this puzzle'}
+              </h3>
+              <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                <p>
+                  {isZh
+                    ? `这道 ${diffLabel} 题适合用作一次完整练习，而不是只看能填多少空格。开始前先确认四个共享 3x3 重叠宫的位置，再比较 ${densestGridLabel} 和中心网格的线索密度。若某个候选数同时受到两个网格限制，它通常比孤立角落里的候选更值得优先处理。`
+                    : `Use this ${diffLabel.toLowerCase()} puzzle as a full practice session, not just a quick fill-in board. Before solving, identify the four shared 3x3 overlap boxes, then compare the ${densestGridLabel} with the center grid. A candidate constrained by two grids is usually more valuable than a candidate isolated in one corner.`}
+                </p>
+                <p>
+                  {isZh
+                    ? '如果中途卡住，不要马上猜或换题。先擦掉最近变化区域的过期候选，按角落网格读一遍共享宫，再按中心网格读一遍。这个小复查可以发现漏掉的唯一数、候选对或错误传导，尤其适合困难和 Evil 题。'
+                    : 'If the board stalls, do not guess or switch puzzles immediately. First clear stale candidates around the most recently changed area, read the shared box once as the corner grid, then read it again as the center grid. This small audit often exposes a missed single, pair, or transfer error, especially on Hard and Evil puzzles.'}
+                </p>
+                <p>
+                  {isZh
+                    ? `复盘时可以记录三件事：第一个确定数字来自哪个网格、第一次跨重叠宫传导发生在哪个区域、最后卡住时是否因为候选数没有同步。连续练三道 ${diffLabel} 题后，这些记录会比单纯追求速度更能说明你该升难度、降难度，还是专门补重叠宫技巧。`
+                    : `For review, note three things: which grid produced the first confirmed placement, where the first overlap transfer happened, and whether the final stall came from unsynced candidates. After three ${diffLabel.toLowerCase()} puzzles, those notes show whether you should raise difficulty, lower it, or practice overlap technique.`}
+                </p>
+              </div>
+            </section>
             <div className="flex flex-wrap gap-2 text-sm">
               <Link href={`/${resolvedParams.locale}/games/samurai/how-to-play`} className="rounded-md border px-3 py-2 hover:bg-accent transition-colors">
                 {isZh ? '规则说明' : 'How to play'}

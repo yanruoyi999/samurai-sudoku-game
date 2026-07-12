@@ -699,6 +699,7 @@ export function SamuraiGuidePage({ guide, locale }: SamuraiGuidePageProps) {
   const normalizedLocale = normalizeLocale(locale);
   const definition = guidePages[guide];
   const content = definition.content[normalizedLocale];
+  const isZh = normalizedLocale === 'zh';
   const pageUrl = buildAbsoluteUrl(`/${normalizedLocale}${definition.path}`);
   const articleJsonLd = {
     '@context': 'https://schema.org',
@@ -792,6 +793,53 @@ export function SamuraiGuidePage({ guide, locale }: SamuraiGuidePageProps) {
               <p className="mt-3 leading-7 text-muted-foreground">{item.body}</p>
             </section>
           ))}
+        </section>
+        <section className="mt-10 rounded-lg border bg-secondary/30 p-6">
+          <h2 className="text-2xl font-semibold">
+            {isZh ? '如何把这页用到实际解题里' : 'How to use this page in a real puzzle'}
+          </h2>
+          <div className="mt-4 space-y-4 leading-7 text-muted-foreground">
+            <p>
+              {isZh
+                ? '不要把攻略当成一次性阅读材料。打开一局当前难度的武士数独，把本页的步骤应用到一个具体区域：先选重叠宫或中心网格，再写候选数，最后只填能解释清楚的数字。这样页面内容会变成可复用的解题流程，而不是泛泛技巧。'
+                : 'Do not treat this guide as a one-time article. Open a puzzle at your current difficulty and apply the steps to one concrete area: choose an overlap box or the center grid, write candidates, then place only numbers you can explain. That turns the page into a repeatable solving workflow instead of generic advice.'}
+            </p>
+            <p>
+              {isZh
+                ? '如果你在三到五分钟内没有确定进展，先回到本页的上一个步骤复查，而不是立刻点新游戏。大多数卡点来自漏看重叠区、候选数过期，或难度选择过高；把这些问题拆开检查，比随机换题更能提升通关率。'
+                : 'If you make no confirmed progress for three to five minutes, return to the previous step on this page before starting a new game. Most stalls come from a missed overlap, stale candidates, or a difficulty level that is too high; checking those causes separately improves completion more than random puzzle switching.'}
+            </p>
+            <p>
+              {isZh
+                ? '完成一题后，用同难度归档再练一题，或切到相关指南补短板。新手优先看入门和第一步攻略；卡在中后盘时看候选数、重叠宫和常见错误；准备纸笔练习时再进入可打印题和 PDF 样张。'
+                : 'After finishing one board, practice another puzzle at the same difficulty from the archive or move to the guide that matches your weak point. Beginners should use the starter and first-move pages; mid-puzzle stalls should use candidates, overlap boxes, and common mistakes; paper solvers should move to printable puzzles and the PDF sample.'}
+            </p>
+            <p>
+              {isZh
+                ? '最有效的做法是把每页攻略变成一个小检查表：这一页解决的是开局、候选数、重叠宫、难度选择还是卡关恢复？只带着一个目标进入棋盘，完成后再换下一页。这样既能减少来回切换难度，也能避免在 Evil 题里填完两个网格后因为第三个共享区域没有同步而崩盘。'
+                : 'The most useful habit is turning each guide into a small checklist: is this page solving the opening, candidates, overlap boxes, difficulty choice, or stuck recovery? Bring one goal back to the board, finish that goal, then move to the next guide. That reduces difficulty switching and prevents Evil puzzles from collapsing after two grids because the third shared area was not synchronized.'}
+            </p>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2 text-sm">
+            <Link
+              href={localizedHref(normalizedLocale, '/games/samurai/common-mistakes')}
+              className="rounded-md border px-3 py-2 hover:bg-accent"
+            >
+              {isZh ? '常见错误排查' : 'Common mistakes'}
+            </Link>
+            <Link
+              href={localizedHref(normalizedLocale, '/games/samurai/candidate-notes')}
+              className="rounded-md border px-3 py-2 hover:bg-accent"
+            >
+              {isZh ? '候选数笔记' : 'Candidate notes'}
+            </Link>
+            <Link
+              href={localizedHref(normalizedLocale, '/games/samurai/printable-practice-plan')}
+              className="rounded-md border px-3 py-2 hover:bg-accent"
+            >
+              {isZh ? '打印练习计划' : 'Printable practice plan'}
+            </Link>
+          </div>
         </section>
         <footer className="mt-10 flex flex-wrap gap-3">
           <TrackedLink

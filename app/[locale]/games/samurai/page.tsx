@@ -259,6 +259,40 @@ async function SamuraiGamePageContent({
             </div>
           </div>
 
+          <section className="rounded-lg border bg-secondary/20 p-6">
+            <h2 className="text-2xl font-semibold">
+              {isZh ? '如果开局后很快卡住，先按这个顺序检查' : 'If the opening stalls, check these steps first'}
+            </h2>
+            <div className="mt-4 grid gap-4 text-sm leading-relaxed text-muted-foreground md:grid-cols-3">
+              <p>
+                {isZh
+                  ? '先看四个共享 3x3 重叠宫。很多玩家会把它当成普通角落宫处理，结果中心网格已经排除的候选数没有同步到角落网格。每次填入数字后，都要在共享宫两侧各读一遍行、列、宫约束。'
+                  : 'Start with the four shared 3x3 overlap boxes. Many players treat them like normal corner boxes and miss candidates already eliminated by the center grid. After every placement, read the shared box once from each grid.'}
+              </p>
+              <p>
+                {isZh
+                  ? '再看候选数是否过期。困难和 Evil 题经常不是没有下一步，而是前面某次填数后忘记删除候选，导致一个唯一数、隐藏单数或候选对被遮住。卡住三分钟时，先复查最近变化区域。'
+                  : 'Then check whether candidates are stale. Hard and Evil puzzles often still have a forced move, but an old candidate hides a single, hidden single, or pair. If you stall for three minutes, audit the area that changed most recently.'}
+              </p>
+              <p>
+                {isZh
+                  ? '最后再决定是否换难度。新手可以从简单和中等开始建立重叠宫节奏；如果已经能稳定完成两个角落网格，却总在第三个网格断掉，优先阅读 Evil 卡关攻略，而不是连续换新题。'
+                  : 'Only then decide whether to switch difficulty. Beginners should build overlap rhythm on Easy or Medium. If you can finish two corner grids but lose the third, use the Evil stuck guide before cycling through new puzzles.'}
+              </p>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2 text-sm">
+              <Link href={`/${locale}/games/samurai/evil-stuck-after-two-grids`} className="rounded-md border px-3 py-2 hover:bg-accent">
+                {isZh ? '两个网格后卡住' : 'Stuck after two grids'}
+              </Link>
+              <Link href={`/${locale}/games/samurai/overlap-boxes`} className="rounded-md border px-3 py-2 hover:bg-accent">
+                {isZh ? '重叠宫详解' : 'Overlap boxes'}
+              </Link>
+              <Link href={`/${locale}/games/samurai/difficulty/easy`} className="rounded-md border px-3 py-2 hover:bg-accent">
+                {isZh ? '从简单题练起' : 'Practice easy puzzles'}
+              </Link>
+            </div>
+          </section>
+
           <div className="grid gap-4 md:grid-cols-3">
             {faqItems.map((item) => (
               <section key={item.question} className="rounded-lg border p-5">

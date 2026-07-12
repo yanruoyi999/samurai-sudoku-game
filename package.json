@@ -14,6 +14,7 @@
     "validate-puzzles": "tsx scripts/puzzles/validate-all.ts",
     "check-difficulty": "tsx scripts/puzzles/check-difficulty.ts",
     "audit:internal-links": "tsx scripts/audit-internal-links.ts",
+    "audit:page-quality": "tsx scripts/page-quality-audit.ts",
     "test": "vitest run",
     "test:sudoku": "vitest run lib/sudoku"
   },

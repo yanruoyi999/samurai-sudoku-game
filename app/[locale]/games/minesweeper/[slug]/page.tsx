@@ -173,6 +173,49 @@ export default async function MinesweeperGuidePage({
               ))}
 
               <section className="rounded-lg border bg-secondary/30 p-6">
+                <h2 className="text-2xl font-semibold">
+                  {isZh ? "如何在棋盘上使用这页" : "How to apply this on a live board"}
+                </h2>
+                <div className="mt-4 space-y-4 leading-relaxed text-muted-foreground">
+                  <p>
+                    {isZh
+                      ? "读完规则后，立刻回到初级棋盘验证一次：先找已经打开的数字边界，再只处理能被数字证明的格子。不要从棋盘另一侧随机点击，也不要把“像雷”的格子直接插旗。"
+                      : "After reading the rule, test it immediately on a beginner board: start from the revealed number edge and only act on cells the numbers can prove. Do not jump randomly across the board or flag a square just because it feels risky."}
+                  </p>
+                  <p>
+                    {isZh
+                      ? "如果一个数字周围的旗帜数量已经等于它本身，剩余相邻隐藏格就是下一批安全格；如果一个数字接触的隐藏格数量正好等于还缺的雷数，这些隐藏格才应该插旗。卡住时，先复查最近三次旗帜，而不是立刻开新局。"
+                      : "When a number already touches the same number of flags, the remaining hidden neighbors are your next safe cells. When the hidden neighbors exactly match the missing mine count, those cells should be flagged. If you stall, review your last three flags before starting a new board."}
+                  </p>
+                  <p>
+                    {isZh
+                      ? "扫雷适合训练局部约束推理；如果你喜欢更长线的候选数和重叠区域推理，也可以切到武士数独练习同一类逻辑耐心。"
+                      : "Minesweeper trains local constraint reasoning. If you want a longer-form version of the same logic habit, Samurai Sudoku lets you practice candidates, overlap boxes, and slower deduction."}
+                  </p>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-2 text-sm">
+                  <Link
+                    href={gameHref}
+                    className="rounded-md border bg-background px-3 py-2 font-medium hover:border-primary hover:text-primary"
+                  >
+                    {isZh ? "在线练习扫雷" : "Practice Minesweeper"}
+                  </Link>
+                  <Link
+                    href={`/${normalizedLocale}/games/minesweeper/beginner-strategy`}
+                    className="rounded-md border bg-background px-3 py-2 font-medium hover:border-primary hover:text-primary"
+                  >
+                    {isZh ? "新手策略" : "Beginner strategy"}
+                  </Link>
+                  <Link
+                    href={`/${normalizedLocale}/games/samurai`}
+                    className="rounded-md border bg-background px-3 py-2 font-medium hover:border-primary hover:text-primary"
+                  >
+                    {isZh ? "武士数独" : "Samurai Sudoku"}
+                  </Link>
+                </div>
+              </section>
+
+              <section className="rounded-lg border bg-secondary/30 p-6">
                 <h2 className="text-2xl font-semibold">{isZh ? "常见问题" : "FAQ"}</h2>
                 <div className="mt-4 space-y-4">
                   {guide.faq.map((item) => (

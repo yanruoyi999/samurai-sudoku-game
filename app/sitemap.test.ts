@@ -33,4 +33,16 @@ describe("sitemap", () => {
     expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/printable-practice-plan")).toBe(true);
     expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/printable-practice-plan")).toBe(true);
   });
+
+  it("keeps low-search-intent trust pages out of the XML sitemap", async () => {
+    const entries = await sitemap();
+    const urls = new Set(entries.map((entry) => entry.url));
+
+    for (const locale of ["en", "zh"]) {
+      expect(urls.has(`https://www.samuraisudoku.net/${locale}/about`)).toBe(false);
+      expect(urls.has(`https://www.samuraisudoku.net/${locale}/contact`)).toBe(false);
+      expect(urls.has(`https://www.samuraisudoku.net/${locale}/privacy`)).toBe(false);
+      expect(urls.has(`https://www.samuraisudoku.net/${locale}/support`)).toBe(false);
+    }
+  });
 });
