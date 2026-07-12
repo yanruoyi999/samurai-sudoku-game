@@ -80,6 +80,13 @@ export default async function HomePage() {
         : 'Follow a complete path from first move to overlap scans, notes, and final review.',
     },
     {
+      href: `/${locale}/games/samurai/printable-practice-plan`,
+      title: locale === 'zh' ? '打印练习计划' : 'Printable practice plan',
+      body: locale === 'zh'
+        ? '用 PDF、答案页、日期题和每周流程做纸笔练习。'
+        : 'Use PDFs, answer keys, dated puzzles, and a weekly paper routine.',
+    },
+    {
       href: `/${locale}/games/samurai/strategy-guide`,
       title: locale === 'zh' ? '解题策略' : 'Strategy guide',
       body: locale === 'zh'
@@ -463,6 +470,9 @@ export default async function HomePage() {
           </Link>
           <Link href={`/${locale}/games/samurai/printable`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '可打印题目' : 'Printable puzzles'}
+          </Link>
+          <Link href={`/${locale}/games/samurai/printable-practice-plan`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '打印练习计划' : 'Printable practice plan'}
           </Link>
           <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? 'PDF 打印包' : 'PDF pack'}

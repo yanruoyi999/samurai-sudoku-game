@@ -37,6 +37,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Evil stuck after two grids guide: ${baseUrl}/en/games/samurai/evil-stuck-after-two-grids
 - Solver and hint guide: ${baseUrl}/en/games/samurai/solver
 - Printable Samurai Sudoku: ${baseUrl}/en/games/samurai/printable
+- Printable practice plan: ${baseUrl}/en/games/samurai/printable-practice-plan
 - Samurai Sudoku PDF pack: ${baseUrl}/en/games/samurai/pdf
 - Free PDF sample pack: ${baseUrl}/en/games/samurai/pdf/sample
 - Beginner guide: ${baseUrl}/en/games/samurai/beginners
@@ -65,6 +66,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
 - The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
 - Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
+- The printable practice plan explains how to use printable Samurai Sudoku PDFs, answer keys, dated archive puzzles, and a one-week paper-solving routine without turning practice into guessing.
 - The PDF pack page is the purchase-intent page for bundled printable puzzles and answer keys; it can point to checkout when NEXT_PUBLIC_SUDOKU_PDF_PACK_URL is configured.
 - The free PDF sample pack includes four printable puzzles, one per difficulty, plus answer keys.
 - The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.

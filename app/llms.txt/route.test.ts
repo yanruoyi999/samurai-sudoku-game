@@ -12,4 +12,14 @@ describe("llms.txt", () => {
     );
     expect(body).toContain("Common mistakes");
   });
+
+  it("lists the printable practice plan for answer engines", async () => {
+    const response = await GET();
+    const body = await response.text();
+
+    expect(body).toContain(
+      "https://www.samuraisudoku.net/en/games/samurai/printable-practice-plan",
+    );
+    expect(body).toContain("Printable practice plan");
+  });
 });

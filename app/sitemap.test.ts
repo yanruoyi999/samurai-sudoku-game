@@ -30,5 +30,7 @@ describe("sitemap", () => {
 
     expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/common-mistakes")).toBe(true);
     expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/common-mistakes")).toBe(true);
+    expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/printable-practice-plan")).toBe(true);
+    expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/printable-practice-plan")).toBe(true);
   });
 });
