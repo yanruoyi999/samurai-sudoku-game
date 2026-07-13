@@ -2,6 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import {
+  buildPdfPackCheckoutHref,
+  getPdfPackPrice,
+  getPdfPackPriceAmount,
+  getPdfPackProductName,
+  isCheckoutHref,
+  isPaypalCheckoutHref,
+} from "@/lib/paypal";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
@@ -10,33 +18,6 @@ interface SamuraiPdfPageProps {
 }
 
 const PATH = "/games/samurai/pdf";
-const DEFAULT_PRICE = "$4.95";
-
-const pdfPackUrl =
-  process.env.NEXT_PUBLIC_SUDOKU_PDF_PACK_URL ||
-  process.env.NEXT_PUBLIC_SUDOKU_PRINTABLE_PACK_URL ||
-  "";
-const pdfPackPrice =
-  process.env.NEXT_PUBLIC_SUDOKU_PDF_PACK_PRICE ||
-  process.env.NEXT_PUBLIC_SUDOKU_PRINTABLE_PACK_PRICE ||
-  DEFAULT_PRICE;
-
-function buildPdfPackHref(locale: string) {
-  if (!pdfPackUrl) {
-    return `/${locale}/support`;
-  }
-
-  try {
-    const url = new URL(pdfPackUrl);
-    url.searchParams.set("utm_source", "samurai-sudoku");
-    url.searchParams.set("utm_medium", "pdf-pack-page");
-    url.searchParams.set("utm_campaign", "printable-pack");
-    url.searchParams.set("locale", locale);
-    return url.toString();
-  } catch {
-    return `/${locale}/support`;
-  }
-}
 
 export async function generateMetadata({
   params,
@@ -83,8 +64,11 @@ export async function generateMetadata({
 export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
   const { locale } = await params;
   const isZh = locale === "zh";
-  const purchaseHref = buildPdfPackHref(locale);
-  const hasCheckout = purchaseHref.startsWith("http");
+  const purchaseHref = buildPdfPackCheckoutHref(locale, "pdf-pack-page");
+  const hasCheckout = isCheckoutHref(purchaseHref);
+  const isPaypalCheckout = isPaypalCheckoutHref(purchaseHref);
+  const pdfPackPrice = getPdfPackPrice();
+  const pdfPackProductName = getPdfPackProductName();
   const pageUrl = buildAbsoluteUrl(`/${locale}${PATH}`);
 
   const features = isZh
@@ -118,12 +102,16 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
   const faq = isZh
     ? [
         {
-          question: "PDF 包上线前可以做什么？",
-          answer: "如果购买链接尚未配置，按钮会跳到支持者候补名单。你仍然可以先使用免费可打印题面。正式支付链接配置后，本页 CTA 会自动指向购买页。",
+          question: "如何购买 PDF 包？",
+          answer: "点击本页的 PayPal 购买按钮完成付款。付款后请保留 PayPal 收据，并通过联系页提交收据邮箱或订单信息以便交付 PDF 包。",
         },
         {
           question: "免费打印页还会保留吗？",
           answer: "会。免费在线题面和单题打印继续保留。PDF 包用于批量保存、按难度整理和离线练习。",
+        },
+        {
+          question: "付款后多久可以拿到文件？",
+          answer: "当前版本采用人工核对收据交付，通常在 24 小时内处理。自动下载和订单后台会在真实购买需求验证后再接入。",
         },
         {
           question: "PDF 包和在线题有什么区别？",
@@ -132,12 +120,16 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
       ]
     : [
         {
-          question: "What happens before the PDF pack is ready?",
-          answer: "If no checkout URL is configured yet, the button goes to the supporter waitlist. Free single-puzzle printing still works. Once a checkout URL is configured, this page automatically points to it.",
+          question: "How do I buy the PDF pack?",
+          answer: "Use the PayPal button on this page to complete payment. Keep the PayPal receipt, then send the receipt email or order details through the contact page so the PDF pack can be delivered.",
         },
         {
           question: "Will free printable pages remain available?",
           answer: "Yes. Free online puzzle sheets and single-puzzle printing remain available. The PDF pack is for bundled saving, difficulty organization, and offline practice.",
+        },
+        {
+          question: "How long does delivery take after payment?",
+          answer: "This MVP uses manual receipt checking and delivery, usually within 24 hours. Automated downloads and an order backend will be added after real purchase demand is validated.",
         },
         {
           question: "How is the PDF pack different from online puzzles?",
@@ -148,7 +140,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: isZh ? "武士数独 PDF 打印包" : "Samurai Sudoku PDF Pack",
+    name: isZh ? "武士数独 PDF 打印包" : pdfPackProductName,
     description: isZh
       ? "按难度整理的可打印武士数独题目与答案包。"
       : "A printable Samurai Sudoku puzzle and answer pack organized by difficulty.",
@@ -158,10 +150,14 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
     },
     offers: {
       "@type": "Offer",
-      price: pdfPackPrice.replace(/[^0-9.]/g, "") || "4.95",
+      price: getPdfPackPriceAmount(),
       priceCurrency: "USD",
-      availability: hasCheckout ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-      url: pageUrl,
+      availability: "https://schema.org/InStock",
+      url: hasCheckout ? purchaseHref : pageUrl,
+      seller: {
+        "@type": "Organization",
+        name: "Samurai Sudoku",
+      },
     },
   };
 
@@ -249,19 +245,21 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <TrackedLink
                 href={purchaseHref}
-                eventName={hasCheckout ? "pdf_pack_purchase_click" : "pdf_pack_waitlist_click"}
+                eventName={hasCheckout ? "paid_pack_purchase" : "pdf_pack_waitlist_click"}
                 eventProperties={{
                   locale,
                   location: "pdf_pack_hero",
+                  product: "100_printable_pack",
+                  provider: isPaypalCheckout ? "paypal" : "external_checkout",
                   price: pdfPackPrice,
-                  destination: hasCheckout ? "checkout" : "support_waitlist",
+                  destination: hasCheckout ? "paypal_checkout" : "support_waitlist",
                 }}
                 className="rounded-lg bg-primary px-6 py-3 text-center font-semibold text-primary-foreground hover:bg-primary/90"
               >
                 {hasCheckout
                   ? isZh
-                    ? `获取 PDF 包 ${pdfPackPrice}`
-                    : `Get the PDF pack ${pdfPackPrice}`
+                    ? `用 PayPal 购买 ${pdfPackPrice}`
+                    : `Buy with PayPal ${pdfPackPrice}`
                   : isZh
                   ? "加入 PDF 包候补名单"
                   : "Join the PDF pack waitlist"}
@@ -287,18 +285,24 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
 
           <aside className="rounded-xl border bg-background p-6">
             <p className="text-sm font-medium text-muted-foreground">
-              {isZh ? "建议价格" : "Target price"}
+              {isZh ? "当前价格" : "Current price"}
             </p>
             <p className="mt-2 text-4xl font-semibold">{pdfPackPrice}</p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               {hasCheckout
                 ? isZh
-                  ? "购买后可获得适合离线练习的武士数独打印包。免费单题打印仍会继续保留。"
-                  : "Purchase gives you an offline-friendly Samurai Sudoku print pack. Free single-puzzle printing remains available."
+                  ? "PayPal 会在新标签页打开。付款后请通过联系页提交 PayPal 收据邮箱或订单信息，人工核对后交付 PDF 包。"
+                  : "PayPal opens in a new tab. After payment, send the PayPal receipt email or order details through the contact page for PDF delivery."
                 : isZh
                 ? "PDF 包正在准备中。你可以先打印免费样稿，再加入候补名单。"
                 : "The PDF pack is being prepared. Print the free sample first, then join the waitlist."}
             </p>
+            <Link
+              href={`/${locale}/contact`}
+              className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline"
+            >
+              {isZh ? "付款后提交收据信息" : "Submit receipt after payment"}
+            </Link>
           </aside>
         </div>
       </section>

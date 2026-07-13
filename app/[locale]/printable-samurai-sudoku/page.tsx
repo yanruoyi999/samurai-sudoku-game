@@ -9,6 +9,7 @@ import {
   getPrintableDifficultyLabel,
   selectPrintableStarterPack,
 } from "@/lib/printable-pack";
+import { getPdfPackPrice } from "@/lib/paypal";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
@@ -21,7 +22,6 @@ interface PageProps {
 }
 
 const PATH = "/printable-samurai-sudoku";
-const PAID_PACK_PRICE = process.env.NEXT_PUBLIC_SUDOKU_PDF_PACK_PRICE || "$4.99";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -155,6 +155,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
   const strategyHref = `/${locale}/games/samurai/strategy-guide`;
   const solverHref = `/${locale}/games/samurai/solver`;
   const paidPackHref = `/${locale}/games/samurai/pdf`;
+  const paidPackPrice = getPdfPackPrice();
   const firstPuzzle = packPuzzles[0];
   const firstPrintHref = firstPuzzle ? `/${locale}/games/samurai/printable/${firstPuzzle.id}` : sampleHref;
 
@@ -468,8 +469,8 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {isZh
-                ? `免费包用于验证打印体验。后续 100 题付费包会测试 ${PAID_PACK_PRICE} 左右价格，包含 Easy 到 Expert、答案、A4、US Letter、一页 1 题和一页 2 题版本。`
-                : `Use the free pack to test the print experience. The 100-puzzle paid pack will test a price around ${PAID_PACK_PRICE} with Easy to Expert levels, solutions, A4, US Letter, one-puzzle and two-puzzle layouts.`}
+                ? `免费包用于验证打印体验。100 题付费包当前测试 ${paidPackPrice} 价格，包含 Easy 到 Expert、答案、A4、US Letter、一页 1 题和一页 2 题版本。`
+                : `Use the free pack to test the print experience. The 100-puzzle paid pack is testing a ${paidPackPrice} price with Easy to Expert levels, solutions, A4, US Letter, one-puzzle and two-puzzle layouts.`}
             </p>
             <TrackedLink
               href={paidPackHref}
