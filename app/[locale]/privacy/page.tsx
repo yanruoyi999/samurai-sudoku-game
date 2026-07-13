@@ -130,8 +130,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         <h2 className="text-2xl font-semibold">{isZh ? "数字购买与下载" : "Digital Purchases and Downloads"}</h2>
         <p className="text-muted-foreground">
           {isZh
-            ? "自动交付启用后，浏览器会在本地保存订单号和随机恢复密钥，以便刷新页面后重新核验已完成订单。恢复密钥不会发送给 PayPal；下载令牌有有效期，且下载响应不会被浏览器或搜索引擎缓存。人工 PayPal.Me 回退仅在自动结账不可用时使用，并需要你主动提交付款收据以完成交付。"
-            : "When automatic delivery is enabled, your browser stores the order ID and a random recovery key locally so a completed order can be verified again after a refresh. The recovery key is not sent to PayPal; download tokens expire, and download responses are not cached or indexed. The manual PayPal.Me fallback is used only when automatic checkout is unavailable and requires you to submit a receipt for delivery."}
+            ? "自动交付启用后，浏览器会在本地保存订单号和随机恢复密钥，以便刷新页面后重新核验已完成订单。恢复密钥不会发送给 PayPal；下载令牌有有效期，且下载响应不会被浏览器或搜索引擎缓存。自动结账不可用时，本站会暂停付款并引导你联系客服，不会跳转到个人收款页面。"
+            : "When automatic delivery is enabled, your browser stores the order ID and a random recovery key locally so a completed order can be verified again after a refresh. The recovery key is not sent to PayPal; download tokens expire, and download responses are not cached or indexed. If automatic checkout is unavailable, payments pause and the site directs you to support instead of a personal payment page."}
         </p>
       </section>
 

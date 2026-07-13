@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { trackInteraction } from "@/lib/analytics/events";
@@ -17,8 +17,8 @@ interface PayPalCheckoutProps {
   autoDeliveryEnabled: boolean;
   clientId: string;
   locale: string;
-  manualCheckoutHref: string;
   price: string;
+  supportHref: string;
 }
 
 interface PayPalButtonsInstance {
@@ -46,8 +46,8 @@ export function PayPalCheckout({
   autoDeliveryEnabled,
   clientId,
   locale,
-  manualCheckoutHref,
   price,
+  supportHref,
 }: PayPalCheckoutProps) {
   const isZh = locale === "zh";
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -149,7 +149,7 @@ export function PayPalCheckout({
       onError: (checkoutError) => {
         console.error("PayPal checkout failed.", checkoutError);
         setStatus("idle");
-        setError(isZh ? "PayPal 结账暂时不可用，你可以使用下方人工交付入口。" : "PayPal Checkout is temporarily unavailable. Use the manual-delivery option below.");
+        setError(isZh ? "PayPal 结账暂时不可用，请稍后重试或联系客服。" : "PayPal Checkout is temporarily unavailable. Try again later or contact support.");
         trackInteraction("paid_pack_checkout_error", { locale, provider: "paypal" });
       },
     });
@@ -159,8 +159,8 @@ export function PayPalCheckout({
       setStatus("idle");
       setError(
         isZh
-          ? "PayPal 按钮加载失败，请使用人工交付入口。"
-          : "PayPal buttons failed to load. Use manual delivery instead.",
+          ? "PayPal 按钮加载失败，请稍后重试或联系客服。"
+          : "PayPal buttons failed to load. Try again later or contact support.",
       );
       trackInteraction("paid_pack_checkout_error", { locale, provider: "paypal" });
     });
@@ -173,14 +173,24 @@ export function PayPalCheckout({
 
   if (!autoDeliveryEnabled) {
     return (
-      <TrackedLink
-        href={manualCheckoutHref}
-        eventName="paid_pack_manual_checkout_click"
-        eventProperties={{ locale, product: "100_printable_pack", provider: "paypal_me", price }}
-        className="rounded-lg bg-primary px-6 py-3 text-center font-semibold text-primary-foreground hover:bg-primary/90"
-      >
-        {isZh ? `用 PayPal 购买 ${price}` : `Buy with PayPal ${price}`}
-      </TrackedLink>
+      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm" role="status">
+        <p className="font-medium">
+          {isZh ? "结账暂时不可用" : "Checkout temporarily unavailable"}
+        </p>
+        <p className="mt-1 text-muted-foreground">
+          {isZh
+            ? "当前未开放付款入口，不会跳转到个人收款页面。"
+            : "Payments are currently paused and will not redirect to a personal payment page."}
+        </p>
+        <TrackedLink
+          href={supportHref}
+          eventName="paid_pack_checkout_support_click"
+          eventProperties={{ locale, product: "100_printable_pack", provider: "paypal", price }}
+          className="mt-2 inline-flex font-semibold text-primary hover:underline"
+        >
+          {isZh ? "联系客户支持" : "Contact support"}
+        </TrackedLink>
+      </div>
     );
   }
 
@@ -193,7 +203,7 @@ export function PayPalCheckout({
         src={sdkUrl}
         strategy="afterInteractive"
         onLoad={() => setScriptReady(true)}
-        onError={() => setError(isZh ? "PayPal 按钮加载失败，请使用人工交付入口。" : "PayPal buttons failed to load. Use manual delivery instead.")}
+        onError={() => setError(isZh ? "PayPal 按钮加载失败，请稍后重试或联系客服。" : "PayPal buttons failed to load. Try again later or contact support.")}
       />
       <div ref={containerRef} aria-label={isZh ? "PayPal 安全结账" : "Secure PayPal checkout"} />
       {(status === "creating" || status === "capturing") && (
@@ -215,9 +225,14 @@ export function PayPalCheckout({
       {error && (
         <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm" role="alert">
           <p>{error}</p>
-          <a href={manualCheckoutHref} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex font-semibold text-primary hover:underline">
-            {isZh ? "改用 PayPal.Me 人工交付" : "Use PayPal.Me with manual delivery"}
-          </a>
+          <TrackedLink
+            href={supportHref}
+            eventName="paid_pack_checkout_support_click"
+            eventProperties={{ locale, product: "100_printable_pack", provider: "paypal", price }}
+            className="mt-2 inline-flex font-semibold text-primary hover:underline"
+          >
+            {isZh ? "联系客户支持" : "Contact support"}
+          </TrackedLink>
         </div>
       )}
     </div>

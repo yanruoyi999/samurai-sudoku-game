@@ -33,18 +33,18 @@ export default async function TermsPage({ params }: TermsPageProps) {
     ? [
         ["在线服务", "在线谜题、提示、计时、候选数字和本地进度按现状提供。我们会尽力保持题目有效和服务可用，但不承诺网站永不中断或每种设备都完全兼容。"],
         ["一次性数字购买", "100题可打印 PDF 包是一次性购买，不是订阅，不会自动续费。结账页显示的美元价格和实际包含文件构成购买承诺；服务器端价格为最终验单依据。"],
-        ["交付", "自动结账可用时，PayPal 确认订单已完成后立即提供有效期7天的下载链接。自动结账不可用时，可使用标明为人工交付的 PayPal.Me 回退，并在联系页提交订单号或收据；通常会在24小时内处理。"],
+        ["交付", "自动结账可用时，PayPal 确认订单已完成后立即提供有效期7天的下载链接。自动结账不可用时，付款入口会暂停并引导至联系页，不会跳转到个人收款页面。"],
         ["许可", "购买者可为个人、家庭或自己直接授课的单个班级打印和使用题包。不得转售、公开上传、共享原始 PDF 或 ZIP、建立镜像下载，或把题目重新包装成其他付费产品。"],
-        ["退款与问题处理", "数字文件一经成功下载通常不退款。若发生重复扣款、文件损坏、无法下载、商品与描述不符，或在人工交付后24小时仍未收到文件，请在购买后14天内联系我们。经核验后，我们会优先补发、修复或对符合条件的订单退款。法定消费者权利不受本条款限制。"],
+        ["退款与问题处理", "数字文件一经成功下载通常不退款。若发生重复扣款、文件损坏、无法下载或商品与描述不符，请在购买后14天内联系我们。经核验后，我们会优先补发、修复或对符合条件的订单退款。法定消费者权利不受本条款限制。"],
         ["合理使用", "不得自动化滥用下载接口、绕过付款验证、攻击服务、抓取并重新发布题库，或干扰其他玩家。违反这些规则的访问可能被限制。"],
         ["变更与联系", "我们可能更新服务和条款，页面顶部日期会同步更新。付款、下载或许可问题请联系 feedback@samuraisudoku.net，并提供 PayPal 订单号，但不要发送密码或完整银行卡信息。"],
       ]
     : [
         ["Online service", "Online puzzles, hints, timers, candidates, and locally saved progress are provided as available. We work to keep puzzles valid and the service usable, but cannot promise uninterrupted access or perfect compatibility with every device."],
         ["One-time digital purchase", "The 100-puzzle printable PDF pack is a one-time purchase, not a subscription, and does not renew. The USD price and included files shown at checkout form the purchase description; the server-owned price is authoritative for payment verification."],
-        ["Delivery", "When automatic checkout is available, a seven-day download link appears after PayPal confirms the order is completed. When it is unavailable, the clearly labeled PayPal.Me manual fallback requires an order ID or receipt through the contact page and is normally handled within 24 hours."],
+        ["Delivery", "When automatic checkout is available, a seven-day download link appears after PayPal confirms the order is completed. When it is unavailable, payments pause and the site directs customers to the contact page instead of a personal payment page."],
         ["License", "A purchaser may print and use the pack personally, within their household, or for one class they directly teach. You may not resell, publicly upload, share the original PDF or ZIP, mirror the download, or repackage the puzzles in another paid product."],
-        ["Refunds and delivery problems", "Successfully downloaded digital files are normally non-refundable. Contact us within 14 days for duplicate charges, corrupt files, failed downloads, a product that does not match its description, or manual delivery that has not arrived after 24 hours. After verification, we will prioritize replacement, repair, or an eligible refund. Nothing here limits mandatory consumer rights."],
+        ["Refunds and delivery problems", "Successfully downloaded digital files are normally non-refundable. Contact us within 14 days for duplicate charges, corrupt files, failed downloads, or a product that does not match its description. After verification, we will prioritize replacement, repair, or an eligible refund. Nothing here limits mandatory consumer rights."],
         ["Acceptable use", "Do not automate abuse of download endpoints, bypass payment verification, attack the service, scrape and republish the puzzle library, or interfere with other players. Access that violates these rules may be restricted."],
         ["Changes and contact", "We may update the service and these terms, with the date on this page updated accordingly. For payment, download, or license questions, email feedback@samuraisudoku.net with the PayPal order ID, but never send a password or full card details."],
       ];

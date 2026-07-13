@@ -129,7 +129,7 @@ PAYPAL_ENVIRONMENT="sandbox"
 PDF_DOWNLOAD_TOKEN_SECRET="at-least-32-random-characters"
 ```
 
-When any REST credential is absent, the product page keeps the PayPal.Me manual-delivery fallback visible instead of presenting a broken automatic checkout.
+When any REST credential is absent, the product page pauses payment and directs customers to support instead of exposing a personal payment link.
 
 ## 📁 Project Structure
 

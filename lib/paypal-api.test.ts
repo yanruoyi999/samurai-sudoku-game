@@ -54,7 +54,9 @@ describe("PayPal PDF pack orders", () => {
       quantity: "1",
       unit_amount: { currency_code: "USD", value: "4.95" },
     });
-    expect(payload.application_context).toMatchObject({
+    expect(payload).not.toHaveProperty("application_context");
+    expect(payload.payment_source.paypal.experience_context).toEqual({
+      brand_name: "Samurai Sudoku",
       shipping_preference: "NO_SHIPPING",
       user_action: "PAY_NOW",
     });

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { PayPalCheckout } from "@/components/payments/PayPalCheckout";
 import {
-  buildPdfPackCheckoutHref,
   getPdfPackPrice,
   getPdfPackPriceAmount,
   getPdfPackProductName,
@@ -64,25 +63,25 @@ export async function generateMetadata({
 export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
   const { locale } = await params;
   const isZh = locale === "zh";
-  const purchaseHref = buildPdfPackCheckoutHref(locale, "pdf-pack-page");
   const autoDeliveryEnabled = isPayPalOrdersConfigured();
   const payPalClientId = getPayPalClientId();
   const pdfPackPrice = getPdfPackPrice();
   const pdfPackProductName = getPdfPackProductName();
   const pageUrl = buildAbsoluteUrl(`/${locale}${PATH}`);
+  const supportHref = `/${locale}/contact`;
 
   const features = isZh
     ? [
         ["100 道验证题", "Easy、Medium、Hard、Evil 各 25 题，所有答案来自已通过程序校验的题库。"],
         ["完整答案页", "每道题都有同编号答案页，题面与答案分区排列，避免提前看到答案。"],
         ["A4 + US Letter", "一个 ZIP 包含 A4 和 US Letter、一页 1 题和一页 2 题共四份矢量 PDF，黑白打印清晰。"],
-        ["付款后自动下载", autoDeliveryEnabled ? "PayPal 捕获成功后立即生成限时下载链接，无需等待人工邮件。" : "当前使用 PayPal.Me 人工核验交付；REST 凭据启用后会自动下载。"],
+        ["付款后自动下载", autoDeliveryEnabled ? "PayPal 捕获成功后立即生成限时下载链接，无需等待人工邮件。" : "结账未配置时会暂停付款并引导联系客服，不会跳转到个人收款页面。"],
       ]
     : [
         ["100 validated puzzles", "The pack contains 25 Easy, 25 Medium, 25 Hard, and 25 Evil puzzles from the program-validated corpus."],
         ["Complete answer pages", "Every puzzle has a matching numbered answer page in a separate section to prevent spoilers."],
         ["A4 + US Letter", "One ZIP contains four vector PDFs: A4 and US Letter in both one-puzzle and two-puzzle layouts."],
-        ["Automatic delivery", autoDeliveryEnabled ? "A time-limited download link appears immediately after PayPal confirms capture." : "PayPal.Me currently uses manual receipt verification; REST credentials enable instant delivery."],
+        ["Automatic delivery", autoDeliveryEnabled ? "A time-limited download link appears immediately after PayPal confirms capture." : "If checkout is not configured, payments pause and customers are directed to support instead of a personal payment page."],
       ];
 
   const useCases = isZh
@@ -105,7 +104,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
           question: "如何购买 PDF 包？",
           answer: autoDeliveryEnabled
             ? "点击 PayPal 按钮并批准付款。服务器只在 PayPal 确认金额、币种和商品全部匹配且状态为 COMPLETED 后显示下载链接。"
-            : "点击 PayPal.Me 按钮完成付款，保留收据并通过联系页提交订单信息；人工核验后交付已经生成的 PDF 包。",
+            : "当前付款入口暂停。请通过联系页咨询恢复时间；本站不会在自动验单不可用时把你跳转到个人收款页面。",
         },
         {
           question: "免费打印页还会保留吗？",
@@ -115,7 +114,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
           question: "付款后多久可以拿到文件？",
           answer: autoDeliveryEnabled
             ? "PayPal 确认捕获后立即显示下载按钮。刷新页面时，浏览器会用本地保存的订单号和恢复密钥重新核验并恢复下载。"
-            : "PayPal.Me 回退路径通常在 24 小时内人工处理。站内自动验单代码已就绪，配置 REST 凭据后即可即时交付。",
+            : "结账恢复前不会接收付款。恢复后，PayPal 确认捕获成功即会显示下载按钮。",
         },
         {
           question: "PDF 包和在线题有什么区别？",
@@ -127,7 +126,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
           question: "How do I buy the PDF pack?",
           answer: autoDeliveryEnabled
             ? "Approve payment with the PayPal button. The server reveals a download only after PayPal confirms a COMPLETED capture whose product, currency, and amount all match."
-            : "Complete payment through PayPal.Me, keep the receipt, and send the order details through the contact page for manual delivery of the generated pack.",
+            : "Payments are paused while checkout is unavailable. Contact support for the restoration status; the site will not redirect you to a personal payment page.",
         },
         {
           question: "Will free printable pages remain available?",
@@ -137,7 +136,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
           question: "How long does delivery take after payment?",
           answer: autoDeliveryEnabled
             ? "The download button appears as soon as PayPal confirms capture. If the page is refreshed, the saved order ID and private recovery key are used to restore access."
-            : "The PayPal.Me fallback is normally handled within 24 hours. Automatic server verification is implemented and becomes active when REST credentials are configured.",
+            : "No payment is accepted until checkout is restored. Once available, the download appears immediately after PayPal confirms capture.",
         },
         {
           question: "How is the PDF pack different from online puzzles?",
@@ -160,8 +159,10 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
       "@type": "Offer",
       price: getPdfPackPriceAmount(),
       priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      url: autoDeliveryEnabled ? pageUrl : purchaseHref,
+      availability: autoDeliveryEnabled
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      url: pageUrl,
       seller: {
         "@type": "Organization",
         name: "Samurai Sudoku",
@@ -255,8 +256,8 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
                 autoDeliveryEnabled={autoDeliveryEnabled}
                 clientId={payPalClientId}
                 locale={locale}
-                manualCheckoutHref={purchaseHref}
                 price={pdfPackPrice}
+                supportHref={supportHref}
               />
               <TrackedLink
                 href={`/${locale}/printable-samurai-sudoku`}
@@ -288,8 +289,8 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
                   ? "安全结账在本页完成。PayPal 确认付款后立即显示 100 题 ZIP 下载，链接有效期 7 天。"
                   : "Secure checkout stays on this page. A 100-puzzle ZIP download appears immediately after PayPal confirms payment and remains valid for 7 days."
                 : isZh
-                ? "100 题 ZIP 已生成。当前 PayPal.Me 路径需提交收据，由人工在 24 小时内交付。"
-                : "The 100-puzzle ZIP is ready. The current PayPal.Me fallback requires receipt submission for delivery within 24 hours."}
+                ? "当前付款入口暂停，不会跳转到个人收款页面。结账恢复后才会重新开放购买。"
+                : "Payments are paused and will not redirect to a personal payment page. Purchasing reopens only after checkout is restored."}
             </p>
             <Link
               href={`/${locale}/contact`}
@@ -297,7 +298,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
             >
               {autoDeliveryEnabled
                 ? isZh ? "付款或下载问题" : "Payment or download help"
-                : isZh ? "付款后提交收据信息" : "Submit receipt after payment"}
+                : isZh ? "询问结账恢复时间" : "Ask when checkout will return"}
             </Link>
             <span className="mx-2 text-muted-foreground" aria-hidden>·</span>
             <Link

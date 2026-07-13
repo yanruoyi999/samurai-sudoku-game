@@ -69,7 +69,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The printable practice plan explains how to use printable Samurai Sudoku PDFs, answer keys, dated archive puzzles, and a one-week paper-solving routine without turning practice into guessing.
 - The free printable starter pack contains 20 verified puzzles, five each in Easy, Medium, Hard, and Evil, with answer keys in both A4 and US Letter PDFs.
 - The paid printable pack contains 100 verified puzzles, 25 per difficulty, with A4 and US Letter editions and complete answer keys in one ZIP download.
-- The PDF pack uses PayPal Orders API automatic capture verification and a seven-day signed download link when REST credentials are configured. PayPal.Me remains a clearly labeled manual-delivery fallback when they are not.
+- The PDF pack uses PayPal Orders API automatic capture verification, the Samurai Sudoku checkout brand, and a seven-day signed download link. Payments pause instead of redirecting to a personal payment page when automatic checkout is unavailable.
 - The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.
 - Minesweeper long-tail guides explain rules, beginner strategy, safe first click behavior, flags, and number clues.
 - Solver-style help should explain the next logical step with candidates and overlap checks, not just reveal a full answer.

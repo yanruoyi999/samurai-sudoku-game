@@ -97,10 +97,14 @@ export function buildPayPalOrderPayload(recoveryKey: string) {
         ],
       },
     ],
-    application_context: {
-      brand_name: "Samurai Sudoku",
-      shipping_preference: "NO_SHIPPING" as const,
-      user_action: "PAY_NOW" as const,
+    payment_source: {
+      paypal: {
+        experience_context: {
+          brand_name: "Samurai Sudoku",
+          shipping_preference: "NO_SHIPPING" as const,
+          user_action: "PAY_NOW" as const,
+        },
+      },
     },
   };
 }
