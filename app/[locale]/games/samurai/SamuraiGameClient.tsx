@@ -111,7 +111,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
 
   if (isInitialPuzzleLoading || !puzzleId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-[calc(100dvh-5.5rem)] items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">{tGame('loadingPuzzle')}</p>
@@ -121,7 +121,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="relative flex min-h-[calc(100dvh-5.5rem)] flex-col">
       {isTransitioning && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">

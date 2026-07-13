@@ -7,6 +7,7 @@ import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { ThemeProvider } from "@/components/theme-provider";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { TypeformFeedbackButton } from "@/components/feedback/TypeformFeedbackButton";
+import { SiteHeader } from "@/components/site/SiteHeader";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -81,6 +82,7 @@ export default async function LocaleLayout({
         disableTransitionOnChange
       >
         <div className="font-sans">
+          <SiteHeader locale={locale} />
           {children}
           <InstallPrompt locale={locale} />
           <TypeformFeedbackButton locale={locale} />
