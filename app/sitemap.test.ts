@@ -53,6 +53,7 @@ describe("sitemap", () => {
       expect(urls.has(`https://www.samuraisudoku.net/${locale}/contact`)).toBe(false);
       expect(urls.has(`https://www.samuraisudoku.net/${locale}/privacy`)).toBe(false);
       expect(urls.has(`https://www.samuraisudoku.net/${locale}/support`)).toBe(false);
+      expect(urls.has(`https://www.samuraisudoku.net/${locale}/terms`)).toBe(false);
     }
   });
 });

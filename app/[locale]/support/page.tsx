@@ -114,7 +114,7 @@ export default async function SupportPage({ params }: SupportPageProps) {
     ? [
         {
           question: '现在已经可以付费订阅吗？',
-          answer: '暂未开放正式付费。当前页面用于收集支持者候补名单和功能偏好，避免在没有真实需求前过早接入支付。',
+          answer: '订阅尚未开放，此页面只收集候补名单和功能偏好。100题可打印 PDF 是独立的一次性购买，不会自动续费，也不代表订阅已经上线。',
         },
         {
           question: '免费题目会消失吗？',
@@ -128,7 +128,7 @@ export default async function SupportPage({ params }: SupportPageProps) {
     : [
         {
           question: 'Can I subscribe today?',
-          answer: 'Not yet. This page collects the supporter waitlist and feature preferences before payment is added.',
+          answer: 'Subscriptions are not open yet; this page only collects waitlist interest and feature preferences. The 100-puzzle printable PDF is a separate one-time purchase with no recurring charge.',
         },
         {
           question: 'Will free puzzles go away?',

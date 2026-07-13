@@ -22,4 +22,14 @@ describe("llms.txt", () => {
     );
     expect(body).toContain("Printable practice plan");
   });
+
+  it("states the verified free and paid PDF pack contents", async () => {
+    const response = await GET();
+    const body = await response.text();
+
+    expect(body).toContain("20 verified puzzles");
+    expect(body).toContain("100 verified puzzles");
+    expect(body).toContain("PayPal Orders API");
+    expect(body).toContain("seven-day signed download link");
+  });
 });

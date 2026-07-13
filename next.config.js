@@ -111,6 +111,10 @@ const withPWA = require('@ducanh2912/next-pwa').default({
         }
       },
       {
+        urlPattern: /\/api\/(?:paypal|download)\/.*/i,
+        handler: 'NetworkOnly'
+      },
+      {
         urlPattern: /\/api\/.*/i,
         handler: 'NetworkFirst',
         options: {
@@ -145,6 +149,9 @@ const nextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    '/api/download/pdf-pack': ['./private-assets/samurai-sudoku-100-puzzle-pack.zip'],
+  },
 
   // Image optimization
   images: {
@@ -170,6 +177,19 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600, s-maxage=3600, stale-while-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/downloads/:file*.pdf',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
           },
         ],
       },

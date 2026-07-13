@@ -38,7 +38,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         {isZh ? "隐私政策" : "Privacy Policy"}
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {isZh ? "最后更新：2026年7月4日" : "Last updated: July 4, 2026"}
+        {isZh ? "最后更新：2026年7月13日" : "Last updated: July 13, 2026"}
       </p>
 
       <section className="mt-8 space-y-3">
@@ -109,7 +109,30 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               {isZh ? "Typeform 隐私政策" : "Typeform Privacy Policy"}
             </a>
           </li>
+          <li>
+            <strong className="text-foreground">PayPal</strong>:{" "}
+            {isZh
+              ? "用于处理可打印 PDF 题包的一次性付款。付款批准和支付信息由 PayPal 处理；本站服务器仅核验订单号、商品、金额、币种和完成状态，并生成限时下载链接。本站不接收或保存完整银行卡信息。"
+              : "Used to process one-time purchases of printable PDF packs. PayPal handles payment approval and payment details; our server verifies only the order ID, product, amount, currency, and completion status before issuing a time-limited download link. We do not receive or store full card details."}{" "}
+            <a
+              href="https://www.paypal.com/us/legalhub/paypal/privacy-full"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80"
+            >
+              {isZh ? "PayPal 隐私声明" : "PayPal Privacy Statement"}
+            </a>
+          </li>
         </ul>
+      </section>
+
+      <section className="mt-8 space-y-3">
+        <h2 className="text-2xl font-semibold">{isZh ? "数字购买与下载" : "Digital Purchases and Downloads"}</h2>
+        <p className="text-muted-foreground">
+          {isZh
+            ? "自动交付启用后，浏览器会在本地保存订单号和随机恢复密钥，以便刷新页面后重新核验已完成订单。恢复密钥不会发送给 PayPal；下载令牌有有效期，且下载响应不会被浏览器或搜索引擎缓存。人工 PayPal.Me 回退仅在自动结账不可用时使用，并需要你主动提交付款收据以完成交付。"
+            : "When automatic delivery is enabled, your browser stores the order ID and a random recovery key locally so a completed order can be verified again after a refresh. The recovery key is not sent to PayPal; download tokens expire, and download responses are not cached or indexed. The manual PayPal.Me fallback is used only when automatic checkout is unavailable and requires you to submit a receipt for delivery."}
+        </p>
       </section>
 
       <section className="mt-8 space-y-3">
@@ -149,6 +172,9 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           </Link>
           <Link href={`/${locale}/about`} className="text-primary hover:text-primary/80">
             {isZh ? "关于武士数独" : "About Samurai Sudoku"}
+          </Link>
+          <Link href={`/${locale}/terms`} className="text-primary hover:text-primary/80">
+            {isZh ? "使用与购买条款" : "Terms of Use and Purchase"}
           </Link>
           <Link href={`/${locale}/games/samurai`} className="text-primary hover:text-primary/80">
             {isZh ? "继续今日谜题" : "Continue today's puzzle"}

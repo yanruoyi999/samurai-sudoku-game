@@ -6,7 +6,7 @@ A modern, feature-rich Samurai Sudoku web application built with Next.js 15, Rea
 
 **Current status** ✅ **Production-oriented game app**
 
-The implementation includes the core Samurai Sudoku game, localized SEO pages, daily puzzle data, offline support, local progress persistence, analytics hooks, and automated puzzle validation.
+The implementation includes the core Samurai Sudoku game, localized SEO pages, daily puzzle data, offline support, local progress persistence, analytics hooks, printable PDF packs, PayPal order verification, and automated puzzle validation.
 
 ### ✅ Completed Features
 
@@ -64,6 +64,7 @@ The implementation includes the core Samurai Sudoku game, localized SEO pages, d
 
 - Node.js 18+
 - pnpm 8+
+- Python 3.10+ and ReportLab only when regenerating PDF packs
 
 ### Installation
 
@@ -91,6 +92,9 @@ pnpm test:sudoku
 
 # Validate generated puzzle JSON files
 pnpm validate-puzzles
+
+# Validate committed free and paid PDF artifacts
+pnpm validate-pdf-packs
 ```
 
 ### Build
@@ -99,6 +103,33 @@ pnpm validate-puzzles
 pnpm build
 pnpm start
 ```
+
+`pnpm build` rebuilds the puzzle index, validates every puzzle, verifies the PDF artifact checksums, and then runs the production Next.js build.
+
+### Printable PDF packs
+
+The repository contains four public 20-puzzle starter PDFs and one private 100-puzzle ZIP. Both A4 and US Letter are available in one-puzzle-per-page and two-puzzles-per-page layouts. To regenerate them deterministically:
+
+```bash
+python3 -m pip install -r scripts/requirements-pdf.txt
+pnpm generate-pdf-packs
+pnpm validate-pdf-packs
+```
+
+The paid ZIP stays under `private-assets/` and is served only by the signed download route after a completed PayPal order is verified.
+
+### PayPal automatic delivery
+
+Copy the PayPal variables documented in `.env.example`. Use sandbox credentials first. Automatic checkout requires all of these values:
+
+```bash
+NEXT_PUBLIC_PAYPAL_CLIENT_ID="..."
+PAYPAL_CLIENT_SECRET="..."
+PAYPAL_ENVIRONMENT="sandbox"
+PDF_DOWNLOAD_TOKEN_SECRET="at-least-32-random-characters"
+```
+
+When any REST credential is absent, the product page keeps the PayPal.Me manual-delivery fallback visible instead of presenting a broken automatic checkout.
 
 ## 📁 Project Structure
 
@@ -242,4 +273,4 @@ This is a development project. Contributions welcome!
 
 **Status**: Ready for local development and production builds.
 
-Last Updated: 2026-07-03
+Last Updated: 2026-07-13

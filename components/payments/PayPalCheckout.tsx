@@ -1,0 +1,248 @@
+"use client";
+
+import Script from "next/script";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { trackInteraction } from "@/lib/analytics/events";
+import {
+  parsePayPalCaptureResponse,
+  parsePayPalCreateResponse,
+  type PayPalCreateResponse,
+} from "@/lib/paypal-checkout";
+
+const STORAGE_KEY = "samurai-pdf-pack-paypal-order";
+
+interface PayPalCheckoutProps {
+  autoDeliveryEnabled: boolean;
+  clientId: string;
+  locale: string;
+  manualCheckoutHref: string;
+  price: string;
+}
+
+interface PayPalButtonsInstance {
+  render: (container: HTMLElement) => Promise<void>;
+  close?: () => void;
+}
+
+interface PayPalButtonsOptions {
+  style?: Record<string, string | number>;
+  createOrder: () => Promise<string>;
+  onApprove: (data: { orderID: string }) => Promise<void>;
+  onCancel: () => void;
+  onError: (error: unknown) => void;
+}
+
+declare global {
+  interface Window {
+    paypal?: {
+      Buttons: (options: PayPalButtonsOptions) => PayPalButtonsInstance;
+    };
+  }
+}
+
+export function PayPalCheckout({
+  autoDeliveryEnabled,
+  clientId,
+  locale,
+  manualCheckoutHref,
+  price,
+}: PayPalCheckoutProps) {
+  const isZh = locale === "zh";
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const buttonsRef = useRef<PayPalButtonsInstance | null>(null);
+  const activeOrderRef = useRef<PayPalCreateResponse | null>(null);
+  const [scriptReady, setScriptReady] = useState(false);
+  const [status, setStatus] = useState<"idle" | "creating" | "capturing" | "complete">("idle");
+  const [error, setError] = useState("");
+  const [downloadUrl, setDownloadUrl] = useState("");
+
+  const captureOrder = useCallback(
+    async (order: PayPalCreateResponse, recovery = false) => {
+      setStatus("capturing");
+      setError("");
+      const response = await fetch("/api/paypal/orders/capture", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+      const body = await readJson(response);
+      if (!response.ok) {
+        throw new Error(getApiError(body, isZh ? "付款尚未完成，请返回 PayPal 完成批准。" : "Payment is not complete yet. Return to PayPal and approve it first."));
+      }
+
+      const captured = parsePayPalCaptureResponse(body);
+      setDownloadUrl(captured.downloadUrl);
+      setStatus("complete");
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...order, completed: true, downloadUrl: captured.downloadUrl }),
+      );
+      trackInteraction(recovery ? "paid_pack_download_recovered" : "paid_pack_purchase", {
+        locale,
+        order_id: captured.orderID,
+        product: "100_printable_pack",
+        provider: "paypal",
+        price,
+      });
+    },
+    [isZh, locale, price],
+  );
+
+  useEffect(() => {
+    if (!autoDeliveryEnabled) return;
+
+    const saved = readSavedOrder();
+    if (!saved) return;
+    activeOrderRef.current = saved;
+
+    void captureOrder(saved, true).catch(() => {
+      setStatus("idle");
+    });
+  }, [autoDeliveryEnabled, captureOrder]);
+
+  useEffect(() => {
+    if (!autoDeliveryEnabled || !scriptReady || !containerRef.current || !window.paypal) {
+      return;
+    }
+
+    const buttons = window.paypal.Buttons({
+      style: { color: "gold", height: 44, label: "paypal", layout: "vertical", shape: "rect" },
+      createOrder: async () => {
+        setStatus("creating");
+        setError("");
+        const response = await fetch("/api/paypal/orders", {
+          method: "POST",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+        });
+        const body = await readJson(response);
+        if (!response.ok) {
+          throw new Error(getApiError(body, isZh ? "无法创建 PayPal 订单。" : "Unable to create the PayPal order."));
+        }
+
+        const order = parsePayPalCreateResponse(body);
+        activeOrderRef.current = order;
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+        setStatus("idle");
+        trackInteraction("paid_pack_checkout_created", {
+          locale,
+          product: "100_printable_pack",
+          provider: "paypal",
+          price,
+        });
+        return order.orderID;
+      },
+      onApprove: async ({ orderID }) => {
+        const order = activeOrderRef.current ?? readSavedOrder();
+        if (!order || order.orderID !== orderID) {
+          throw new Error(isZh ? "订单恢复信息缺失，请刷新后重试。" : "Order recovery details are missing. Refresh and try again.");
+        }
+        await captureOrder(order);
+      },
+      onCancel: () => {
+        setStatus("idle");
+        trackInteraction("paid_pack_checkout_cancel", { locale, provider: "paypal" });
+      },
+      onError: (checkoutError) => {
+        console.error("PayPal checkout failed.", checkoutError);
+        setStatus("idle");
+        setError(isZh ? "PayPal 结账暂时不可用，你可以使用下方人工交付入口。" : "PayPal Checkout is temporarily unavailable. Use the manual-delivery option below.");
+        trackInteraction("paid_pack_checkout_error", { locale, provider: "paypal" });
+      },
+    });
+    buttonsRef.current = buttons;
+    void buttons.render(containerRef.current).catch((renderError) => {
+      console.error("PayPal buttons failed to render.", renderError);
+      setStatus("idle");
+      setError(
+        isZh
+          ? "PayPal 按钮加载失败，请使用人工交付入口。"
+          : "PayPal buttons failed to load. Use manual delivery instead.",
+      );
+      trackInteraction("paid_pack_checkout_error", { locale, provider: "paypal" });
+    });
+
+    return () => {
+      buttons.close?.();
+      buttonsRef.current = null;
+    };
+  }, [autoDeliveryEnabled, captureOrder, isZh, locale, price, scriptReady]);
+
+  if (!autoDeliveryEnabled) {
+    return (
+      <TrackedLink
+        href={manualCheckoutHref}
+        eventName="paid_pack_manual_checkout_click"
+        eventProperties={{ locale, product: "100_printable_pack", provider: "paypal_me", price }}
+        className="rounded-lg bg-primary px-6 py-3 text-center font-semibold text-primary-foreground hover:bg-primary/90"
+      >
+        {isZh ? `用 PayPal 购买 ${price}` : `Buy with PayPal ${price}`}
+      </TrackedLink>
+    );
+  }
+
+  const sdkUrl = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=USD&intent=capture&components=buttons`;
+
+  return (
+    <div className="w-full min-w-0 sm:max-w-[320px]">
+      <Script
+        id="paypal-checkout-sdk"
+        src={sdkUrl}
+        strategy="afterInteractive"
+        onLoad={() => setScriptReady(true)}
+        onError={() => setError(isZh ? "PayPal 按钮加载失败，请使用人工交付入口。" : "PayPal buttons failed to load. Use manual delivery instead.")}
+      />
+      <div ref={containerRef} aria-label={isZh ? "PayPal 安全结账" : "Secure PayPal checkout"} />
+      {(status === "creating" || status === "capturing") && (
+        <p className="mt-2 text-sm text-muted-foreground" role="status">
+          {status === "creating"
+            ? isZh ? "正在创建安全订单..." : "Creating a secure order..."
+            : isZh ? "正在核验付款并准备下载..." : "Verifying payment and preparing your download..."}
+        </p>
+      )}
+      {downloadUrl && (
+        <a
+          href={downloadUrl}
+          className="mt-3 inline-flex w-full justify-center rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
+          onClick={() => trackInteraction("paid_pack_download", { locale, provider: "paypal" })}
+        >
+          {isZh ? "下载 100 题 PDF 包" : "Download the 100-puzzle PDF pack"}
+        </a>
+      )}
+      {error && (
+        <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm" role="alert">
+          <p>{error}</p>
+          <a href={manualCheckoutHref} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex font-semibold text-primary hover:underline">
+            {isZh ? "改用 PayPal.Me 人工交付" : "Use PayPal.Me with manual delivery"}
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+async function readJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function getApiError(value: unknown, fallback: string): string {
+  if (!value || typeof value !== "object") return fallback;
+  const error = (value as { error?: unknown }).error;
+  return typeof error === "string" && error.length > 0 ? error : fallback;
+}
+
+function readSavedOrder(): PayPalCreateResponse | null {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? parsePayPalCreateResponse(JSON.parse(raw)) : null;
+  } catch {
+    return null;
+  }
+}

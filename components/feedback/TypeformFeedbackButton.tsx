@@ -64,6 +64,9 @@ export function TypeformFeedbackButton({ locale }: TypeformFeedbackButtonProps) 
   const isZh = locale === "zh";
   const routePuzzleId = pathname?.match(/\/games\/samurai\/(\d{4}-\d{2}-\d{2})/)?.[1];
   const effectivePuzzleId = puzzleId ?? routePuzzleId;
+  const hasMobileGameControls = Boolean(
+    pathname?.match(/^\/(?:en|zh)\/games\/(?:samurai(?:\/\d{4}-\d{2}-\d{2})?|minesweeper)$/),
+  );
   const typeformHref = buildTypeformHref({
     locale,
     pathname,
@@ -93,9 +96,10 @@ export function TypeformFeedbackButton({ locale }: TypeformFeedbackButtonProps) 
         })
       }
       aria-label={isZh ? "反馈武士数独题目" : "Send Samurai Sudoku feedback"}
-      className="fixed bottom-24 right-4 z-40 rounded-full border border-primary/20 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90 md:bottom-5 md:right-5"
+      className={`fixed right-3 z-40 h-11 w-11 items-center justify-center rounded-full border border-primary/20 bg-primary p-0 text-sm font-semibold text-primary-foreground shadow-lg transition hover:bg-primary/90 md:bottom-5 md:right-5 md:flex md:h-auto md:w-auto md:px-4 md:py-2 ${hasMobileGameControls ? "hidden" : "bottom-3 flex"}`}
     >
-      {isZh ? "反馈题目" : "Feedback"}
+      <span className="text-lg md:hidden" aria-hidden>?</span>
+      <span className="hidden md:inline">{isZh ? "反馈题目" : "Feedback"}</span>
     </a>
   );
 }

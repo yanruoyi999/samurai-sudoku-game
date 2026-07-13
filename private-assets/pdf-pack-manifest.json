@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    {
+      "bytes": 2339396,
+      "kind": "zip",
+      "path": "private-assets/samurai-sudoku-100-puzzle-pack.zip",
+      "sha256": "2076a8595e8497cf2e972de7700aac890276b1ecb37778a65bf919c6e534afee"
+    },
+    {
+      "bytes": 218240,
+      "kind": "pdf",
+      "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf",
+      "sha256": "5bf1af4aada6680653d3a288218fe72dcc0629d50f41a7390fc0671e9d8318ef"
+    },
+    {
+      "bytes": 217997,
+      "kind": "pdf",
+      "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-letter.pdf",
+      "sha256": "e6c522815fa317e048f014c5ebd41e5cb978ba0e74b6dee70c5b9c946ca3215a"
+    },
+    {
+      "bytes": 195652,
+      "kind": "pdf",
+      "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf",
+      "sha256": "eb3902d3b6d4534d11b261b484779f41d23bd7e00e99128497cad48f854493df"
+    },
+    {
+      "bytes": 193627,
+      "kind": "pdf",
+      "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf",
+      "sha256": "0f231edd86b9381dc9e5bcf164f053a6a9ca2b0efa72dc3c841174955b498b78"
+    }
+  ],
+  "difficultyCounts": {
+    "easy": {
+      "free": 5,
+      "paid": 25
+    },
+    "evil": {
+      "free": 5,
+      "paid": 25
+    },
+    "hard": {
+      "free": 5,
+      "paid": 25
+    },
+    "medium": {
+      "free": 5,
+      "paid": 25
+    }
+  },
+  "freePuzzleCount": 20,
+  "paidPuzzleCount": 100,
+  "productId": "samurai-sudoku-100-pack-v1"
+}

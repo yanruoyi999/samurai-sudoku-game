@@ -160,7 +160,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
         </div>
       </header>
 
-      <main className="flex-1 overflow-hidden">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {status === "completed" && (
           <div className="mx-4 mt-4 p-4 bg-primary/10 border border-primary/40 rounded-lg text-center">
             <p className="text-lg font-semibold text-primary">
@@ -169,11 +169,12 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
           </div>
         )}
 
-        <div className="hidden lg:flex h-full">
+        <GameOnboardingPrompt className="mx-4 mt-4 shrink-0 lg:mx-auto lg:w-full lg:max-w-3xl" />
+
+        <div className="hidden min-h-0 flex-1 lg:flex">
           <div className="flex-1 overflow-y-auto p-4">
             <div className="max-w-3xl mx-auto space-y-4">
               <StatsPanel />
-              <GameOnboardingPrompt />
               <SamuraiBoard key={puzzleId} />
             </div>
           </div>
@@ -186,20 +187,18 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
           </div>
         </div>
 
-        <div className="hidden md:block lg:hidden h-full overflow-y-auto">
+        <div className="hidden min-h-0 flex-1 overflow-y-auto md:block lg:hidden">
           <div className="container mx-auto px-4 py-6 space-y-6">
             <StatsPanel />
-            <GameOnboardingPrompt />
             <SamuraiBoard key={puzzleId} />
             <NumberPad showCandidates />
             <ActionBar />
           </div>
         </div>
 
-        <div className="md:hidden h-full flex flex-col">
+        <div className="flex min-h-0 flex-1 flex-col md:hidden">
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
             <StatsPanel />
-            <GameOnboardingPrompt />
             <SamuraiBoard key={puzzleId} />
           </div>
 

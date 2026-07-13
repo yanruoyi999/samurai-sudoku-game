@@ -4,6 +4,12 @@ import Link from "next/link";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { PrintPackButton } from "@/components/printable/PrintPackButton";
 import {
+  PRINTABLE_STARTER_A4_PDF,
+  PRINTABLE_STARTER_A4_TWO_UP_PDF,
+  PRINTABLE_STARTER_LETTER_PDF,
+  PRINTABLE_STARTER_LETTER_TWO_UP_PDF,
+} from "@/lib/printable-pack";
+import {
   PrintablePageStyle,
   PrintableSamuraiBoard,
 } from "@/components/printable/PrintableSamuraiBoard";
@@ -177,6 +183,33 @@ export default async function SamuraiPdfSamplePage({
         </div>
 
         <div className="no-print flex flex-wrap gap-3">
+          <TrackedLink
+            href={PRINTABLE_STARTER_A4_PDF}
+            eventName="download_free_pdf"
+            eventProperties={{ locale, pack_id: PACK_ID, paper: "a4", location: "pdf_sample_header" }}
+            download
+            className="rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            {isZh ? "下载 A4 PDF" : "Download A4 PDF"}
+          </TrackedLink>
+          <TrackedLink
+            href={PRINTABLE_STARTER_LETTER_PDF}
+            eventName="download_free_pdf"
+            eventProperties={{ locale, pack_id: PACK_ID, paper: "letter", location: "pdf_sample_header" }}
+            download
+            className="rounded-lg border border-primary px-5 py-3 font-semibold text-primary hover:bg-primary/10"
+          >
+            {isZh ? "下载 US Letter PDF" : "Download US Letter PDF"}
+          </TrackedLink>
+          <TrackedLink
+            href={paperSize === "a4" ? PRINTABLE_STARTER_A4_TWO_UP_PDF : PRINTABLE_STARTER_LETTER_TWO_UP_PDF}
+            eventName="download_free_pdf"
+            eventProperties={{ locale, pack_id: PACK_ID, paper: paperSize, layout: "two", location: "pdf_sample_header" }}
+            download
+            className="rounded-lg border px-5 py-3 font-semibold transition-colors hover:bg-accent"
+          >
+            {isZh ? "下载一页 2 题版" : "Download compact 2-up PDF"}
+          </TrackedLink>
           <PrintPackButton locale={locale} packId={PACK_ID} puzzleCount={puzzles.length} />
           <TrackedLink
             href={pdfPackHref}

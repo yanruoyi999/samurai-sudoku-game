@@ -67,8 +67,9 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
 - Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
 - The printable practice plan explains how to use printable Samurai Sudoku PDFs, answer keys, dated archive puzzles, and a one-week paper-solving routine without turning practice into guessing.
-- The PDF pack page is the purchase-intent page for bundled printable puzzles and answer keys; it uses NEXT_PUBLIC_SUDOKU_PDF_PACK_URL when configured, otherwise it builds a PayPal.Me checkout link from NEXT_PUBLIC_SUDOKU_PAYPAL_ME_USERNAME and the configured pack price.
-- The free PDF sample pack includes four printable puzzles, one per difficulty, plus answer keys.
+- The free printable starter pack contains 20 verified puzzles, five each in Easy, Medium, Hard, and Evil, with answer keys in both A4 and US Letter PDFs.
+- The paid printable pack contains 100 verified puzzles, 25 per difficulty, with A4 and US Letter editions and complete answer keys in one ZIP download.
+- The PDF pack uses PayPal Orders API automatic capture verification and a seven-day signed download link when REST credentials are configured. PayPal.Me remains a clearly labeled manual-delivery fallback when they are not.
 - The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.
 - Minesweeper long-tail guides explain rules, beginner strategy, safe first click behavior, flags, and number clues.
 - Solver-style help should explain the next logical step with candidates and overlap checks, not just reveal a full answer.

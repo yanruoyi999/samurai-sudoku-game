@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { PRINTABLE_STARTER_DIFFICULTIES, selectPrintableStarterPack } from "./printable-pack";
+import {
+  PRINTABLE_STARTER_DIFFICULTIES,
+  selectPrintablePaidPack,
+  selectPrintableStarterPack,
+} from "./printable-pack";
 import type { PuzzleMetadata } from "./sudoku/types";
 
 function puzzle(id: string, difficulty: PuzzleMetadata["difficulty"]): PuzzleMetadata {
@@ -43,5 +47,23 @@ describe("selectPrintableStarterPack", () => {
       "2026-01-03",
       "2026-01-04",
     ]);
+  });
+
+  it("selects a balanced 100-puzzle paid pack", () => {
+    const puzzles = PRINTABLE_STARTER_DIFFICULTIES.flatMap((difficulty, difficultyIndex) =>
+      Array.from({ length: 30 }, (_, index) =>
+        puzzle(
+          `2026-${String(difficultyIndex + 1).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
+          difficulty,
+        ),
+      ),
+    );
+
+    const selected = selectPrintablePaidPack(puzzles);
+
+    expect(selected).toHaveLength(100);
+    for (const difficulty of PRINTABLE_STARTER_DIFFICULTIES) {
+      expect(selected.filter((item) => item.difficulty === difficulty)).toHaveLength(25);
+    }
   });
 });

@@ -72,7 +72,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
           : "If you find a problem with a puzzle, solution, timer, saved progress, or page display, tell us the page and the steps that caused it."}
       </p>
 
-      <section className="mt-10 grid gap-5 sm:grid-cols-2">
+      <section className="mt-10 grid gap-5 sm:grid-cols-3">
         <div className="rounded-lg border bg-background p-5">
           <h2 className="text-xl font-semibold">{isZh ? "题目与产品反馈" : "Puzzle and Product Feedback"}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -102,6 +102,21 @@ export default async function ContactPage({ params }: ContactPageProps) {
             privacy@samuraisudoku.net
           </a>
         </div>
+
+        <div className="rounded-lg border bg-background p-5">
+          <h2 className="text-xl font-semibold">{isZh ? "付款与下载" : "Payment and Download"}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {isZh
+              ? "请附上 PayPal 订单号、购买日期和遇到的问题，不要发送密码或完整银行卡信息。"
+              : "Include the PayPal order ID, purchase date, and issue. Never send passwords or full card details."}
+          </p>
+          <a
+            href={`mailto:feedback@samuraisudoku.net?subject=${encodeURIComponent(isZh ? "PDF 题包付款或下载问题" : "PDF pack payment or download issue")}`}
+            className="mt-4 inline-flex font-medium text-primary hover:text-primary/80"
+          >
+            {isZh ? "获取购买支持" : "Get purchase support"}
+          </a>
+        </div>
       </section>
 
       <section className="mt-10 space-y-3">
@@ -120,6 +135,9 @@ export default async function ContactPage({ params }: ContactPageProps) {
         </Link>
         <Link href={`/${locale}/about`} className="font-medium text-primary hover:text-primary/80">
           {isZh ? "了解本站" : "About This Site"}
+        </Link>
+        <Link href={`/${locale}/terms`} className="font-medium text-primary hover:text-primary/80">
+          {isZh ? "使用与购买条款" : "Terms of Use and Purchase"}
         </Link>
       </div>
     </main>

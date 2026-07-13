@@ -453,6 +453,9 @@ export default async function HomePage() {
           <Link href={`/${locale}/privacy`} className="text-primary hover:text-primary/80">
             {t('privacy')}
           </Link>
+          <Link href={`/${locale}/terms`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '使用与购买条款' : 'Terms'}
+          </Link>
           <Link href={`/${locale}/support`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '支持与订阅' : 'Support / Subscribe'}
           </Link>

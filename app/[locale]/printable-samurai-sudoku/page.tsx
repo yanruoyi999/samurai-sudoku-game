@@ -4,7 +4,11 @@ import Script from "next/script";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import {
+  PRINTABLE_STARTER_A4_PDF,
+  PRINTABLE_STARTER_A4_TWO_UP_PDF,
   PRINTABLE_STARTER_DIFFICULTIES,
+  PRINTABLE_STARTER_LETTER_PDF,
+  PRINTABLE_STARTER_LETTER_TWO_UP_PDF,
   groupPrintablePackByDifficulty,
   getPrintableDifficultyLabel,
   selectPrintableStarterPack,
@@ -245,12 +249,22 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <TrackedLink
-                href={sampleHref}
+                href={PRINTABLE_STARTER_A4_PDF}
                 eventName="download_free_pdf"
-                eventProperties={{ locale, pack_id: "starter_20", location: "hero" }}
+                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "hero" }}
+                download
                 className="rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                {isZh ? "下载免费 PDF" : "Download Free PDF"}
+                {isZh ? "下载免费 A4 PDF" : "Download Free A4 PDF"}
+              </TrackedLink>
+              <TrackedLink
+                href={PRINTABLE_STARTER_LETTER_PDF}
+                eventName="download_free_pdf"
+                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "hero" }}
+                download
+                className="rounded-lg border border-primary px-5 py-3 font-semibold text-primary hover:bg-primary/10"
+              >
+                {isZh ? "下载 US Letter PDF" : "Download US Letter PDF"}
               </TrackedLink>
               <TrackedLink
                 href={firstPrintHref}
@@ -287,12 +301,12 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                   {getPrintableDifficultyLabel(difficulty, locale)}
                 </Link>
               ))}
-              <Link href={`${sampleHref}&paper=a4`} className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary">
+              <a href={PRINTABLE_STARTER_A4_PDF} download className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary">
                 A4
-              </Link>
-              <Link href={sampleHref} className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary">
+              </a>
+              <a href={PRINTABLE_STARTER_LETTER_PDF} download className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary">
                 US Letter
-              </Link>
+              </a>
             </div>
           </div>
           <div className="rounded-lg border bg-secondary/20 p-4">
@@ -321,12 +335,13 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                   </p>
                   <div className="mt-4 grid gap-2 text-sm">
                     <TrackedLink
-                      href={`${sampleHref}#${anchor}`}
+                      href={PRINTABLE_STARTER_A4_PDF}
                       eventName="download_free_pdf"
-                      eventProperties={{ locale, difficulty, pack_id: "starter_20", location: "difficulty_card" }}
+                      eventProperties={{ locale, difficulty, pack_id: "starter_20", paper: "a4", location: "difficulty_card" }}
+                      download
                       className="rounded-md bg-primary px-3 py-2 text-center font-semibold text-primary-foreground hover:bg-primary/90"
                     >
-                      {isZh ? "下载 PDF" : "Download PDF"}
+                      {isZh ? "下载 A4 PDF" : "Download A4 PDF"}
                     </TrackedLink>
                     {summary.firstPuzzle ? (
                       <>
@@ -410,18 +425,48 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                 <li>A4</li>
                 <li>US Letter</li>
                 <li>{isZh ? "一页 1 题" : "1 puzzle per page"}</li>
-                <li>{isZh ? "一页 2 题预留版" : "2 puzzles per page planned"}</li>
-                <li>{isZh ? "可附答案页" : "Solutions included"}</li>
-                <li>{isZh ? "普通字体 / 大字体打印流程" : "Regular / large-print workflow"}</li>
+                <li>{isZh ? "一页 2 题紧凑版" : "2 puzzles per page compact edition"}</li>
+                <li>{isZh ? "完整答案页" : "Complete solutions included"}</li>
+                <li>{isZh ? "矢量数字与清晰粗细线" : "Vector numbers and clear line weights"}</li>
               </ul>
               <TrackedLink
-                href={sampleHref}
+                href={PRINTABLE_STARTER_A4_PDF}
                 eventName="download_free_pdf"
-                eventProperties={{ locale, pack_id: "starter_20", location: "print_options" }}
+                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "print_options" }}
+                download
                 className="mt-5 block rounded-lg bg-primary px-4 py-3 text-center font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                {isZh ? "打开免费打印包" : "Open free print pack"}
+                {isZh ? "下载 A4 免费包" : "Download the free A4 pack"}
               </TrackedLink>
+              <TrackedLink
+                href={PRINTABLE_STARTER_LETTER_PDF}
+                eventName="download_free_pdf"
+                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "print_options" }}
+                download
+                className="mt-3 block rounded-lg border border-primary px-4 py-3 text-center font-semibold text-primary hover:bg-primary/10"
+              >
+                {isZh ? "下载 US Letter 免费包" : "Download the US Letter pack"}
+              </TrackedLink>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <TrackedLink
+                  href={PRINTABLE_STARTER_A4_TWO_UP_PDF}
+                  eventName="download_free_pdf"
+                  eventProperties={{ locale, pack_id: "starter_20", paper: "a4", layout: "two", location: "print_options" }}
+                  download
+                  className="rounded-lg border px-3 py-2 text-center text-sm font-semibold hover:bg-accent"
+                >
+                  {isZh ? "A4 一页 2 题" : "A4 compact 2-up"}
+                </TrackedLink>
+                <TrackedLink
+                  href={PRINTABLE_STARTER_LETTER_TWO_UP_PDF}
+                  eventName="download_free_pdf"
+                  eventProperties={{ locale, pack_id: "starter_20", paper: "letter", layout: "two", location: "print_options" }}
+                  download
+                  className="rounded-lg border px-3 py-2 text-center text-sm font-semibold hover:bg-accent"
+                >
+                  {isZh ? "Letter 一页 2 题" : "Letter compact 2-up"}
+                </TrackedLink>
+              </div>
             </aside>
           </div>
         </div>
