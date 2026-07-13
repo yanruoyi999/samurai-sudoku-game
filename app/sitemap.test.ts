@@ -8,7 +8,7 @@ describe("sitemap", () => {
     const expectedDates = {
       easy: "2026-07-11T00:00:00.000Z",
       medium: "2026-07-12T00:00:00.000Z",
-      hard: "2026-07-09T00:00:00.000Z",
+      hard: "2026-07-13T00:00:00.000Z",
       evil: "2026-07-10T00:00:00.000Z",
     };
 
@@ -32,6 +32,16 @@ describe("sitemap", () => {
     expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/common-mistakes")).toBe(true);
     expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/printable-practice-plan")).toBe(true);
     expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/printable-practice-plan")).toBe(true);
+  });
+
+  it("uses printable-samurai-sudoku as the canonical printable resource page", async () => {
+    const entries = await sitemap();
+    const urls = new Set(entries.map((entry) => entry.url));
+
+    expect(urls.has("https://www.samuraisudoku.net/en/printable-samurai-sudoku")).toBe(true);
+    expect(urls.has("https://www.samuraisudoku.net/zh/printable-samurai-sudoku")).toBe(true);
+    expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/printable")).toBe(false);
+    expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/printable")).toBe(false);
   });
 
   it("keeps low-search-intent trust pages out of the XML sitemap", async () => {

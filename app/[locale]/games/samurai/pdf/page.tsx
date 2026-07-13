@@ -225,7 +225,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
           Samurai Sudoku
         </Link>
         <span aria-hidden>/</span>
-        <Link href={`/${locale}/games/samurai/printable`} className="hover:text-foreground">
+        <Link href={`/${locale}/printable-samurai-sudoku`} className="hover:text-foreground">
           {isZh ? "可打印" : "Printable"}
         </Link>
         <span aria-hidden>/</span>
@@ -267,7 +267,7 @@ export default async function SamuraiPdfPage({ params }: SamuraiPdfPageProps) {
                   : "Join the PDF pack waitlist"}
               </TrackedLink>
               <TrackedLink
-                href={`/${locale}/games/samurai/printable`}
+                href={`/${locale}/printable-samurai-sudoku`}
                 eventName="pdf_pack_free_printable_click"
                 eventProperties={{ locale, location: "pdf_pack_hero" }}
                 className="rounded-lg border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary/10"

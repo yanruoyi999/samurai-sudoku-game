@@ -10,7 +10,7 @@ interface PrintPackButtonProps {
 
 export function PrintPackButton({ locale, packId, puzzleCount }: PrintPackButtonProps) {
   const handlePrint = () => {
-    trackInteraction("pdf_sample_print_click", {
+    trackInteraction("download_free_pdf", {
       locale,
       pack_id: packId,
       puzzle_count: puzzleCount,

@@ -10,7 +10,7 @@ interface PrintButtonProps {
 
 export function PrintButton({ locale, puzzleId, difficulty }: PrintButtonProps) {
   const handlePrint = () => {
-    trackInteraction("printable_print_click", {
+    trackInteraction("print_puzzle", {
       locale,
       puzzle_id: puzzleId,
       difficulty,

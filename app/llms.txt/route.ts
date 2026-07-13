@@ -36,7 +36,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Evil solving path: ${baseUrl}/en/games/samurai/evil-solving-path
 - Evil stuck after two grids guide: ${baseUrl}/en/games/samurai/evil-stuck-after-two-grids
 - Solver and hint guide: ${baseUrl}/en/games/samurai/solver
-- Printable Samurai Sudoku: ${baseUrl}/en/games/samurai/printable
+- Printable Samurai Sudoku: ${baseUrl}/en/printable-samurai-sudoku
 - Printable practice plan: ${baseUrl}/en/games/samurai/printable-practice-plan
 - Samurai Sudoku PDF pack: ${baseUrl}/en/games/samurai/pdf
 - Free PDF sample pack: ${baseUrl}/en/games/samurai/pdf/sample

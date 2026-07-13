@@ -108,11 +108,11 @@ export default async function HomePage() {
         : 'Practice slower solving with candidate notes, overlap marks, and review habits.',
     },
     {
-      href: `/${locale}/games/samurai/printable`,
+      href: `/${locale}/printable-samurai-sudoku`,
       title: locale === 'zh' ? '可打印题目' : 'Printable puzzles',
       body: locale === 'zh'
-        ? '按难度选择日期题，打印后纸笔推理，再回到线上检查。'
-        : 'Choose dated puzzles by difficulty, print for paper solving, then check online.',
+        ? '下载 20 道免费打印题，含答案、A4 和 US Letter 打印入口。'
+        : 'Download 20 free printable puzzles with answers, A4, and US Letter print entry points.',
     },
     {
       href: `/${locale}/games/samurai/pdf`,
@@ -468,7 +468,7 @@ export default async function HomePage() {
           <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '提示与求解' : 'Solver hints'}
           </Link>
-          <Link href={`/${locale}/games/samurai/printable`} className="text-primary hover:text-primary/80">
+          <Link href={`/${locale}/printable-samurai-sudoku`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '可打印题目' : 'Printable puzzles'}
           </Link>
           <Link href={`/${locale}/games/samurai/printable-practice-plan`} className="text-primary hover:text-primary/80">

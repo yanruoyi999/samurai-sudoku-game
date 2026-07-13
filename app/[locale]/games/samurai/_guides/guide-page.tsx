@@ -517,7 +517,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
     },
   },
   printable: {
-    path: '/games/samurai/printable',
+    path: '/printable-samurai-sudoku',
     backHref: '/games/samurai/paper-practice',
     primaryHref: '/games/samurai/archive',
     secondaryHref: '/games/samurai/pdf',

@@ -7,22 +7,23 @@ import {
   PrintablePageStyle,
   PrintableSamuraiBoard,
 } from "@/components/printable/PrintableSamuraiBoard";
+import { selectPrintableStarterPack } from "@/lib/printable-pack";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import {
   getGlobalInitialBoard,
   getGlobalSolutionBoard,
 } from "@/lib/sudoku/solution-counter";
-import type { Difficulty, Puzzle } from "@/lib/sudoku/types";
+import type { Puzzle } from "@/lib/sudoku/types";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface SamuraiPdfSamplePageProps {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ paper?: string }>;
 }
 
 const PATH = "/games/samurai/pdf/sample";
-const SAMPLE_DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard", "evil"];
-const PACK_ID = "samurai-sudoku-sample-pack";
+const PACK_ID = "samurai-sudoku-starter-pack-20";
 
 export async function generateMetadata({
   params,
@@ -31,11 +32,11 @@ export async function generateMetadata({
   const isZh = locale === "zh";
   const canonical = buildLocalizedUrl(locale, PATH);
   const title = isZh
-    ? "免费武士数独 PDF 样稿 — 题面与答案"
-    : "Free Samurai Sudoku PDF Sample Pack — Puzzles and Answers";
+    ? "免费武士数独 PDF 打印包 — 20 题与答案"
+    : "Free Samurai Sudoku PDF Starter Pack — 20 Puzzles and Answers";
   const description = isZh
-    ? "打印免费的武士数独 PDF 样稿，包含 Easy、Medium、Hard、Evil 难度题面与答案页。"
-    : "Print a free Samurai Sudoku PDF sample pack with Easy, Medium, Hard, and Evil puzzle sheets plus answer keys.";
+    ? "打印免费的武士数独 PDF starter pack，包含 20 道 Easy、Medium、Hard、Expert 难度题面与答案页。"
+    : "Print a free Samurai Sudoku PDF starter pack with 20 Easy, Medium, Hard, and Expert puzzle sheets plus answer keys.";
 
   return {
     title,
@@ -68,10 +69,7 @@ export async function generateMetadata({
 
 async function getSamplePuzzles(): Promise<Puzzle[]> {
   const index = await getPuzzleIndex();
-  const selectedIds = SAMPLE_DIFFICULTIES.flatMap((difficulty) => {
-    const puzzle = index.puzzles.find((item) => item.difficulty === difficulty);
-    return puzzle ? [puzzle.id] : [];
-  });
+  const selectedIds = selectPrintableStarterPack(index.puzzles).map((puzzle) => puzzle.id);
 
   const puzzles = await Promise.all(selectedIds.map((id) => getPuzzle(id)));
   return puzzles.filter((puzzle): puzzle is Puzzle => Boolean(puzzle));
@@ -79,9 +77,12 @@ async function getSamplePuzzles(): Promise<Puzzle[]> {
 
 export default async function SamuraiPdfSamplePage({
   params,
+  searchParams,
 }: SamuraiPdfSamplePageProps) {
   const { locale } = await params;
+  const resolvedSearchParams = await searchParams;
   const isZh = locale === "zh";
+  const paperSize = resolvedSearchParams?.paper === "a4" ? "a4" : "letter";
   const puzzles = await getSamplePuzzles();
   const pageUrl = buildAbsoluteUrl(`/${locale}${PATH}`);
   const pdfPackHref = `/${locale}/games/samurai/pdf`;
@@ -106,7 +107,7 @@ export default async function SamuraiPdfSamplePage({
       {
         "@type": "ListItem",
         position: 3,
-        name: isZh ? "PDF 样稿" : "PDF sample pack",
+        name: isZh ? "PDF 免费包" : "PDF starter pack",
         item: pageUrl,
       },
     ],
@@ -115,7 +116,7 @@ export default async function SamuraiPdfSamplePage({
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: isZh ? "免费武士数独 PDF 样稿" : "Free Samurai Sudoku PDF Sample Pack",
+    name: isZh ? "免费武士数独 PDF 打印包" : "Free Samurai Sudoku PDF Starter Pack",
     url: pageUrl,
     inLanguage: isZh ? "zh-CN" : "en-US",
     mainEntity: {
@@ -139,7 +140,7 @@ export default async function SamuraiPdfSamplePage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-      <PrintablePageStyle />
+      <PrintablePageStyle paperSize={paperSize} />
 
       <nav
         className="no-print mb-5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
@@ -157,21 +158,21 @@ export default async function SamuraiPdfSamplePage({
           {isZh ? "PDF 打印包" : "PDF Pack"}
         </Link>
         <span aria-hidden>/</span>
-        <span className="text-foreground">{isZh ? "样稿" : "Sample"}</span>
+        <span className="text-foreground">{isZh ? "免费包" : "Starter pack"}</span>
       </nav>
 
       <header className="mb-6 flex flex-col gap-5 border-b pb-5 print:mb-4 print:gap-2 print:pb-3">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary print:text-xs">
-            {isZh ? "免费 PDF 样稿" : "Free PDF sample pack"}
+            {isZh ? "免费 PDF 打印包" : "Free PDF starter pack"}
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight print:text-2xl">
-            {isZh ? "武士数独 PDF 样稿" : "Samurai Sudoku PDF Sample Pack"}
+            {isZh ? "武士数独 PDF 免费打印包" : "Samurai Sudoku PDF Starter Pack"}
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground print:text-xs">
             {isZh
-              ? "这份样稿包含四道题，覆盖 Easy、Medium、Hard、Evil 难度。打印时题面和答案分开分页；也可以在浏览器打印窗口中选择保存为 PDF。"
-              : "This sample includes four puzzles across Easy, Medium, Hard, and Evil. Puzzle sheets and answer keys are separated by page breaks; use your browser print dialog to save as PDF."}
+              ? "这份免费包包含 20 道题，覆盖 Easy、Medium、Hard、Expert 难度。打印时题面和答案分开分页；也可以在浏览器打印窗口中选择保存为 PDF。"
+              : "This free pack includes 20 puzzles across Easy, Medium, Hard, and Expert. Puzzle sheets and answer keys are separated by page breaks; use your browser print dialog to save as PDF."}
           </p>
         </div>
 
@@ -200,7 +201,7 @@ export default async function SamuraiPdfSamplePage({
           </div>
           <div className="rounded-lg border bg-secondary/30 p-3 print:border-slate-300 print:bg-white">
             <dt className="text-muted-foreground">{isZh ? "难度覆盖" : "Difficulties"}</dt>
-            <dd className="mt-1 font-semibold">Easy / Medium / Hard / Evil</dd>
+            <dd className="mt-1 font-semibold">Easy / Medium / Hard / Expert</dd>
           </div>
           <div className="rounded-lg border bg-secondary/30 p-3 print:border-slate-300 print:bg-white">
             <dt className="text-muted-foreground">{isZh ? "答案页" : "Answer keys"}</dt>

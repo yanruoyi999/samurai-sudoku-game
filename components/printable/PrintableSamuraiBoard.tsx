@@ -3,13 +3,15 @@ import type { CSSProperties } from "react";
 import { globalToLocal } from "@/lib/sudoku/coordinates";
 
 const BOARD_SIZE = 21;
+export type PrintablePaperSize = "letter" | "a4";
 
-export function PrintablePageStyle() {
+export function PrintablePageStyle({ paperSize = "letter" }: { paperSize?: PrintablePaperSize }) {
+  const pageSize = paperSize === "a4" ? "A4 portrait" : "letter portrait";
   return (
     <style>
       {`
         @media print {
-          @page { size: letter portrait; margin: 0.35in; }
+          @page { size: ${pageSize}; margin: 0.35in; }
           .no-print { display: none !important; }
           body { background: white !important; }
         }
@@ -38,14 +40,16 @@ export function PrintableSamuraiBoard({
   title,
   isAnswer = false,
   forcePageBreak = false,
+  sectionId,
 }: {
   board: number[][];
   title: string;
   isAnswer?: boolean;
   forcePageBreak?: boolean;
+  sectionId?: string;
 }) {
   return (
-    <section className={forcePageBreak ? "break-before-page pt-8 print:pt-0" : ""}>
+    <section id={sectionId} className={forcePageBreak ? "break-before-page pt-8 print:pt-0" : ""}>
       <h2 className="mb-3 text-xl font-semibold print:text-base">{title}</h2>
       <div
         className="grid w-full max-w-[9.2in] border-2 border-foreground bg-white text-foreground shadow-sm print:max-w-none print:shadow-none"

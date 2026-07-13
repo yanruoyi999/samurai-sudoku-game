@@ -1,19 +1,10 @@
-import type { Metadata } from 'next';
-
-import { generateGuideMetadata, SamuraiGuidePage } from '../_guides/guide-page';
+import { redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
 }
 
-const GUIDE = 'printable';
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export default async function LegacyPrintableSamuraiSudokuPage({ params }: PageProps) {
   const { locale } = await params;
-  return generateGuideMetadata(GUIDE, locale);
-}
-
-export default async function PrintableSamuraiSudokuPage({ params }: PageProps) {
-  const { locale } = await params;
-  return <SamuraiGuidePage guide={GUIDE} locale={locale} />;
+  redirect(`/${locale}/printable-samurai-sudoku`);
 }

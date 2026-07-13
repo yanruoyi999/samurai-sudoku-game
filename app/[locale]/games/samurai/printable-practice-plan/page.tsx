@@ -511,7 +511,7 @@ export default async function PrintablePracticePlanPage({ params }: PageProps) {
           <p className="mt-3 leading-7 text-muted-foreground">{page.nextBody}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
-              href={`/${normalizedLocale}/games/samurai/printable`}
+              href={`/${normalizedLocale}/printable-samurai-sudoku`}
               className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
             >
               {page.primaryCta}

@@ -19,6 +19,7 @@ import { buildAbsoluteUrl } from "@/lib/site-url";
 
 interface PrintablePuzzlePageProps {
   params: Promise<{ locale: string; id: string }>;
+  searchParams?: Promise<{ paper?: string }>;
 }
 
 export const dynamicParams = true;
@@ -68,8 +69,10 @@ export async function generateMetadata({
 
 export default async function PrintablePuzzlePage({
   params,
+  searchParams,
 }: PrintablePuzzlePageProps) {
   const { locale, id } = await params;
+  const resolvedSearchParams = await searchParams;
   if (!isPuzzleId(id)) notFound();
 
   const puzzle = await getPuzzle(id);
@@ -78,6 +81,7 @@ export default async function PrintablePuzzlePage({
   const isZh = locale === "zh";
   const initialBoard = getGlobalInitialBoard(puzzle);
   const solutionBoard = getGlobalSolutionBoard(puzzle);
+  const paperSize = resolvedSearchParams?.paper === "a4" ? "a4" : "letter";
   const onlineHref = `/${locale}/games/samurai/${id}`;
   const archiveHref = `/${locale}/games/samurai/archive`;
   const pageUrl = buildAbsoluteUrl(`/${locale}/games/samurai/printable/${id}`);
@@ -112,7 +116,7 @@ export default async function PrintablePuzzlePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <PrintablePageStyle />
+      <PrintablePageStyle paperSize={paperSize} />
 
       <nav
         className="no-print mb-5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground"
@@ -126,7 +130,7 @@ export default async function PrintablePuzzlePage({
           Samurai Sudoku
         </Link>
         <span aria-hidden>/</span>
-        <Link href={`/${locale}/games/samurai/printable`} className="hover:text-foreground">
+        <Link href={`/${locale}/printable-samurai-sudoku`} className="hover:text-foreground">
           {isZh ? "可打印" : "Printable"}
         </Link>
         <span aria-hidden>/</span>
@@ -205,6 +209,7 @@ export default async function PrintablePuzzlePage({
           title={isZh ? "答案" : "Answer key"}
           isAnswer
           forcePageBreak
+          sectionId="answer-key"
         />
       </div>
     </main>
