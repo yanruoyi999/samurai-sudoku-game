@@ -9,7 +9,7 @@ describe("sitemap", () => {
       easy: "2026-07-11T00:00:00.000Z",
       medium: "2026-07-12T00:00:00.000Z",
       hard: "2026-07-13T00:00:00.000Z",
-      evil: "2026-07-10T00:00:00.000Z",
+      evil: "2026-07-14T00:00:00.000Z",
     };
 
     for (const [difficulty, expectedDate] of Object.entries(expectedDates)) {

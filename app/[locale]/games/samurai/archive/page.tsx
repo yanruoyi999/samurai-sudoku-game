@@ -30,10 +30,10 @@ export async function generateMetadata({
   const hasFilteredView = Boolean(resolvedSearchParams.difficulty || resolvedSearchParams.page);
 
   return {
-    title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
+    title: isZh ? '武士数独题库归档 - 在线玩与打印' : 'Samurai Sudoku Archive - Play or Print Daily Puzzles',
     description: isZh
-      ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
-      : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+      ? '按日期与难度浏览全部公开武士数独，可直接在线游玩，或打印题面与答案并保存为 PDF。'
+      : 'Browse public Samurai Sudoku puzzles by date and difficulty. Play online or print each puzzle with its answer key and save it as PDF.',
     alternates: {
       canonical,
       languages: buildLanguageAlternates('/games/samurai/archive'),
@@ -45,19 +45,19 @@ export async function generateMetadata({
         }
       : undefined,
     openGraph: {
-      title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
+      title: isZh ? '武士数独题库归档 - 在线玩与打印' : 'Samurai Sudoku Archive - Play or Print Daily Puzzles',
       description: isZh
-        ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
-        : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+        ? '按日期与难度浏览全部公开武士数独，可在线游玩或打印题面和答案。'
+        : 'Browse dated Samurai Sudoku puzzles, play online, or print each puzzle with its answer key.',
       url: canonical,
       type: 'website',
     },
     twitter: {
       card: 'summary',
-      title: isZh ? '武士数独题库归档' : 'Samurai Sudoku Puzzle Archive',
+      title: isZh ? '武士数独题库归档 - 在线玩与打印' : 'Samurai Sudoku Archive - Play or Print Daily Puzzles',
       description: isZh
-        ? '浏览全部公开武士数独题目，按难度筛选并直接在线游玩。'
-        : 'Browse all public Samurai Sudoku puzzles, filter by difficulty, and play online.',
+        ? '按日期与难度浏览公开武士数独，在线玩或打印答案版。'
+        : 'Browse dated Samurai Sudoku puzzles, play online, or print answer-key editions.',
     },
   };
 }
@@ -123,12 +123,12 @@ export default async function ArchivePage({
                 </Link>
               ))}
               <TrackedLink
-                href={`/${locale}/games/samurai/pdf`}
-                eventName="pdf_pack_archive_cta_click"
+                href={`/${locale}/printable-samurai-sudoku`}
+                eventName="archive_printable_hub_click"
                 eventProperties={{ locale, location: 'archive_header' }}
                 className="rounded-md border border-primary/40 px-3 py-1 font-medium text-primary hover:bg-primary/10 transition-colors"
               >
-                {locale === 'zh' ? 'PDF 打印包' : 'PDF pack'}
+                {locale === 'zh' ? '免费可打印题' : 'Free printables'}
               </TrackedLink>
             </div>
           </div>
@@ -255,7 +255,7 @@ export default async function ArchivePage({
                             }}
                             className="inline-flex rounded-md border px-3 py-1 font-medium text-primary hover:bg-primary/10"
                           >
-                            {locale === 'zh' ? '打印' : 'Print'}
+                            {locale === 'zh' ? '打印 / PDF' : 'Print / PDF'}
                           </TrackedLink>
                           <Link
                             href={`/${locale}/games/samurai/${puzzle.id}`}
@@ -310,6 +310,35 @@ export default async function ArchivePage({
             {locale === 'zh' ? '我的本地完成记录' : 'My local completion history'}
           </h2>
           <GameHistoryArchive selectedDifficulty={selectedDifficulty} />
+        </section>
+
+        <section className="mt-12 border-t pt-8">
+          <h2 className="text-2xl font-semibold">
+            {locale === 'zh' ? '如何使用日期题库' : 'How to use the dated Samurai Sudoku archive'}
+          </h2>
+          <div className="mt-4 max-w-4xl space-y-4 leading-relaxed text-muted-foreground">
+            <p>
+              {locale === 'zh'
+                ? '每道题都有固定日期 URL，适合记录进度、补练错过的每日题，或按相同难度连续练习。筛选和分页仅用于浏览，所有可收录题目都保持独立日期页面。'
+                : 'Every puzzle has a stable dated URL for resuming progress, catching up on missed daily puzzles, or practicing several boards at the same difficulty. Filters and pagination are browsing tools; each indexable puzzle keeps its own dated page.'}
+            </p>
+            <p>
+              {locale === 'zh'
+                ? '纸笔解题时，点击每行的“打印 / PDF”打开黑白题面与独立答案页。需要批量下载时，请使用免费可打印武士数独中心的 20 题 A4 或 US Letter PDF。'
+                : 'For paper solving, use Print / PDF on any row to open a clean black-and-white puzzle and a separate answer page. For a batch download, use the free printable Samurai Sudoku center and its 20-puzzle A4 or US Letter PDFs.'}
+            </p>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2 text-sm">
+            <Link href={`/${locale}/games/samurai/daily`} className="rounded-md border px-3 py-2 hover:bg-accent">
+              {locale === 'zh' ? '今日武士数独' : "Today's Samurai Sudoku"}
+            </Link>
+            <Link href={`/${locale}/printable-samurai-sudoku`} className="rounded-md border px-3 py-2 hover:bg-accent">
+              {locale === 'zh' ? '免费可打印武士数独' : 'Free printable Samurai Sudoku'}
+            </Link>
+            <Link href={`/${locale}/games/samurai/paper-practice`} className="rounded-md border px-3 py-2 hover:bg-accent">
+              {locale === 'zh' ? '纸笔练习流程' : 'Paper practice workflow'}
+            </Link>
+          </div>
         </section>
       </main>
     </div>

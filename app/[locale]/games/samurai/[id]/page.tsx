@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { notFound } from 'next/navigation';
 
+import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { locales, type Locale } from '@/i18n';
 import { buildLanguageAlternates } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
@@ -155,8 +156,8 @@ export async function generateMetadata({ params }: PuzzlePageProps): Promise<Met
       : `${puzzle.id} ${difficulty} Samurai Sudoku Online - Daily Puzzle`;
   const description =
     locale === 'zh'
-      ? `免费在线游玩 ${puzzle.id} 每日武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示和进度记录。`
-      : `Play the free ${puzzle.id} daily Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, and progress tracking.`;
+      ? `免费在线游玩 ${puzzle.id} 每日武士数独，难度 ${difficulty}，预计 ${puzzle.estimatedTime} 分钟完成，支持候选标记、提示、进度记录和单题打印。`
+      : `Play the free ${puzzle.id} daily Samurai Sudoku puzzle online. ${difficulty} difficulty, estimated ${puzzle.estimatedTime} minutes, with notes, hints, saved progress, and a printable copy.`;
   const canonical = buildAbsoluteUrl(`/${locale}/games/samurai/${puzzle.id}`);
   const path = `/games/samurai/${puzzle.id}`;
 
@@ -278,6 +279,35 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
                 ? `这是一道 ${diffLabel} 难度的每日武士数独，预计 ${puzzle.metadata.estimatedTime} 分钟完成。全局共有 ${givenEntries} 个唯一给定数，其中 ${overlapGivens} 个落在重叠区；建议先看 ${densestGridLabel}，这里有 ${densestGrid.givenCount} 个局部给定数。`
                 : `This is ${getEnglishArticle(diffLabel)} ${diffLabel.toLowerCase()} daily Samurai Sudoku puzzle with an estimated solve time of ${puzzle.metadata.estimatedTime} minutes. It has ${givenEntries} unique global givens, including ${overlapGivens} in overlap cells; start with the ${densestGridLabel}, which has ${densestGrid.givenCount} local givens.`}
             </p>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <TrackedLink
+                href={`/${resolvedParams.locale}/games/samurai/printable/${puzzle.id}?paper=a4`}
+                eventName="print_puzzle"
+                eventProperties={{
+                  locale: resolvedParams.locale,
+                  puzzle_id: puzzle.id,
+                  difficulty,
+                  paper: 'a4',
+                  location: 'dated_puzzle_profile',
+                }}
+                className="rounded-lg border border-primary px-4 py-2 font-semibold text-primary hover:bg-primary/10"
+              >
+                {isZh ? '打印 / 保存 PDF' : 'Print / Save PDF'}
+              </TrackedLink>
+              <TrackedLink
+                href={`/${resolvedParams.locale}/printable-samurai-sudoku`}
+                eventName="dated_puzzle_printable_hub_click"
+                eventProperties={{
+                  locale: resolvedParams.locale,
+                  puzzle_id: puzzle.id,
+                  difficulty,
+                  location: 'dated_puzzle_profile',
+                }}
+                className="rounded-lg border px-4 py-2 font-semibold hover:bg-accent"
+              >
+                {isZh ? '20 道免费打印题' : '20 free printable puzzles'}
+              </TrackedLink>
+            </div>
           </div>
 
           <div className="rounded-lg border bg-secondary/30 p-5">
@@ -435,6 +465,9 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
             ))}
             <Link href={`/${resolvedParams.locale}/games/samurai/archive`} className="rounded-md border px-3 py-1 hover:bg-accent transition-colors">
               {isZh ? '全部题库' : 'Full archive'}
+            </Link>
+            <Link href={`/${resolvedParams.locale}/printable-samurai-sudoku`} className="rounded-md border px-3 py-1 hover:bg-accent transition-colors">
+              {isZh ? '免费可打印武士数独' : 'Free printable Samurai Sudoku'}
             </Link>
           </div>
         </div>

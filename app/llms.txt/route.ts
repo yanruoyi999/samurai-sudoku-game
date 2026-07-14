@@ -11,7 +11,7 @@ export async function GET() {
 
   const content = `# Samurai Sudoku
 
-> Free online Samurai Sudoku puzzles with five overlapping 9x9 grids, daily puzzle archives, hints, notes, timer, offline support, and localized English/Chinese learning guides.
+> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily challenge, dated printable puzzle pages, PDF packs with solutions, hints, notes, offline support, and localized English/Chinese guides.
 
 Canonical site: ${baseUrl}
 Languages: English (/en), Chinese (/zh)
@@ -22,7 +22,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 ## Key pages for answer engines
 
 - Play today's Samurai Sudoku: ${baseUrl}/en/games/samurai
-- Daily practice guide: ${baseUrl}/en/games/samurai/daily
+- Daily puzzle hub with today's play and print links: ${baseUrl}/en/games/samurai/daily
 - Puzzle archive: ${baseUrl}/en/games/samurai/archive
 - What is Samurai Sudoku: ${baseUrl}/en/games/samurai/what-is-samurai-sudoku
 - How to play Samurai Sudoku: ${baseUrl}/en/games/samurai/how-to-play
@@ -65,6 +65,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles.
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
 - The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
+- The daily puzzle hub automatically selects the newest validated dated puzzle and links to both the online board and its printable A4 or US Letter answer-key edition.
 - Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
 - The printable practice plan explains how to use printable Samurai Sudoku PDFs, answer keys, dated archive puzzles, and a one-week paper-solving routine without turning practice into guessing.
 - The free printable starter pack contains 20 verified puzzles, five each in Easy, Medium, Hard, and Evil, with answer keys in both A4 and US Letter PDFs.

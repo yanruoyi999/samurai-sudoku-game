@@ -3,6 +3,8 @@ import Link from "next/link";
 import Script from "next/script";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { MiniSamuraiPreview } from "@/components/printable/MiniSamuraiPreview";
+import { selectRecentDailyPuzzles } from "@/lib/daily-puzzles";
 import {
   PRINTABLE_STARTER_A4_PDF,
   PRINTABLE_STARTER_A4_TWO_UP_PDF,
@@ -17,9 +19,7 @@ import { getPdfPackPrice } from "@/lib/paypal";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
-import { globalToLocal } from "@/lib/sudoku/coordinates";
-import { getGlobalInitialBoard } from "@/lib/sudoku/solution-counter";
-import type { Difficulty, Puzzle, PuzzleMetadata } from "@/lib/sudoku/types";
+import type { Difficulty, PuzzleMetadata } from "@/lib/sudoku/types";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -97,52 +97,6 @@ function difficultySummary(difficulty: Difficulty, puzzles: PuzzleMetadata[], lo
   };
 }
 
-function MiniSamuraiPreview({ puzzle }: { puzzle: Puzzle | null }) {
-  const board = puzzle ? getGlobalInitialBoard(puzzle) : Array.from({ length: 21 }, () => Array(21).fill(0));
-
-  return (
-    <div
-      className="grid aspect-square w-full max-w-[420px] border-2 border-foreground bg-white text-[7px] text-slate-950 shadow-sm sm:text-[9px]"
-      style={{ gridTemplateColumns: "repeat(21, minmax(0, 1fr))" }}
-      aria-label="Samurai Sudoku printable puzzle preview"
-    >
-      {Array.from({ length: 21 * 21 }, (_, index) => {
-        const row = Math.floor(index / 21);
-        const col = index % 21;
-        const locals = globalToLocal({ row, col });
-        const value = board[row]?.[col] ?? 0;
-
-        if (locals.length === 0) {
-          return <span key={`${row}-${col}`} className="aspect-square bg-transparent" aria-hidden />;
-        }
-
-        const hasTopEdge = locals.some((local) => local.row === 0 || local.row % 3 === 0);
-        const hasLeftEdge = locals.some((local) => local.col === 0 || local.col % 3 === 0);
-        const hasBottomEdge = locals.some((local) => local.row === 8);
-        const hasRightEdge = locals.some((local) => local.col === 8);
-
-        return (
-          <span
-            key={`${row}-${col}`}
-            className={[
-              "flex aspect-square items-center justify-center border-slate-700 font-semibold",
-              locals.length > 1 ? "bg-primary/10" : "bg-white",
-            ].join(" ")}
-            style={{
-              borderTopWidth: hasTopEdge ? 2 : 1,
-              borderLeftWidth: hasLeftEdge ? 2 : 1,
-              borderBottomWidth: hasBottomEdge ? 2 : 1,
-              borderRightWidth: hasRightEdge ? 2 : 1,
-            }}
-          >
-            {value || ""}
-          </span>
-        );
-      })}
-    </div>
-  );
-}
-
 export default async function PrintableSamuraiSudokuResourcePage({ params }: PageProps) {
   const { locale } = await params;
   const isZh = locale === "zh";
@@ -161,7 +115,11 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
   const paidPackHref = `/${locale}/games/samurai/pdf`;
   const paidPackPrice = getPdfPackPrice();
   const firstPuzzle = packPuzzles[0];
+  const latestPuzzle = selectRecentDailyPuzzles(index.puzzles, 1)[0];
   const firstPrintHref = firstPuzzle ? `/${locale}/games/samurai/printable/${firstPuzzle.id}` : sampleHref;
+  const latestPrintHref = latestPuzzle
+    ? `/${locale}/games/samurai/printable/${latestPuzzle.id}?paper=a4`
+    : firstPrintHref;
 
   const faqItems = isZh
     ? [
@@ -310,7 +268,10 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
             </div>
           </div>
           <div className="rounded-lg border bg-secondary/20 p-4">
-            <MiniSamuraiPreview puzzle={previewPuzzle} />
+            <MiniSamuraiPreview
+              puzzle={previewPuzzle}
+              ariaLabel={isZh ? "可打印武士数独题目预览" : "Samurai Sudoku printable puzzle preview"}
+            />
             <p className="mt-3 text-sm text-muted-foreground">
               {isZh
                 ? "重叠宫使用浅色底标出，便于打印后做跨网格候选数检查。"
@@ -319,6 +280,45 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
           </div>
         </div>
       </section>
+
+      {latestPuzzle ? (
+        <section className="border-b bg-secondary/20 px-4 py-6">
+          <div className="mx-auto flex max-w-6xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-primary">
+                {isZh ? "今日可打印题" : "Today's printable puzzle"}
+              </p>
+              <h2 className="mt-1 text-2xl font-semibold">
+                {latestPuzzle.id} {getPrintableDifficultyLabel(latestPuzzle.difficulty, locale)}{" "}
+                {isZh ? "武士数独" : "Samurai Sudoku"}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {isZh
+                  ? `预计 ${latestPuzzle.estimatedTime} 分钟。打开单题 A4 版打印或保存 PDF，也可以在线完成今日挑战。`
+                  : `Estimated at ${latestPuzzle.estimatedTime} minutes. Open the single-puzzle A4 edition to print or save as PDF, or solve today's challenge online.`}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <TrackedLink
+                href={latestPrintHref}
+                eventName="print_puzzle"
+                eventProperties={{ locale, puzzle_id: latestPuzzle.id, difficulty: latestPuzzle.difficulty, paper: "a4", location: "printable_daily_bridge" }}
+                className="rounded-lg border border-primary px-4 py-2 font-semibold text-primary hover:bg-primary/10"
+              >
+                {isZh ? "打印 / 保存 PDF" : "Print / Save PDF"}
+              </TrackedLink>
+              <TrackedLink
+                href={dailyHref}
+                eventName="printable_daily_click"
+                eventProperties={{ locale, puzzle_id: latestPuzzle.id, location: "printable_daily_bridge" }}
+                className="rounded-lg border px-4 py-2 font-semibold hover:bg-accent"
+              >
+                {isZh ? "查看每日题" : "View daily puzzle"}
+              </TrackedLink>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="px-4 py-10">
         <div className="mx-auto max-w-6xl">
