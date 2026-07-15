@@ -58,4 +58,21 @@ describe("PayPalCheckout fallback", () => {
     expect(html.toLowerCase()).not.toContain("paypal.me");
     expect(html).not.toContain("Checkout temporarily unavailable");
   });
+
+  it("defers the PayPal SDK on the canonical SEO page until checkout is opened", () => {
+    const html = renderToStaticMarkup(
+      <PayPalCheckout
+        autoDeliveryEnabled
+        clientId="test-client-id"
+        deferUntilActivated
+        locale="en"
+        price="$4.95"
+        supportHref="/en/contact"
+      />,
+    );
+
+    expect(html).toContain("Buy 100 puzzles for $4.95");
+    expect(html).not.toContain("https://www.paypal.com/sdk/js");
+    expect(html.toLowerCase()).not.toContain("paypal.me");
+  });
 });

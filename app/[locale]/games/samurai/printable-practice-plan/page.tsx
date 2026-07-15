@@ -517,7 +517,7 @@ export default async function PrintablePracticePlanPage({ params }: PageProps) {
               {page.primaryCta}
             </Link>
             <Link
-              href={`/${normalizedLocale}/games/samurai/pdf/sample`}
+              href={`/${normalizedLocale}/printable-samurai-sudoku#free-20-puzzle-pack`}
               className="rounded-lg border border-primary px-6 py-3 font-medium text-primary hover:bg-primary/10"
             >
               {page.secondaryCta}

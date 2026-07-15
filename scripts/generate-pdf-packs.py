@@ -383,7 +383,7 @@ Included:
 
 License: personal and classroom use. Do not resell or redistribute this pack.
 Support: feedback@samuraisudoku.net
-Website: https://www.samuraisudoku.net/en/games/samurai/pdf
+Website: https://www.samuraisudoku.net/en/printable-samurai-sudoku#paid-100-puzzle-pack
 """
     with zipfile.ZipFile(paid_zip, "w") as archive:
         add_zip_bytes(archive, paid_a4.name, paid_a4.read_bytes())

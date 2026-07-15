@@ -115,7 +115,7 @@ export default async function HomePage() {
         : 'Download 20 free printable puzzles with answers, A4, and US Letter print entry points.',
     },
     {
-      href: `/${locale}/games/samurai/pdf`,
+      href: `/${locale}/printable-samurai-sudoku#paid-100-puzzle-pack`,
       title: locale === 'zh' ? 'PDF 打印包' : 'PDF pack',
       body: locale === 'zh'
         ? '批量保存题面和答案，验证纸笔练习的付费需求。'
@@ -477,7 +477,7 @@ export default async function HomePage() {
           <Link href={`/${locale}/games/samurai/printable-practice-plan`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '打印练习计划' : 'Printable practice plan'}
           </Link>
-          <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:text-primary/80">
+          <Link href={`/${locale}/printable-samurai-sudoku#paid-100-puzzle-pack`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? 'PDF 打印包' : 'PDF pack'}
           </Link>
           <Link href={`/${locale}/games/minesweeper`} className="text-primary hover:text-primary/80">

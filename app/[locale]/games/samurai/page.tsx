@@ -234,7 +234,7 @@ async function SamuraiGamePageContent({
                 <Link href={`/${locale}/games/samurai/printable-practice-plan`} className="text-primary hover:underline">
                   {isZh ? '打印练习计划' : 'Printable practice plan'}
                 </Link>
-                <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:underline">
+                <Link href={`/${locale}/printable-samurai-sudoku#paid-100-puzzle-pack`} className="text-primary hover:underline">
                   {isZh ? 'PDF 打印包' : 'Samurai Sudoku PDF pack'}
                 </Link>
                 <Link href={`/${locale}/games/samurai/strategy-guide`} className="text-primary hover:underline">

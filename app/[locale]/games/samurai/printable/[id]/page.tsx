@@ -167,7 +167,7 @@ export default async function PrintablePuzzlePage({
             {isZh ? "返回题库" : "Back to archive"}
           </Link>
           <TrackedLink
-            href={`/${locale}/games/samurai/pdf`}
+            href={`/${locale}/printable-samurai-sudoku#paid-100-puzzle-pack`}
             eventName="pdf_pack_printable_page_click"
             eventProperties={{
               locale,

@@ -116,7 +116,17 @@ pnpm generate-pdf-packs
 pnpm validate-pdf-packs
 ```
 
-The paid ZIP stays under `private-assets/` and is served only by the signed download route after a completed PayPal order is verified.
+The paid ZIP stays under `private-assets/` and is served only by the signed download route after a completed PayPal order is verified. The canonical customer funnel is `/{locale}/printable-samurai-sudoku`; legacy PDF sales and sample URLs permanently redirect to the matching section on that page.
+
+For the seven-day printable experiment, use these funnel events:
+
+- `download_free_pdf`: a visitor selected one of the public 20-puzzle PDFs.
+- `paid_pack_view`: a visitor opened the deferred PayPal checkout.
+- `paid_pack_checkout_created`: PayPal created the 100-puzzle order.
+- `paid_pack_purchase`: the server verified and captured the matching payment.
+- `paid_pack_download`: the buyer selected the signed ZIP download.
+
+The canonical hub tags these events with `experiment_id=printable_hub_7d_v1` where applicable.
 
 ### PayPal automatic delivery
 
@@ -129,7 +139,7 @@ PAYPAL_ENVIRONMENT="sandbox"
 PDF_DOWNLOAD_TOKEN_SECRET="at-least-32-random-characters"
 ```
 
-When any REST credential is absent, the product page pauses payment and directs customers to support instead of exposing a personal payment link.
+When any REST credential is absent, the canonical printable hub pauses payment and directs customers to support instead of exposing a personal payment link.
 
 ## 📁 Project Structure
 

@@ -16,6 +16,8 @@ const STORAGE_KEY = "samurai-pdf-pack-paypal-order";
 interface PayPalCheckoutProps {
   autoDeliveryEnabled: boolean;
   clientId: string;
+  deferUntilActivated?: boolean;
+  experimentId?: string;
   locale: string;
   price: string;
   supportHref: string;
@@ -45,6 +47,8 @@ declare global {
 export function PayPalCheckout({
   autoDeliveryEnabled,
   clientId,
+  deferUntilActivated = false,
+  experimentId,
   locale,
   price,
   supportHref,
@@ -54,6 +58,7 @@ export function PayPalCheckout({
   const buttonsRef = useRef<PayPalButtonsInstance | null>(null);
   const activeOrderRef = useRef<PayPalCreateResponse | null>(null);
   const [scriptReady, setScriptReady] = useState(false);
+  const [activated, setActivated] = useState(!deferUntilActivated);
   const [status, setStatus] = useState<"idle" | "creating" | "capturing" | "complete">("idle");
   const [error, setError] = useState("");
   const [downloadUrl, setDownloadUrl] = useState("");
@@ -86,9 +91,10 @@ export function PayPalCheckout({
         product: "100_printable_pack",
         provider: "paypal",
         price,
+        experiment_id: experimentId,
       });
     },
-    [isZh, locale, price],
+    [experimentId, isZh, locale, price],
   );
 
   useEffect(() => {
@@ -97,6 +103,7 @@ export function PayPalCheckout({
     const saved = readSavedOrder();
     if (!saved) return;
     activeOrderRef.current = saved;
+    setActivated(true);
 
     void captureOrder(saved, true).catch(() => {
       setStatus("idle");
@@ -104,7 +111,13 @@ export function PayPalCheckout({
   }, [autoDeliveryEnabled, captureOrder]);
 
   useEffect(() => {
-    if (!autoDeliveryEnabled || !scriptReady || !containerRef.current || !window.paypal) {
+    if (
+      !activated ||
+      !autoDeliveryEnabled ||
+      !scriptReady ||
+      !containerRef.current ||
+      !window.paypal
+    ) {
       return;
     }
 
@@ -132,6 +145,7 @@ export function PayPalCheckout({
           product: "100_printable_pack",
           provider: "paypal",
           price,
+          experiment_id: experimentId,
         });
         return order.orderID;
       },
@@ -144,13 +158,21 @@ export function PayPalCheckout({
       },
       onCancel: () => {
         setStatus("idle");
-        trackInteraction("paid_pack_checkout_cancel", { locale, provider: "paypal" });
+        trackInteraction("paid_pack_checkout_cancel", {
+          locale,
+          provider: "paypal",
+          experiment_id: experimentId,
+        });
       },
       onError: (checkoutError) => {
         console.error("PayPal checkout failed.", checkoutError);
         setStatus("idle");
         setError(isZh ? "PayPal 结账暂时不可用，请稍后重试或联系客服。" : "PayPal Checkout is temporarily unavailable. Try again later or contact support.");
-        trackInteraction("paid_pack_checkout_error", { locale, provider: "paypal" });
+        trackInteraction("paid_pack_checkout_error", {
+          locale,
+          provider: "paypal",
+          experiment_id: experimentId,
+        });
       },
     });
     buttonsRef.current = buttons;
@@ -162,14 +184,18 @@ export function PayPalCheckout({
           ? "PayPal 按钮加载失败，请稍后重试或联系客服。"
           : "PayPal buttons failed to load. Try again later or contact support.",
       );
-      trackInteraction("paid_pack_checkout_error", { locale, provider: "paypal" });
+      trackInteraction("paid_pack_checkout_error", {
+        locale,
+        provider: "paypal",
+        experiment_id: experimentId,
+      });
     });
 
     return () => {
       buttons.close?.();
       buttonsRef.current = null;
     };
-  }, [autoDeliveryEnabled, captureOrder, isZh, locale, price, scriptReady]);
+  }, [activated, autoDeliveryEnabled, captureOrder, experimentId, isZh, locale, price, scriptReady]);
 
   if (!autoDeliveryEnabled) {
     return (
@@ -185,12 +211,34 @@ export function PayPalCheckout({
         <TrackedLink
           href={supportHref}
           eventName="paid_pack_checkout_support_click"
-          eventProperties={{ locale, product: "100_printable_pack", provider: "paypal", price }}
+          eventProperties={{ locale, product: "100_printable_pack", provider: "paypal", price, experiment_id: experimentId }}
           className="mt-2 inline-flex font-semibold text-primary hover:underline"
         >
           {isZh ? "联系客户支持" : "Contact support"}
         </TrackedLink>
       </div>
+    );
+  }
+
+  if (!activated) {
+    return (
+      <button
+        type="button"
+        className="w-full rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90 sm:max-w-[320px]"
+        onClick={() => {
+          setActivated(true);
+          trackInteraction("paid_pack_view", {
+            locale,
+            location: "canonical_printable_hub",
+            product: "100_printable_pack",
+            price,
+            provider: "paypal",
+            experiment_id: experimentId,
+          });
+        }}
+      >
+        {isZh ? `以 ${price} 购买 100 题` : `Buy 100 puzzles for ${price}`}
+      </button>
     );
   }
 
@@ -202,10 +250,15 @@ export function PayPalCheckout({
         id="paypal-checkout-sdk"
         src={sdkUrl}
         strategy="afterInteractive"
-        onLoad={() => setScriptReady(true)}
+        onReady={() => setScriptReady(true)}
         onError={() => setError(isZh ? "PayPal 按钮加载失败，请稍后重试或联系客服。" : "PayPal buttons failed to load. Try again later or contact support.")}
       />
       <div ref={containerRef} aria-label={isZh ? "PayPal 安全结账" : "Secure PayPal checkout"} />
+      {!scriptReady && (
+        <p className="text-sm text-muted-foreground" role="status">
+          {isZh ? "正在加载安全结账..." : "Loading secure checkout..."}
+        </p>
+      )}
       {(status === "creating" || status === "capturing") && (
         <p className="mt-2 text-sm text-muted-foreground" role="status">
           {status === "creating"
@@ -217,7 +270,11 @@ export function PayPalCheckout({
         <a
           href={downloadUrl}
           className="mt-3 inline-flex w-full justify-center rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
-          onClick={() => trackInteraction("paid_pack_download", { locale, provider: "paypal" })}
+          onClick={() => trackInteraction("paid_pack_download", {
+            locale,
+            provider: "paypal",
+            experiment_id: experimentId,
+          })}
         >
           {isZh ? "下载 100 题 PDF 包" : "Download the 100-puzzle PDF pack"}
         </a>
@@ -228,7 +285,7 @@ export function PayPalCheckout({
           <TrackedLink
             href={supportHref}
             eventName="paid_pack_checkout_support_click"
-            eventProperties={{ locale, product: "100_printable_pack", provider: "paypal", price }}
+            eventProperties={{ locale, product: "100_printable_pack", provider: "paypal", price, experiment_id: experimentId }}
             className="mt-2 inline-flex font-semibold text-primary hover:underline"
           >
             {isZh ? "联系客户支持" : "Contact support"}

@@ -520,7 +520,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
     path: '/printable-samurai-sudoku',
     backHref: '/games/samurai/paper-practice',
     primaryHref: '/games/samurai/archive',
-    secondaryHref: '/games/samurai/pdf',
+    secondaryHref: '/printable-samurai-sudoku#paid-100-puzzle-pack',
     numbered: true,
     keywords: {
       en: ['printable samurai sudoku', 'samurai sudoku pdf', 'printable sudoku puzzles', 'samurai sudoku with answers'],

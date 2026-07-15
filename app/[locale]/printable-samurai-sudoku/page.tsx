@@ -3,6 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { PayPalCheckout } from "@/components/payments/PayPalCheckout";
 import { MiniSamuraiPreview } from "@/components/printable/MiniSamuraiPreview";
 import { selectRecentDailyPuzzles } from "@/lib/daily-puzzles";
 import {
@@ -15,7 +16,12 @@ import {
   getPrintableDifficultyLabel,
   selectPrintableStarterPack,
 } from "@/lib/printable-pack";
-import { getPdfPackPrice } from "@/lib/paypal";
+import {
+  getPdfPackPrice,
+  getPdfPackPriceAmount,
+  getPdfPackProductName,
+} from "@/lib/paypal";
+import { getPayPalClientId, isPayPalOrdersConfigured } from "@/lib/paypal-api";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
@@ -26,6 +32,7 @@ interface PageProps {
 }
 
 const PATH = "/printable-samurai-sudoku";
+const EXPERIMENT_ID = "printable_hub_7d_v1";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -105,15 +112,19 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
   const grouped = groupPrintablePackByDifficulty(packPuzzles);
   const previewPuzzle = await getPreviewPuzzle(packPuzzles);
   const pageUrl = buildAbsoluteUrl(`/${locale}${PATH}`);
-  const sampleHref = `/${locale}/games/samurai/pdf/sample?paper=letter&layout=one`;
+  const sampleHref = `/${locale}/printable-samurai-sudoku#free-20-puzzle-pack`;
   const onlineHref = `/${locale}/games/samurai`;
   const dailyHref = `/${locale}/games/samurai/daily`;
   const paperPracticeHref = `/${locale}/games/samurai/paper-practice`;
   const rulesHref = `/${locale}/games/samurai/how-to-play`;
   const strategyHref = `/${locale}/games/samurai/strategy-guide`;
   const solverHref = `/${locale}/games/samurai/solver`;
-  const paidPackHref = `/${locale}/games/samurai/pdf`;
   const paidPackPrice = getPdfPackPrice();
+  const paidPackPriceAmount = getPdfPackPriceAmount();
+  const paidPackProductName = getPdfPackProductName();
+  const autoDeliveryEnabled = isPayPalOrdersConfigured();
+  const payPalClientId = getPayPalClientId();
+  const supportHref = `/${locale}/contact`;
   const firstPuzzle = packPuzzles[0];
   const latestPuzzle = selectRecentDailyPuzzles(index.puzzles, 1)[0];
   const firstPrintHref = firstPuzzle ? `/${locale}/games/samurai/printable/${firstPuzzle.id}` : sampleHref;
@@ -129,6 +140,8 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
         ["最简单的难度是什么？", "Easy 简单适合新手、课堂和第一次打印练习。"],
         ["可以用于课堂吗？", "可以用于个人、家庭和课堂练习；如果需要批量发放，建议使用免费包或后续付费题包。"],
         ["多久新增题目？", "在线题库持续新增；免费打印中心会优先保持 20 题 starter pack 清晰可用。"],
+        ["100 题包付款后如何下载？", autoDeliveryEnabled ? "PayPal 确认付款后，本页会立即显示 100 题 ZIP 下载按钮。下载链接有效期为 7 天。" : "结账配置未完成时不会接收付款；付款入口恢复后，PayPal 确认付款即可立即下载 ZIP。"],
+        ["免费包和 100 题包有什么区别？", "免费包有 20 题；100 题包包含四份 PDF：A4、US Letter，以及两种纸张的一页 2 题紧凑版，全部附答案。"],
       ]
     : [
         ["Are these Samurai Sudoku puzzles free?", "Yes. The starter pack opens without registration or email and can be printed or saved as PDF."],
@@ -137,6 +150,8 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
         ["What is the easiest level?", "Easy is the best starting level for beginners, classrooms, and first paper sessions."],
         ["Can I use the puzzles in a classroom?", "Yes for personal, family, and classroom practice. Use the starter pack first, then consider the larger pack when you need more sheets."],
         ["How often are new puzzles added?", "The online archive keeps growing; this printable center keeps the 20-puzzle starter pack easy to find and print."],
+        ["How do I download the 100-puzzle pack after payment?", autoDeliveryEnabled ? "After PayPal confirms payment, this page immediately shows the 100-puzzle ZIP download. The signed link remains valid for 7 days." : "No payment is accepted while checkout is not configured. Once restored, PayPal confirmation unlocks the ZIP immediately."],
+        ["What is the difference between the free and paid packs?", "The free pack contains 20 puzzles. The 100-puzzle pack includes four PDFs: A4, US Letter, and compact two-per-page editions for both paper sizes, all with solutions."],
       ];
 
   const breadcrumbJsonLd = {
@@ -168,10 +183,30 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
       acceptedAnswer: { "@type": "Answer", text: answer },
     })),
   };
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: paidPackProductName,
+    description: isZh
+      ? "100 道经过程序校验的可打印武士数独，包含答案、A4、US Letter 和一页 2 题版本。"
+      : "100 program-validated printable Samurai Sudoku puzzles with solutions, A4, US Letter, and compact two-per-page editions.",
+    sku: "samurai-sudoku-100-pack-v1",
+    category: "Printable puzzle pack",
+    url: `${pageUrl}#paid-100-puzzle-pack`,
+    offers: {
+      "@type": "Offer",
+      availability: autoDeliveryEnabled
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      price: paidPackPriceAmount,
+      priceCurrency: "USD",
+      url: `${pageUrl}#paid-100-puzzle-pack`,
+    },
+  };
 
   return (
     <main className="min-h-screen bg-background">
-      {[breadcrumbJsonLd, webPageJsonLd, faqJsonLd].map((schema, index) => (
+      {[breadcrumbJsonLd, webPageJsonLd, productJsonLd, faqJsonLd].map((schema, index) => (
         <Script
           key={index}
           id={`printable-samurai-sudoku-schema-${index}`}
@@ -209,7 +244,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
               <TrackedLink
                 href={PRINTABLE_STARTER_A4_PDF}
                 eventName="download_free_pdf"
-                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "hero" }}
+                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "hero", experiment_id: EXPERIMENT_ID }}
                 download
                 className="rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
               >
@@ -218,7 +253,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
               <TrackedLink
                 href={PRINTABLE_STARTER_LETTER_PDF}
                 eventName="download_free_pdf"
-                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "hero" }}
+                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "hero", experiment_id: EXPERIMENT_ID }}
                 download
                 className="rounded-lg border border-primary px-5 py-3 font-semibold text-primary hover:bg-primary/10"
               >
@@ -259,12 +294,24 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                   {getPrintableDifficultyLabel(difficulty, locale)}
                 </Link>
               ))}
-              <a href={PRINTABLE_STARTER_A4_PDF} download className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary">
+              <TrackedLink
+                href={PRINTABLE_STARTER_A4_PDF}
+                eventName="download_free_pdf"
+                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "hero_filter", experiment_id: EXPERIMENT_ID }}
+                download
+                className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary"
+              >
                 A4
-              </a>
-              <a href={PRINTABLE_STARTER_LETTER_PDF} download className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary">
+              </TrackedLink>
+              <TrackedLink
+                href={PRINTABLE_STARTER_LETTER_PDF}
+                eventName="download_free_pdf"
+                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "hero_filter", experiment_id: EXPERIMENT_ID }}
+                download
+                className="rounded-full border px-3 py-1 font-medium hover:border-primary hover:text-primary"
+              >
                 US Letter
-              </a>
+              </TrackedLink>
             </div>
           </div>
           <div className="rounded-lg border bg-secondary/20 p-4">
@@ -337,7 +384,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                     <TrackedLink
                       href={PRINTABLE_STARTER_A4_PDF}
                       eventName="download_free_pdf"
-                      eventProperties={{ locale, difficulty, pack_id: "starter_20", paper: "a4", location: "difficulty_card" }}
+                      eventProperties={{ locale, difficulty, pack_id: "starter_20", paper: "a4", location: "difficulty_card", experiment_id: EXPERIMENT_ID }}
                       download
                       className="rounded-md bg-primary px-3 py-2 text-center font-semibold text-primary-foreground hover:bg-primary/90"
                     >
@@ -371,7 +418,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
         </div>
       </section>
 
-      <section className="bg-secondary/20 px-4 py-10">
+      <section id="free-20-puzzle-pack" className="scroll-mt-28 bg-secondary/20 px-4 py-10">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
             <div>
@@ -432,7 +479,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
               <TrackedLink
                 href={PRINTABLE_STARTER_A4_PDF}
                 eventName="download_free_pdf"
-                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "print_options" }}
+                eventProperties={{ locale, pack_id: "starter_20", paper: "a4", location: "print_options", experiment_id: EXPERIMENT_ID }}
                 download
                 className="mt-5 block rounded-lg bg-primary px-4 py-3 text-center font-semibold text-primary-foreground hover:bg-primary/90"
               >
@@ -441,7 +488,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
               <TrackedLink
                 href={PRINTABLE_STARTER_LETTER_PDF}
                 eventName="download_free_pdf"
-                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "print_options" }}
+                eventProperties={{ locale, pack_id: "starter_20", paper: "letter", location: "print_options", experiment_id: EXPERIMENT_ID }}
                 download
                 className="mt-3 block rounded-lg border border-primary px-4 py-3 text-center font-semibold text-primary hover:bg-primary/10"
               >
@@ -451,7 +498,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                 <TrackedLink
                   href={PRINTABLE_STARTER_A4_TWO_UP_PDF}
                   eventName="download_free_pdf"
-                  eventProperties={{ locale, pack_id: "starter_20", paper: "a4", layout: "two", location: "print_options" }}
+                  eventProperties={{ locale, pack_id: "starter_20", paper: "a4", layout: "two", location: "print_options", experiment_id: EXPERIMENT_ID }}
                   download
                   className="rounded-lg border px-3 py-2 text-center text-sm font-semibold hover:bg-accent"
                 >
@@ -460,7 +507,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                 <TrackedLink
                   href={PRINTABLE_STARTER_LETTER_TWO_UP_PDF}
                   eventName="download_free_pdf"
-                  eventProperties={{ locale, pack_id: "starter_20", paper: "letter", layout: "two", location: "print_options" }}
+                  eventProperties={{ locale, pack_id: "starter_20", paper: "letter", layout: "two", location: "print_options", experiment_id: EXPERIMENT_ID }}
                   download
                   className="rounded-lg border px-3 py-2 text-center text-sm font-semibold hover:bg-accent"
                 >
@@ -472,8 +519,95 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
         </div>
       </section>
 
+      <section id="paid-100-puzzle-pack" className="scroll-mt-28 border-y px-4 py-12">
+        <div className="mx-auto grid max-w-6xl gap-x-10 gap-y-7 lg:grid-cols-[1fr_340px] lg:items-start">
+          <div>
+            <p className="text-sm font-semibold uppercase text-primary">
+              {isZh ? "一次购买，立即下载" : "One-time purchase, instant download"}
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">
+              {isZh
+                ? `100 道可打印武士数独题 · ${paidPackPrice}`
+                : `100 Printable Samurai Sudoku Puzzles · ${paidPackPrice}`}
+            </h2>
+            <p className="mt-4 max-w-3xl leading-relaxed text-muted-foreground">
+              {isZh
+                ? "免费 20 题包适合先测试打印体验。需要更长训练周期时，100 题 ZIP 提供 Easy、Medium、Hard、Expert 各 25 题，全部附答案，无广告、无需订阅。"
+                : "Use the free 20-puzzle pack to test the print experience. For a longer practice cycle, the 100-puzzle ZIP includes 25 Easy, 25 Medium, 25 Hard, and 25 Expert puzzles, all with solutions, no ads, and no subscription."}
+            </p>
+
+          </div>
+
+          <aside className="border-t pt-6 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+            <p className="text-sm font-medium text-muted-foreground">
+              {isZh ? "100 题完整 ZIP" : "Complete 100-puzzle ZIP"}
+            </p>
+            <p className="mt-2 text-4xl font-semibold">{paidPackPrice}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {isZh
+                ? "一次性付款，不自动续费。包含 4 份 PDF 和说明文件。"
+                : "One-time payment with no renewal. Includes four PDFs and a readme."}
+            </p>
+            <div className="mt-6">
+              <PayPalCheckout
+                autoDeliveryEnabled={autoDeliveryEnabled}
+                clientId={payPalClientId}
+                deferUntilActivated
+                experimentId={EXPERIMENT_ID}
+                locale={locale}
+                price={paidPackPrice}
+                supportHref={supportHref}
+              />
+            </div>
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              {autoDeliveryEnabled
+                ? isZh
+                  ? "结账由 PayPal 安全处理。付款确认后，本页立即显示 ZIP 下载按钮。"
+                  : "Checkout is securely handled by PayPal. The ZIP download appears here immediately after confirmation."
+                : isZh
+                  ? "自动验单配置未完成时不会接收付款，也不会跳转到个人收款页。"
+                  : "No payment is accepted while automatic verification is unavailable, and no personal payment page is used."}
+            </p>
+          </aside>
+
+          <div className="lg:col-start-1">
+            <dl className="grid gap-x-8 sm:grid-cols-2">
+              {(
+                isZh
+                  ? [
+                      ["100 道已验证题目", "每个难度 25 题，答案来自同一程序校验题库。"],
+                      ["4 份打印 PDF", "A4、US Letter，以及两种纸张的一页 2 题紧凑版。"],
+                      ["题面与答案分开", "先完成整套题面，再进入编号一致的答案页。"],
+                      ["付款后自动交付", "PayPal 验证金额和商品后立即生成 7 天下载链接。"],
+                    ]
+                  : [
+                      ["100 validated puzzles", "25 puzzles per level, with answers from the same program-checked archive."],
+                      ["4 print-ready PDFs", "A4, US Letter, and compact two-per-page editions for both paper sizes."],
+                      ["Separate answer sections", "Complete the puzzle pages first, then use matching numbered solutions."],
+                      ["Automatic delivery", "PayPal verifies the product and amount before issuing a 7-day download link."],
+                    ]
+              ).map(([label, detail]) => (
+                <div key={label} className="border-t py-4">
+                  <dt className="font-semibold">{label}</dt>
+                  <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">{detail}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
+              <a href="#free-20-puzzle-pack" className="text-primary hover:underline">
+                {isZh ? "先下载免费 20 题" : "Download the free 20-puzzle pack first"}
+              </a>
+              <Link href={`/${locale}/terms`} className="text-primary hover:underline">
+                {isZh ? "购买与退款条款" : "Purchase and refund terms"}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="px-4 py-10">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2">
+        <div className="mx-auto max-w-6xl">
           <section className="rounded-lg border p-6">
             <h2 className="text-2xl font-semibold">{isZh ? "如何使用这页" : "How to use this page"}</h2>
             <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
@@ -507,24 +641,6 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                 {isZh ? "每日武士数独" : "Daily puzzle"}
               </Link>
             </div>
-          </section>
-          <section className="rounded-lg border bg-primary/5 p-6">
-            <h2 className="text-2xl font-semibold">
-              {isZh ? "需要更多题？" : "Need more printable puzzles?"}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              {isZh
-                ? `免费包用于验证打印体验。100 题付费包当前测试 ${paidPackPrice} 价格，包含 Easy 到 Expert、答案、A4、US Letter、一页 1 题和一页 2 题版本。`
-                : `Use the free pack to test the print experience. The 100-puzzle paid pack is testing a ${paidPackPrice} price with Easy to Expert levels, solutions, A4, US Letter, one-puzzle and two-puzzle layouts.`}
-            </p>
-            <TrackedLink
-              href={paidPackHref}
-              eventName="paid_pack_view"
-              eventProperties={{ locale, product: "100_printable_pack", location: "monetization_card" }}
-              className="mt-5 inline-flex rounded-lg border border-primary px-5 py-3 font-semibold text-primary hover:bg-primary/10"
-            >
-              {isZh ? "查看付费 PDF 题包" : "View paid PDF pack"}
-            </TrackedLink>
           </section>
         </div>
       </section>

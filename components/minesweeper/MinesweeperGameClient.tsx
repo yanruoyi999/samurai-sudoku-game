@@ -304,7 +304,7 @@ export default function MinesweeperGameClient({ locale, isZh }: MinesweeperGameC
                   {isZh ? "每日武士数独" : "Daily Samurai Sudoku"}
                 </Link>
                 <Link
-                  href={`/${locale}/games/samurai/pdf/sample`}
+                  href={`/${locale}/printable-samurai-sudoku#free-20-puzzle-pack`}
                   className="rounded-lg border bg-background px-4 py-3 font-medium text-primary hover:border-primary hover:bg-primary/5"
                 >
                   {isZh ? "免费 PDF 样包" : "Free PDF sample pack"}

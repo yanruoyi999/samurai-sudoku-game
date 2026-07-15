@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -6,5 +6,5 @@ interface PageProps {
 
 export default async function LegacyPrintableSamuraiSudokuPage({ params }: PageProps) {
   const { locale } = await params;
-  redirect(`/${locale}/printable-samurai-sudoku`);
+  permanentRedirect(`/${locale}/printable-samurai-sudoku`);
 }

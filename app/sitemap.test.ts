@@ -6,7 +6,7 @@ describe("sitemap", () => {
   it("uses each difficulty archive's newest puzzle date as lastModified", async () => {
     const entries = await sitemap();
     const expectedDates = {
-      easy: "2026-07-11T00:00:00.000Z",
+      easy: "2026-07-15T00:00:00.000Z",
       medium: "2026-07-12T00:00:00.000Z",
       hard: "2026-07-13T00:00:00.000Z",
       evil: "2026-07-14T00:00:00.000Z",
@@ -42,6 +42,10 @@ describe("sitemap", () => {
     expect(urls.has("https://www.samuraisudoku.net/zh/printable-samurai-sudoku")).toBe(true);
     expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/printable")).toBe(false);
     expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/printable")).toBe(false);
+    expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/pdf")).toBe(false);
+    expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/pdf")).toBe(false);
+    expect(urls.has("https://www.samuraisudoku.net/en/games/samurai/pdf/sample")).toBe(false);
+    expect(urls.has("https://www.samuraisudoku.net/zh/games/samurai/pdf/sample")).toBe(false);
   });
 
   it("keeps low-search-intent trust pages out of the XML sitemap", async () => {

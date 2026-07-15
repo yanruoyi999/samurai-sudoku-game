@@ -65,7 +65,7 @@ export function buildSiteNavigation(
       },
       {
         id: "pdf-pack",
-        href: `${localeRoot}/games/samurai/pdf`,
+        href: `${localeRoot}/printable-samurai-sudoku#paid-100-puzzle-pack`,
         label: isZh
           ? `PDF 题包 · ${paidPackPrice}`
           : `PDF Pack · ${paidPackPrice}`,

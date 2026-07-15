@@ -87,8 +87,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/evil-stuck-after-two-grids', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/printable-samurai-sudoku', changeFrequency: 'weekly' as const, priority: 0.82 },
     { path: '/games/samurai/printable-practice-plan', changeFrequency: 'monthly' as const, priority: 0.74 },
-    { path: '/games/samurai/pdf', changeFrequency: 'monthly' as const, priority: 0.72 },
-    { path: '/games/samurai/pdf/sample', changeFrequency: 'monthly' as const, priority: 0.68 },
     { path: '/games/samurai/strategy-guide', changeFrequency: 'monthly' as const, priority: 0.72 },
     { path: '/games/samurai/beginners', changeFrequency: 'monthly' as const, priority: 0.71 },
     { path: '/games/samurai/paper-practice', changeFrequency: 'monthly' as const, priority: 0.69 },

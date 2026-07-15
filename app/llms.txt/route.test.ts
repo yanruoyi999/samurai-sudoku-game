@@ -23,6 +23,18 @@ describe("llms.txt", () => {
     expect(body).toContain("Printable practice plan");
   });
 
+  it("uses markdown links for the canonical printable funnel", async () => {
+    const response = await GET();
+    const body = await response.text();
+
+    expect(body).toContain(
+      "[Canonical free and paid printable Samurai Sudoku hub](https://www.samuraisudoku.net/en/printable-samurai-sudoku)",
+    );
+    expect(body).toContain(
+      "[100-puzzle ZIP pack](https://www.samuraisudoku.net/en/printable-samurai-sudoku#paid-100-puzzle-pack)",
+    );
+  });
+
   it("states the verified free and paid PDF pack contents", async () => {
     const response = await GET();
     const body = await response.text();

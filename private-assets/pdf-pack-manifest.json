@@ -1,34 +1,34 @@
 {
   "artifacts": [
     {
-      "bytes": 2339396,
+      "bytes": 2336214,
       "kind": "zip",
       "path": "private-assets/samurai-sudoku-100-puzzle-pack.zip",
-      "sha256": "2076a8595e8497cf2e972de7700aac890276b1ecb37778a65bf919c6e534afee"
+      "sha256": "6e9118fb0879334989f852c8c242188a794c7445e747b3d427fc1ed2dd5a59ce"
     },
     {
-      "bytes": 218240,
+      "bytes": 218265,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf",
-      "sha256": "5bf1af4aada6680653d3a288218fe72dcc0629d50f41a7390fc0671e9d8318ef"
+      "sha256": "4a938e280d95bff3c4a8dcc23a7eace0dfdf9e101d6af63eb9f61107ce4b62c8"
     },
     {
-      "bytes": 217997,
+      "bytes": 218005,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-letter.pdf",
-      "sha256": "e6c522815fa317e048f014c5ebd41e5cb978ba0e74b6dee70c5b9c946ca3215a"
+      "sha256": "ba45f189882cb918620dbe5a17b9dd69531da4ebd68d3fe7430fcfdb2a3d5402"
     },
     {
-      "bytes": 195652,
+      "bytes": 195670,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf",
-      "sha256": "eb3902d3b6d4534d11b261b484779f41d23bd7e00e99128497cad48f854493df"
+      "sha256": "cd2ee8e688b0982b557ac17049af538adf76f880b6b9c6204a97517a4fc4d673"
     },
     {
-      "bytes": 193627,
+      "bytes": 193655,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf",
-      "sha256": "0f231edd86b9381dc9e5bcf164f053a6a9ca2b0efa72dc3c841174955b498b78"
+      "sha256": "d527243fa959d0a1ce4725b4b018e9cf91a8ef019006111f5e4e8ec4e3e1f029"
     }
   ],
   "difficultyCounts": {

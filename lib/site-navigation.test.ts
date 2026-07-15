@@ -25,6 +25,9 @@ describe("buildSiteNavigation", () => {
       "pdf-pack",
     ]);
     expect(navigation.items.at(-1)?.label).toBe("PDF Pack · $4.95");
+    expect(navigation.items.at(-1)?.href).toBe(
+      "/en/printable-samurai-sudoku#paid-100-puzzle-pack",
+    );
   });
 
   it("localizes labels and destinations for Chinese pages", () => {
@@ -40,5 +43,8 @@ describe("buildSiteNavigation", () => {
       }),
     );
     expect(navigation.items.at(-1)?.label).toBe("PDF 题包 · $3.99");
+    expect(navigation.items.at(-1)?.href).toBe(
+      "/zh/printable-samurai-sudoku#paid-100-puzzle-pack",
+    );
   });
 });

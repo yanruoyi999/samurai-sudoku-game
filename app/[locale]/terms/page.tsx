@@ -71,7 +71,7 @@ export default async function TermsPage({ params }: TermsPageProps) {
       </div>
 
       <nav className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t pt-6 text-sm font-medium">
-        <Link href={`/${locale}/games/samurai/pdf`} className="text-primary hover:text-primary/80">
+        <Link href={`/${locale}/printable-samurai-sudoku#paid-100-puzzle-pack`} className="text-primary hover:text-primary/80">
           {isZh ? "查看 PDF 题包" : "View the PDF pack"}
         </Link>
         <Link href={`/${locale}/privacy`} className="text-primary hover:text-primary/80">

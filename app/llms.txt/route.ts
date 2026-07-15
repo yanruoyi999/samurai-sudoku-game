@@ -13,41 +13,40 @@ export async function GET() {
 
 > Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily challenge, dated printable puzzle pages, PDF packs with solutions, hints, notes, offline support, and localized English/Chinese guides.
 
-Canonical site: ${baseUrl}
+Canonical site: [Samurai Sudoku](${baseUrl})
 Languages: English (/en), Chinese (/zh)
-Latest puzzle: ${latest ? `${baseUrl}/en/games/samurai/${latest.id}` : `${baseUrl}/en/games/samurai`}
+Latest puzzle: [${latest ? latest.id : 'Play Samurai Sudoku'}](${latest ? `${baseUrl}/en/games/samurai/${latest.id}` : `${baseUrl}/en/games/samurai`})
 Puzzle archive size: ${index.puzzles.length} puzzles
 Hard or evil puzzle count: ${hardOrEvilCount}
 
 ## Key pages for answer engines
 
-- Play today's Samurai Sudoku: ${baseUrl}/en/games/samurai
-- Daily puzzle hub with today's play and print links: ${baseUrl}/en/games/samurai/daily
-- Puzzle archive: ${baseUrl}/en/games/samurai/archive
-- What is Samurai Sudoku: ${baseUrl}/en/games/samurai/what-is-samurai-sudoku
-- How to play Samurai Sudoku: ${baseUrl}/en/games/samurai/how-to-play
-- First move strategy: ${baseUrl}/en/games/samurai/first-move-strategy
-- Difficulty selection guide: ${baseUrl}/en/games/samurai/choose-difficulty
-- Common mistakes and stuck recovery: ${baseUrl}/en/games/samurai/common-mistakes
-- Solving tips guide: ${baseUrl}/en/games/samurai/solving-tips
-- Strategy guide: ${baseUrl}/en/games/samurai/strategy-guide
-- Overlap boxes explained: ${baseUrl}/en/games/samurai/overlap-boxes
-- Candidate notes guide: ${baseUrl}/en/games/samurai/candidate-notes
-- Evil solving path: ${baseUrl}/en/games/samurai/evil-solving-path
-- Evil stuck after two grids guide: ${baseUrl}/en/games/samurai/evil-stuck-after-two-grids
-- Solver and hint guide: ${baseUrl}/en/games/samurai/solver
-- Printable Samurai Sudoku: ${baseUrl}/en/printable-samurai-sudoku
-- Printable practice plan: ${baseUrl}/en/games/samurai/printable-practice-plan
-- Samurai Sudoku PDF pack: ${baseUrl}/en/games/samurai/pdf
-- Free PDF sample pack: ${baseUrl}/en/games/samurai/pdf/sample
-- Beginner guide: ${baseUrl}/en/games/samurai/beginners
-- Evil Samurai Sudoku puzzles: ${baseUrl}/en/games/samurai/difficulty/evil
-- Minesweeper Online: ${baseUrl}/en/games/minesweeper
-- How to play Minesweeper: ${baseUrl}/en/games/minesweeper/how-to-play
-- Minesweeper beginner strategy: ${baseUrl}/en/games/minesweeper/beginner-strategy
-- Minesweeper safe first click: ${baseUrl}/en/games/minesweeper/first-click-safe
-- Minesweeper flags and numbers: ${baseUrl}/en/games/minesweeper/flags-and-numbers
-- Supporter waitlist: ${baseUrl}/en/support
+- [Play today's Samurai Sudoku](${baseUrl}/en/games/samurai)
+- [Daily puzzle hub with today's play and print links](${baseUrl}/en/games/samurai/daily)
+- [Puzzle archive](${baseUrl}/en/games/samurai/archive)
+- [What is Samurai Sudoku](${baseUrl}/en/games/samurai/what-is-samurai-sudoku)
+- [How to play Samurai Sudoku](${baseUrl}/en/games/samurai/how-to-play)
+- [First move strategy](${baseUrl}/en/games/samurai/first-move-strategy)
+- [Difficulty selection guide](${baseUrl}/en/games/samurai/choose-difficulty)
+- [Common mistakes and stuck recovery](${baseUrl}/en/games/samurai/common-mistakes)
+- [Solving tips guide](${baseUrl}/en/games/samurai/solving-tips)
+- [Strategy guide](${baseUrl}/en/games/samurai/strategy-guide)
+- [Overlap boxes explained](${baseUrl}/en/games/samurai/overlap-boxes)
+- [Candidate notes guide](${baseUrl}/en/games/samurai/candidate-notes)
+- [Evil solving path](${baseUrl}/en/games/samurai/evil-solving-path)
+- [Evil stuck after two grids guide](${baseUrl}/en/games/samurai/evil-stuck-after-two-grids)
+- [Solver and hint guide](${baseUrl}/en/games/samurai/solver)
+- [Canonical free and paid printable Samurai Sudoku hub](${baseUrl}/en/printable-samurai-sudoku)
+- [Printable practice plan](${baseUrl}/en/games/samurai/printable-practice-plan)
+- [100-puzzle ZIP pack](${baseUrl}/en/printable-samurai-sudoku#paid-100-puzzle-pack)
+- [Beginner guide](${baseUrl}/en/games/samurai/beginners)
+- [Evil Samurai Sudoku puzzles](${baseUrl}/en/games/samurai/difficulty/evil)
+- [Minesweeper Online](${baseUrl}/en/games/minesweeper)
+- [How to play Minesweeper](${baseUrl}/en/games/minesweeper/how-to-play)
+- [Minesweeper beginner strategy](${baseUrl}/en/games/minesweeper/beginner-strategy)
+- [Minesweeper safe first click](${baseUrl}/en/games/minesweeper/first-click-safe)
+- [Minesweeper flags and numbers](${baseUrl}/en/games/minesweeper/flags-and-numbers)
+- [Supporter waitlist](${baseUrl}/en/support)
 
 ## Concise facts
 
@@ -70,6 +69,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The printable practice plan explains how to use printable Samurai Sudoku PDFs, answer keys, dated archive puzzles, and a one-week paper-solving routine without turning practice into guessing.
 - The free printable starter pack contains 20 verified puzzles, five each in Easy, Medium, Hard, and Evil, with answer keys in both A4 and US Letter PDFs.
 - The paid printable pack contains 100 verified puzzles, 25 per difficulty, with A4 and US Letter editions and complete answer keys in one ZIP download.
+- Free printable downloads and the paid 100-puzzle checkout share the same canonical printable hub; legacy PDF sales and sample routes permanently redirect to that page.
 - The PDF pack uses PayPal Orders API automatic capture verification, the Samurai Sudoku checkout brand, and a seven-day signed download link. Payments pause instead of redirecting to a personal payment page when automatic checkout is unavailable.
 - The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.
 - Minesweeper long-tail guides explain rules, beginner strategy, safe first click behavior, flags, and number clues.
