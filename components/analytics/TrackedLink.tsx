@@ -32,8 +32,11 @@ export function TrackedLink({
     trackInteraction(eventName, eventProperties);
   };
 
-  if (isExternalHref(href)) {
-    const safeTarget = target ?? (href.startsWith("http") ? "_blank" : undefined);
+  const external = isExternalHref(href);
+  const nativeAnchor = external || anchorProps.download !== undefined;
+
+  if (nativeAnchor) {
+    const safeTarget = target ?? (external && href.startsWith("http") ? "_blank" : undefined);
     const safeRel = rel ?? (safeTarget === "_blank" ? "noopener noreferrer" : undefined);
 
     return (
