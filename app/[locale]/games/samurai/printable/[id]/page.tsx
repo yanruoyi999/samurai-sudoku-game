@@ -203,6 +203,14 @@ export default async function PrintablePuzzlePage({
         <PrintableSamuraiBoard
           board={initialBoard}
           title={isZh ? "题面" : "Puzzle"}
+          playHref={onlineHref}
+          playLabel={isZh ? "在线游玩这道题" : "Play this puzzle online"}
+          trackingProperties={{
+            locale,
+            puzzle_id: id,
+            difficulty: puzzle.difficulty,
+            location: "printable_puzzle_board",
+          }}
         />
         <PrintableSamuraiBoard
           board={solutionBoard}

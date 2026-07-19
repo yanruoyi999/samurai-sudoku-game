@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getNearbyPuzzles } from './puzzle-links';
+import { getNearbyPuzzles, getPrimaryPrintablePuzzle } from './puzzle-links';
 
 const puzzles = [
   { id: '2026-01-05' },
@@ -30,5 +30,17 @@ describe('getNearbyPuzzles', () => {
 
   it('falls back to the newest puzzles when the current ID is absent', () => {
     expect(getNearbyPuzzles(puzzles, 'missing', 2)).toEqual(puzzles.slice(0, 2));
+  });
+});
+
+describe('getPrimaryPrintablePuzzle', () => {
+  it('uses the latest daily puzzle instead of the first starter-pack puzzle', () => {
+    const latest = { id: '2026-01-06' };
+
+    expect(getPrimaryPrintablePuzzle(latest, puzzles)?.id).toBe('2026-01-06');
+  });
+
+  it('falls back to the starter pack when no daily puzzle is available', () => {
+    expect(getPrimaryPrintablePuzzle(undefined, puzzles)?.id).toBe('2026-01-05');
   });
 });

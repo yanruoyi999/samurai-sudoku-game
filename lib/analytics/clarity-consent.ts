@@ -5,3 +5,10 @@ export function getClarityAnalyticsStorage(
 ): ClarityAnalyticsStorage {
   return analyticsOptedOut ? "denied" : "granted";
 }
+
+export function shouldLoadClarity(
+  projectId: string,
+  analyticsOptedOut: boolean,
+): boolean {
+  return Boolean(projectId) && !analyticsOptedOut;
+}

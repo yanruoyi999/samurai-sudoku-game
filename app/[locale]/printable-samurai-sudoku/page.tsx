@@ -23,6 +23,7 @@ import {
 } from "@/lib/paypal";
 import { getPayPalClientId, isPayPalOrdersConfigured } from "@/lib/paypal-api";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
+import { getPrimaryPrintablePuzzle } from "@/lib/puzzle-links";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
 import type { Difficulty, PuzzleMetadata } from "@/lib/sudoku/types";
@@ -125,12 +126,14 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
   const autoDeliveryEnabled = isPayPalOrdersConfigured();
   const payPalClientId = getPayPalClientId();
   const supportHref = `/${locale}/contact`;
-  const firstPuzzle = packPuzzles[0];
   const latestPuzzle = selectRecentDailyPuzzles(index.puzzles, 1)[0];
-  const firstPrintHref = firstPuzzle ? `/${locale}/games/samurai/printable/${firstPuzzle.id}` : sampleHref;
+  const heroPuzzle = getPrimaryPrintablePuzzle(latestPuzzle, packPuzzles);
+  const heroPrintHref = heroPuzzle
+    ? `/${locale}/games/samurai/printable/${heroPuzzle.id}?paper=a4`
+    : sampleHref;
   const latestPrintHref = latestPuzzle
     ? `/${locale}/games/samurai/printable/${latestPuzzle.id}?paper=a4`
-    : firstPrintHref;
+    : heroPrintHref;
 
   const faqItems = isZh
     ? [
@@ -260,17 +263,29 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                 {isZh ? "下载 US Letter PDF" : "Download US Letter PDF"}
               </TrackedLink>
               <TrackedLink
-                href={firstPrintHref}
+                href={heroPrintHref}
                 eventName="print_puzzle"
-                eventProperties={{ locale, puzzle_id: firstPuzzle?.id, location: "hero" }}
+                eventProperties={{
+                  locale,
+                  puzzle_id: heroPuzzle?.id,
+                  difficulty: heroPuzzle?.difficulty,
+                  paper: "a4",
+                  location: "hero",
+                }}
                 className="rounded-lg border border-primary px-5 py-3 font-semibold text-primary hover:bg-primary/10"
               >
                 {isZh ? "打印当前题" : "Print Current Puzzle"}
               </TrackedLink>
               <TrackedLink
-                href={`${firstPrintHref}#answer-key`}
+                href={`${heroPrintHref}#answer-key`}
                 eventName="view_solution"
-                eventProperties={{ locale, puzzle_id: firstPuzzle?.id, location: "hero" }}
+                eventProperties={{
+                  locale,
+                  puzzle_id: heroPuzzle?.id,
+                  difficulty: heroPuzzle?.difficulty,
+                  paper: "a4",
+                  location: "hero",
+                }}
                 className="rounded-lg border px-5 py-3 font-semibold hover:bg-accent"
               >
                 {isZh ? "查看答案" : "View Solutions"}

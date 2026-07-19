@@ -12,6 +12,17 @@ declare global {
 const OPT_OUT_VALUES = new Set(["0", "false", "no", "off", "optout"]);
 const OPT_IN_VALUES = new Set(["1", "on", "yes", "optin"]);
 
+export function isLocalAnalyticsHost(hostname = ""): boolean {
+  const normalized = hostname.trim().toLowerCase();
+  return (
+    normalized === "localhost" ||
+    normalized === "127.0.0.1" ||
+    normalized === "::1" ||
+    normalized === "[::1]" ||
+    normalized.endsWith(".localhost")
+  );
+}
+
 function readAnalyticsParam(search: string): boolean | null {
   const params = new URLSearchParams(search);
   const value = params.get("analytics") ?? params.get("samurai_analytics");
@@ -54,9 +65,10 @@ export function applyAnalyticsOptOutFromUrl(): boolean {
     return paramOptOut;
   }
 
-  const storedOptOut = readStoredOptOut();
-  window.__samuraiAnalyticsOptOut = storedOptOut;
-  return storedOptOut;
+  const optedOut =
+    isLocalAnalyticsHost(window.location.hostname) || readStoredOptOut();
+  window.__samuraiAnalyticsOptOut = optedOut;
+  return optedOut;
 }
 
 export function isAnalyticsOptedOut(): boolean {

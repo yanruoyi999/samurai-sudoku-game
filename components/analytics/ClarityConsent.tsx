@@ -8,6 +8,7 @@ import {
 } from "@/lib/analytics/opt-out";
 import {
   getClarityAnalyticsStorage,
+  shouldLoadClarity,
   type ClarityAnalyticsStorage,
 } from "@/lib/analytics/clarity-consent";
 
@@ -65,7 +66,14 @@ export function ClarityConsent() {
   useEffect(() => {
     if (!clarityProjectId) return;
     const optedOut = applyAnalyticsOptOutFromUrl() || isAnalyticsOptedOut();
-    loadClarity(clarityProjectId, getClarityAnalyticsStorage(optedOut));
+    const analyticsStorage = getClarityAnalyticsStorage(optedOut);
+
+    if (!shouldLoadClarity(clarityProjectId, optedOut)) {
+      setClarityConsent(analyticsStorage);
+      return;
+    }
+
+    loadClarity(clarityProjectId, analyticsStorage);
   }, []);
 
   return null;

@@ -2,6 +2,13 @@ interface PuzzleLinkItem {
   id: string;
 }
 
+export function getPrimaryPrintablePuzzle<T extends PuzzleLinkItem>(
+  latestPuzzle: T | null | undefined,
+  starterPuzzles: readonly T[],
+): T | undefined {
+  return latestPuzzle ?? starterPuzzles[0];
+}
+
 export function getNearbyPuzzles<T extends PuzzleLinkItem>(
   puzzles: T[],
   currentId: string,

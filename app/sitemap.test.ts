@@ -1,26 +1,33 @@
 import { describe, expect, it } from "vitest";
 
+import { getPuzzleIndex } from "@/lib/puzzles";
+import type { Difficulty } from "@/lib/sudoku/types";
 import sitemap from "./sitemap";
 
 describe("sitemap", () => {
   it("uses each difficulty archive's newest puzzle date as lastModified", async () => {
     const entries = await sitemap();
-    const expectedDates = {
-      easy: "2026-07-15T00:00:00.000Z",
-      medium: "2026-07-12T00:00:00.000Z",
-      hard: "2026-07-13T00:00:00.000Z",
-      evil: "2026-07-14T00:00:00.000Z",
-    };
+    const index = await getPuzzleIndex();
+    const difficulties: Difficulty[] = ["easy", "medium", "hard", "evil"];
 
-    for (const [difficulty, expectedDate] of Object.entries(expectedDates)) {
+    for (const difficulty of difficulties) {
+      const latestPuzzleId = index.puzzles
+        .filter((puzzle) => puzzle.difficulty === difficulty)
+        .reduce<string | undefined>(
+          (latest, puzzle) => (!latest || puzzle.id > latest ? puzzle.id : latest),
+          undefined,
+        );
       const entry = entries.find(
         (item) =>
           item.url ===
           `https://www.samuraisudoku.net/en/games/samurai/difficulty/${difficulty}`,
       );
 
+      expect(latestPuzzleId).toBeDefined();
       expect(entry?.lastModified).toBeInstanceOf(Date);
-      expect((entry?.lastModified as Date).toISOString()).toBe(expectedDate);
+      expect((entry?.lastModified as Date).toISOString()).toBe(
+        new Date(`${latestPuzzleId}T00:00:00.000Z`).toISOString(),
+      );
     }
   });
 
