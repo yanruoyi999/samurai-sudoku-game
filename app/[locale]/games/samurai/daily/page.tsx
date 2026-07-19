@@ -5,6 +5,7 @@ import Script from "next/script";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { MiniSamuraiPreview } from "@/components/printable/MiniSamuraiPreview";
+import { PRINTABLE_PUZZLE_OPEN_EVENT } from "@/lib/analytics/event-names";
 import { selectRecentDailyPuzzles } from "@/lib/daily-puzzles";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
@@ -209,7 +210,7 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
                 </TrackedLink>
                 <TrackedLink
                   href={printHref}
-                  eventName="print_puzzle"
+                  eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                   eventProperties={{ locale, puzzle_id: latest.id, difficulty: latest.difficulty, paper: "a4", location: "daily_hero" }}
                   className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10"
                 >

@@ -4,6 +4,7 @@ import { Difficulty } from '@/lib/sudoku/types';
 import { getTranslations } from 'next-intl/server';
 import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { GameHistoryArchive } from '@/components/GameHistoryArchive';
+import { PRINTABLE_PUZZLE_OPEN_EVENT } from '@/lib/analytics/event-names';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 
@@ -246,7 +247,7 @@ export default async function ArchivePage({
                         <div className="flex justify-end gap-2">
                           <TrackedLink
                             href={`/${locale}/games/samurai/printable/${puzzle.id}`}
-                            eventName="printable_puzzle_open_click"
+                            eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                             eventProperties={{
                               locale,
                               puzzle_id: puzzle.id,

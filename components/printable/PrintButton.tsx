@@ -1,6 +1,7 @@
 "use client";
 
 import { trackInteraction } from "@/lib/analytics/events";
+import { PRINT_PUZZLE_EVENT } from "@/lib/analytics/event-names";
 
 interface PrintButtonProps {
   locale: string;
@@ -10,7 +11,7 @@ interface PrintButtonProps {
 
 export function PrintButton({ locale, puzzleId, difficulty }: PrintButtonProps) {
   const handlePrint = () => {
-    trackInteraction("print_puzzle", {
+    trackInteraction(PRINT_PUZZLE_EVENT, {
       locale,
       puzzle_id: puzzleId,
       difficulty,

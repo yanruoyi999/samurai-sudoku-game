@@ -5,6 +5,7 @@ import Script from "next/script";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { PayPalCheckout } from "@/components/payments/PayPalCheckout";
 import { MiniSamuraiPreview } from "@/components/printable/MiniSamuraiPreview";
+import { PRINTABLE_PUZZLE_OPEN_EVENT } from "@/lib/analytics/event-names";
 import { selectRecentDailyPuzzles } from "@/lib/daily-puzzles";
 import {
   PRINTABLE_STARTER_A4_PDF,
@@ -264,7 +265,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
               </TrackedLink>
               <TrackedLink
                 href={heroPrintHref}
-                eventName="print_puzzle"
+                eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                 eventProperties={{
                   locale,
                   puzzle_id: heroPuzzle?.id,
@@ -363,7 +364,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
             <div className="flex flex-wrap gap-3">
               <TrackedLink
                 href={latestPrintHref}
-                eventName="print_puzzle"
+                eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                 eventProperties={{ locale, puzzle_id: latestPuzzle.id, difficulty: latestPuzzle.difficulty, paper: "a4", location: "printable_daily_bridge" }}
                 className="rounded-lg border border-primary px-4 py-2 font-semibold text-primary hover:bg-primary/10"
               >
@@ -409,7 +410,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                       <>
                         <TrackedLink
                           href={`/${locale}/games/samurai/printable/${summary.firstPuzzle.id}`}
-                          eventName="print_puzzle"
+                          eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                           eventProperties={{ locale, difficulty, puzzle_id: summary.firstPuzzle.id, location: "difficulty_card" }}
                           className="rounded-md border px-3 py-2 text-center font-medium hover:bg-accent"
                         >
@@ -463,7 +464,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                     <span>{getPrintableDifficultyLabel(puzzle.difficulty, locale)}</span>
                     <TrackedLink
                       href={`/${locale}/games/samurai/printable/${puzzle.id}`}
-                      eventName="print_puzzle"
+                      eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                       eventProperties={{ locale, puzzle_id: puzzle.id, difficulty: puzzle.difficulty, location: "starter_pack_table" }}
                       className="text-primary hover:underline"
                     >

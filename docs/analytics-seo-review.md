@@ -42,3 +42,11 @@ Use this checklist after every production analytics or SEO change.
 - Local change: the bootstrap now sends the initial view and the duplicate manual route listener is no longer mounted.
 - Verification: targeted bootstrap tests, the full 35-file / 144-test suite, lint, the production build, page-quality and internal-link audits, plus 1440px and 390px browser checks passed.
 - Status: local repair complete; wait for deployment and a 24-48 hour complete-day GA4 window before judging production recovery.
+
+## 2026-07-19 Local Remediation
+
+- Evidence: GA4 counted `print_puzzle` on the printable hub and printable detail routes, while source inspection showed that six navigation links and the real `window.print()` handler shared that event name.
+- Root cause: opening a printable page and invoking the browser print dialog were represented as the same conversion step.
+- Local change: printable-page navigation now uses `printable_puzzle_open_click`; only the handler that calls `window.print()` emits `print_puzzle`.
+- Verification: the event-contract test, the full 36-file / 147-test suite, lint, the production build, 460-page quality audit, 872-page internal-link audit, and 1440px / 390px browser checks passed.
+- Status: local repair complete and not deployed. Historical `print_puzzle` data remains mixed; evaluate only events collected after deployment.

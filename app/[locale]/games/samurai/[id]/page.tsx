@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 
 import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { locales, type Locale } from '@/i18n';
+import { PRINTABLE_PUZZLE_OPEN_EVENT } from '@/lib/analytics/event-names';
 import { buildLanguageAlternates } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
 import { getPuzzle, getPuzzleIndex, getPuzzleMetadata } from '@/lib/puzzles';
@@ -282,7 +283,7 @@ export default async function PuzzlePage({ params }: PuzzlePageProps) {
             <div className="flex flex-wrap gap-3 pt-1">
               <TrackedLink
                 href={`/${resolvedParams.locale}/games/samurai/printable/${puzzle.id}?paper=a4`}
-                eventName="print_puzzle"
+                eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
                 eventProperties={{
                   locale: resolvedParams.locale,
                   puzzle_id: puzzle.id,
