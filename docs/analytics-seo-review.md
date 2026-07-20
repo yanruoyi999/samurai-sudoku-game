@@ -50,3 +50,11 @@ Use this checklist after every production analytics or SEO change.
 - Local change: printable-page navigation now uses `printable_puzzle_open_click`; only the handler that calls `window.print()` emits `print_puzzle`.
 - Verification: the event-contract test, the full 36-file / 147-test suite, lint, the production build, 460-page quality audit, 872-page internal-link audit, and 1440px / 390px browser checks passed.
 - Status: local repair complete and not deployed. Historical `print_puzzle` data remains mixed; evaluate only events collected after deployment.
+
+## 2026-07-21 Local Remediation
+
+- Evidence: the GA4 Data API reported one 2026-07-20 session attributed to `number_pad`; the 2026-07-14 through 2026-07-20 window also contained `daily` as a session source. Event-level inspection tied the polluted acquisition row to interaction events rather than an external referrer.
+- Root cause: the shared analytics adapter forwarded the internal interaction property `source` to GA4 unchanged. `source` is reserved for traffic attribution, and several Sudoku interactions use it for UI context.
+- Local change: Vercel Analytics still receives the existing `source` value, while the GA4 payload removes `source` and sends the same context as `interaction_source`. The adapter-level fix covers all current and future callers.
+- Verification: the new adapter contract tests, the full 37-file / 149-test suite, lint, the 489-page production build, 464-page quality audit, 880-page internal-link audit, and 1440px / 390px browser checks passed with no console errors.
+- Status: local repair complete and not deployed. Historical `number_pad` and `daily` acquisition rows will not be rewritten; verify only data collected 24-48 hours after deployment.

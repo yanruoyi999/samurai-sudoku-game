@@ -18,13 +18,28 @@ function cleanProperties(properties?: AnalyticsProperties): Record<string, Analy
   ) as Record<string, AnalyticsValue>;
 }
 
+function normalizeGoogleProperties(
+  properties: Record<string, AnalyticsValue>,
+): Record<string, AnalyticsValue> {
+  const { source, ...normalizedProperties } = properties;
+
+  if (source === undefined || normalizedProperties.interaction_source !== undefined) {
+    return normalizedProperties;
+  }
+
+  return {
+    ...normalizedProperties,
+    interaction_source: source,
+  };
+}
+
 export function trackInteraction(eventName: string, properties?: AnalyticsProperties) {
   if (isAnalyticsOptedOut()) return;
 
   const cleanedProperties = cleanProperties(properties);
 
   track(eventName, cleanedProperties);
-  trackGoogleEvent(eventName, cleanedProperties);
+  trackGoogleEvent(eventName, normalizeGoogleProperties(cleanedProperties));
 
   if (typeof window !== "undefined") {
     const clarity = (window as WindowWithClarity).clarity;
