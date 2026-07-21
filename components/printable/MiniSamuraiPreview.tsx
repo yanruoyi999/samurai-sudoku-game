@@ -1,13 +1,23 @@
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { globalToLocal } from "@/lib/sudoku/coordinates";
 import { getGlobalInitialBoard } from "@/lib/sudoku/solution-counter";
 import type { Puzzle } from "@/lib/sudoku/types";
 
+type PreviewAction = {
+  eventName: string;
+  eventProperties?: Record<string, string | number | boolean | null | undefined>;
+  href: string;
+  label: string;
+};
+
 interface MiniSamuraiPreviewProps {
+  action?: PreviewAction;
   ariaLabel: string;
   puzzle: Puzzle | null;
 }
 
 export function MiniSamuraiPreview({
+  action,
   ariaLabel,
   puzzle,
 }: MiniSamuraiPreviewProps) {
@@ -15,7 +25,7 @@ export function MiniSamuraiPreview({
     ? getGlobalInitialBoard(puzzle)
     : Array.from({ length: 21 }, () => Array(21).fill(0));
 
-  return (
+  const preview = (
     <div
       className="grid aspect-square w-full max-w-[420px] border-2 border-foreground bg-white text-[7px] text-slate-950 shadow-sm sm:text-[9px]"
       style={{ gridTemplateColumns: "repeat(21, minmax(0, 1fr))" }}
@@ -65,5 +75,19 @@ export function MiniSamuraiPreview({
         );
       })}
     </div>
+  );
+
+  if (!action) return preview;
+
+  return (
+    <TrackedLink
+      href={action.href}
+      eventName={action.eventName}
+      eventProperties={action.eventProperties}
+      aria-label={action.label}
+      className="block w-full max-w-[420px] rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    >
+      {preview}
+    </TrackedLink>
   );
 }

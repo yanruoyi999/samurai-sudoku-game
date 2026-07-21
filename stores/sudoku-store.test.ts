@@ -21,6 +21,18 @@ function findEditableSolvedCell(): GlobalPosition {
   throw new Error("sample puzzle must include an editable solved cell");
 }
 
+function findInitialCell(): GlobalPosition {
+  const state = useSudokuStore.getState();
+
+  for (let row = 0; row < state.initial.length; row += 1) {
+    for (let col = 0; col < state.initial[row].length; col += 1) {
+      if (state.initial[row][col]) return { row, col };
+    }
+  }
+
+  throw new Error("sample puzzle must include an initial cell");
+}
+
 function candidateKey(pos: GlobalPosition) {
   return `${pos.row},${pos.col}`;
 }
@@ -106,6 +118,22 @@ describe("sudoku store candidate undo history", () => {
 
     useSudokuStore.getState().undo();
     expect(useSudokuStore.getState().candidates.get(key)?.has(1)).toBe(true);
+  });
+
+  it("keeps a selected given clue immutable", () => {
+    const pos = findInitialCell();
+    const originalValue = useSudokuStore.getState().board[pos.row][pos.col];
+
+    useSudokuStore.getState().selectCell(pos);
+    useSudokuStore.getState().setCell(pos, originalValue === 9 ? 8 : 9);
+    useSudokuStore.getState().clearCell(pos);
+    useSudokuStore.getState().toggleCandidate(pos, 1);
+
+    const state = useSudokuStore.getState();
+    expect(state.selectedCell).toEqual(pos);
+    expect(state.board[pos.row][pos.col]).toBe(originalValue);
+    expect(state.candidates.has(candidateKey(pos))).toBe(false);
+    expect(state.history).toHaveLength(0);
   });
 });
 

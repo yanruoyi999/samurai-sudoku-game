@@ -334,6 +334,18 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
             <MiniSamuraiPreview
               puzzle={previewPuzzle}
               ariaLabel={isZh ? "可打印武士数独题目预览" : "Samurai Sudoku printable puzzle preview"}
+              action={{
+                href: heroPrintHref,
+                label: isZh ? "打开这道可打印武士数独" : "Open this printable Samurai Sudoku puzzle",
+                eventName: PRINTABLE_PUZZLE_OPEN_EVENT,
+                eventProperties: {
+                  locale,
+                  puzzle_id: heroPuzzle?.id,
+                  difficulty: heroPuzzle?.difficulty,
+                  paper: "a4",
+                  location: "hero_preview",
+                },
+              }}
             />
             <p className="mt-3 text-sm text-muted-foreground">
               {isZh

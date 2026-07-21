@@ -16,12 +16,14 @@ const FEEDBACK_COPY = {
     candidateRemoved: (value: number) => `Candidate ${value} removed`,
     cleared: "Cell cleared",
     entered: (value: number) => `Entered ${value}`,
+    givenSelected: "Given clue selected",
   },
   zh: {
     candidateAdded: (value: number) => `已添加候选 ${value}`,
     candidateRemoved: (value: number) => `已移除候选 ${value}`,
     cleared: "已清除",
     entered: (value: number) => `已填入 ${value}`,
+    givenSelected: "已选中给定数",
   },
 };
 
@@ -46,6 +48,10 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const puzzleId = useSudokuStore((state) => state.puzzleId);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const selectedCellIsInitial = selectedCell
+    ? engine?.isInitial(selectedCell) ?? false
+    : false;
+  const canEditSelectedCell = Boolean(selectedCell && !selectedCellIsInitial);
 
   useEffect(() => {
     return () => {
@@ -86,7 +92,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   };
 
   const handleNumberClick = (num: number) => {
-    if (selectedCell) {
+    if (selectedCell && !selectedCellIsInitial) {
       const currentValue = engine?.getValue(selectedCell) ?? 0;
 
       if (noteMode) {
@@ -132,7 +138,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   };
 
   const handleClear = () => {
-    if (selectedCell) {
+    if (selectedCell && !selectedCellIsInitial) {
       const key = `${selectedCell.row},${selectedCell.col}`;
       const hasValue = (engine?.getValue(selectedCell) ?? 0) !== 0;
       const hasCandidates = candidates.has(key);
@@ -170,7 +176,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           {NUMBER_PAD_VALUES.map((num) => {
             const isPossibleValue = possibleValues.has(num);
             const isMarkedCandidate = selectedCandidateMarks.has(num);
-            const isDisabled = !selectedCell;
+            const isDisabled = !canEditSelectedCell;
 
             return (
               <button
@@ -204,7 +210,7 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
           {/* Clear Button */}
           <button
             onClick={handleClear}
-            disabled={!selectedCell}
+            disabled={!canEditSelectedCell}
             aria-label={tActions('clear')}
             title={tActions('clear')}
             className={cn(
@@ -223,6 +229,12 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
         {!selectedCell && (
           <p className="text-xs text-center text-muted-foreground">
             {t("selectCellPrompt")}
+          </p>
+        )}
+
+        {selectedCellIsInitial && (
+          <p className="text-xs text-center text-muted-foreground" role="status">
+            {feedbackCopy.givenSelected}
           </p>
         )}
 

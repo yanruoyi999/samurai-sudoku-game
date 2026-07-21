@@ -162,11 +162,10 @@ export function SamuraiBoard() {
   // Handle cell click
   const handleCellClick = useCallback(
     (pos: GlobalPosition) => {
-      if (initial[pos.row][pos.col]) return; // Can't select initial cells
       selectCell(pos);
       trackFirstCellSelection(pos, "click");
     },
-    [initial, selectCell, trackFirstCellSelection]
+    [selectCell, trackFirstCellSelection]
   );
 
   // Handle keyboard input
@@ -204,6 +203,7 @@ export function SamuraiBoard() {
       // Number keys (1-9)
       if (e.key >= "1" && e.key <= "9") {
         e.preventDefault();
+        if (initial[selectedCell.row][selectedCell.col]) return;
         const num = parseInt(e.key);
         const currentValue = engine?.getValue(selectedCell) ?? 0;
 
@@ -235,6 +235,7 @@ export function SamuraiBoard() {
       // Backspace or Delete to clear
       if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") {
         e.preventDefault();
+        if (initial[selectedCell.row][selectedCell.col]) return;
         const key = `${selectedCell.row},${selectedCell.col}`;
         const hasValue = (engine?.getValue(selectedCell) ?? 0) !== 0;
         const hasCandidates = candidates.has(key);
@@ -286,6 +287,7 @@ export function SamuraiBoard() {
       redo,
       engine,
       candidates,
+      initial,
     ]
   );
 

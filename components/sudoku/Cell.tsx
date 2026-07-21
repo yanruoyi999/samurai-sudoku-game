@@ -67,10 +67,9 @@ function CellComponent({
         isSelected && "sudoku-cell-selected",
         isHighlighted && !isSelected && "sudoku-cell-highlighted",
         hasConflict && "sudoku-cell-conflict",
-        !isInitial && "cursor-pointer"
+        "cursor-pointer"
       )}
       onClick={onClick}
-      disabled={isInitial}
       type="button"
       aria-label={ariaLabel}
       aria-pressed={isSelected}
