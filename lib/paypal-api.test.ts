@@ -167,4 +167,38 @@ describe("PayPal PDF pack orders", () => {
     expect(fetcher).toHaveBeenCalledTimes(2);
     expect(fetcher.mock.calls[1][1]?.method).toBe("GET");
   });
+
+  it("requests the complete order representation when capturing an approved order", async () => {
+    vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
+    vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ access_token: "access-token" }), { status: 200 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({ id: "5O190127TN364715T", status: "APPROVED" }),
+          { status: 200 },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(completedOrder()), { status: 201 }),
+      );
+
+    await expect(
+      capturePayPalOrder("5O190127TN364715T", "recovery-key", fetcher),
+    ).resolves.toMatchObject({ captureId: "3Y662965014333303" });
+
+    expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(fetcher.mock.calls[2][0]).toBe(
+      "https://api-m.sandbox.paypal.com/v2/checkout/orders/5O190127TN364715T/capture",
+    );
+    expect(fetcher.mock.calls[2][1]).toMatchObject({
+      method: "POST",
+      headers: expect.objectContaining({
+        Prefer: "return=representation",
+      }),
+    });
+  });
 });

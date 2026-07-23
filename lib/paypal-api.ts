@@ -240,6 +240,7 @@ export async function capturePayPalOrder(
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
       "PayPal-Request-Id": createPayPalRequestId(),
+      Prefer: "return=representation",
     },
     body: "{}",
   });
