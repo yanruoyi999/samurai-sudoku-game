@@ -19,7 +19,7 @@
     "audit:page-quality": "tsx scripts/page-quality-audit.ts",
     "test": "vitest run",
     "test:sudoku": "vitest run lib/sudoku",
-    "test:indexnow": "node --test scripts/submit-indexnow.test.mjs",
+    "test:indexnow": "node --test scripts/submit-indexnow.node-test.mjs",
     "seo:indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
