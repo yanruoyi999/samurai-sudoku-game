@@ -44,7 +44,16 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Test
-        run: pnpm test
+        run: pnpm test 2>&1 | tee vitest.log
+
+      - name: Upload test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-diagnostics
+          path: vitest.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Validate puzzle corpus
         run: pnpm validate-puzzles
