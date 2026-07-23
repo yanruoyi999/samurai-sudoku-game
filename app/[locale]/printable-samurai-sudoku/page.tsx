@@ -415,8 +415,6 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
         </div>
       </section>
 
-      <span id="free-20-puzzle-pack" className="block scroll-mt-28" aria-hidden="true" />
-      <span id="free-5-puzzle-pack" className="block scroll-mt-28" aria-hidden="true" />
       <section id="free-3-puzzle-pack" className="scroll-mt-28 bg-secondary/20 px-4 py-10">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-[1fr_320px]">

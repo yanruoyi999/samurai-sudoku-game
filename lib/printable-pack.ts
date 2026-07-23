@@ -4,10 +4,15 @@ import printableSampler from "@/lib/printable-sampler.json";
 export const PRINTABLE_STARTER_DIFFICULTIES = ["easy", "medium", "hard", "evil"] as const satisfies readonly Difficulty[];
 export const PRINTABLE_STARTER_COUNT = 3;
 export const PRINTABLE_PAID_PER_DIFFICULTY = 25;
-export const PRINTABLE_STARTER_A4_PDF = "/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf";
-export const PRINTABLE_STARTER_LETTER_PDF = "/downloads/samurai-sudoku-starter-pack-with-solutions-letter.pdf";
-export const PRINTABLE_STARTER_A4_TWO_UP_PDF = "/downloads/samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf";
-export const PRINTABLE_STARTER_LETTER_TWO_UP_PDF = "/downloads/samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf";
+export const PRINTABLE_STARTER_ASSET_VERSION = printableSampler.assetVersion;
+export const PRINTABLE_STARTER_A4_PDF =
+  `/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-v${PRINTABLE_STARTER_ASSET_VERSION}.pdf`;
+export const PRINTABLE_STARTER_LETTER_PDF =
+  `/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-v${PRINTABLE_STARTER_ASSET_VERSION}.pdf`;
+export const PRINTABLE_STARTER_A4_TWO_UP_PDF =
+  `/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-2-per-page-v${PRINTABLE_STARTER_ASSET_VERSION}.pdf`;
+export const PRINTABLE_STARTER_LETTER_TWO_UP_PDF =
+  `/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-2-per-page-v${PRINTABLE_STARTER_ASSET_VERSION}.pdf`;
 export const PRINTABLE_EXPERT_OPENING_HINT = printableSampler.puzzles[2].openingHint!;
 export const PRINTABLE_EXPERT_GUIDED_OPENING = printableSampler.puzzles[2].guidedOpening!;
 

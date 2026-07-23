@@ -18,6 +18,8 @@ describe("print funnel contract", () => {
       expect(source).toContain("curated_sampler_3");
       expect(source).not.toContain("/games/samurai/printable/${");
       expect(source).not.toContain("window.print()");
+      expect(source).not.toContain("free-20-puzzle-pack");
+      expect(source).not.toContain("free-5-puzzle-pack");
     }
   });
 

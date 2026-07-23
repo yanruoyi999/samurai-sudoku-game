@@ -11,7 +11,7 @@
     "generate-puzzles": "tsx scripts/puzzles/generate.ts",
     "build-index": "tsx scripts/puzzles/build-index.ts",
     "generate-pwa-assets": "tsx scripts/generate-pwa-assets.ts",
-    "generate-pdf-packs": "python3 scripts/generate-pdf-packs.py",
+    "generate-pdf-packs": "uv run scripts/generate-pdf-packs.py",
     "validate-pdf-packs": "tsx scripts/validate-pdf-packs.ts",
     "validate-puzzles": "tsx scripts/puzzles/validate-all.ts",
     "check-difficulty": "tsx scripts/puzzles/check-difficulty.ts",

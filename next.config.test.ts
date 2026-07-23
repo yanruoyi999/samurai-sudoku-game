@@ -28,11 +28,41 @@ describe("PWA puzzle data caching", () => {
     );
   });
 
-  it("caches only public PDF downloads while leaving paid downloads protected", () => {
+  it("keeps public PDFs out of the service worker and uses versioned immutable URLs", () => {
+    expect(source).toContain(
+      "publicExcludes: ['!puzzles/**/*.json', '!downloads/**/*.pdf']",
+    );
+    const publicPdfRule =
+      "urlPattern: /\\/downloads\\/.*\\.pdf(?:\\?.*)?$/i";
+    expect(source).toContain(publicPdfRule);
+    expect(source.slice(source.indexOf(publicPdfRule))).toMatch(
+      /handler: 'NetworkOnly'/,
+    );
     expect(source).toContain("source: '/downloads/:file*.pdf'");
     expect(source).toContain(
-      "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+      "public, max-age=31536000, immutable",
     );
     expect(source).not.toContain("source: '/api/download/:path*'");
+  });
+
+  it("redirects every legacy starter-pack filename to the versioned three-puzzle sampler", () => {
+    expect(source).toContain(
+      "source: '/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf'",
+    );
+    expect(source).toContain(
+      "source: '/downloads/samurai-sudoku-starter-pack-with-solutions-letter.pdf'",
+    );
+    expect(source).toContain(
+      "source: '/downloads/samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf'",
+    );
+    expect(source).toContain(
+      "source: '/downloads/samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf'",
+    );
+    expect(source).toContain(
+      "samurai-sudoku-free-3-puzzle-sampler-a4-v${printableSamplerAssetVersion}.pdf",
+    );
+    expect(source).toContain(
+      "samurai-sudoku-free-3-puzzle-sampler-letter-v${printableSamplerAssetVersion}.pdf",
+    );
   });
 });

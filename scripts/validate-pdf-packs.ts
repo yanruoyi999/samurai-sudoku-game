@@ -4,6 +4,13 @@ import { resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import { PDF_PACK_PRODUCT_ID } from "@/lib/paypal-api";
+import {
+  PRINTABLE_STARTER_A4_PDF,
+  PRINTABLE_STARTER_A4_TWO_UP_PDF,
+  PRINTABLE_STARTER_ASSET_VERSION,
+  PRINTABLE_STARTER_LETTER_PDF,
+  PRINTABLE_STARTER_LETTER_TWO_UP_PDF,
+} from "@/lib/printable-pack";
 
 interface PdfPackArtifact {
   path: string;
@@ -16,6 +23,8 @@ interface PdfPackManifest {
   productId: string;
   paidPuzzleCount: number;
   freePuzzleCount: number;
+  freeAnswerCount: number;
+  samplerAssetVersion: string;
   expertPreview: {
     id: string;
     paidSequence: number;
@@ -23,6 +32,13 @@ interface PdfPackManifest {
   };
   artifacts: PdfPackArtifact[];
 }
+
+const expectedFreeArtifactPaths = [
+  PRINTABLE_STARTER_A4_PDF,
+  PRINTABLE_STARTER_LETTER_PDF,
+  PRINTABLE_STARTER_A4_TWO_UP_PDF,
+  PRINTABLE_STARTER_LETTER_TWO_UP_PDF,
+].map((path) => `public${path}`).sort();
 
 export async function validatePdfPackArtifacts(root = process.cwd()): Promise<PdfPackManifest> {
   const manifestPath = resolve(root, "private-assets", "pdf-pack-manifest.json");
@@ -35,6 +51,12 @@ export async function validatePdfPackArtifacts(root = process.cwd()): Promise<Pd
     throw new Error("PDF pack manifest must contain 100 paid and 3 free puzzles.");
   }
   if (
+    manifest.freeAnswerCount !== 2 ||
+    manifest.samplerAssetVersion !== PRINTABLE_STARTER_ASSET_VERSION
+  ) {
+    throw new Error("PDF pack manifest must contain two free answers and the current sampler asset version.");
+  }
+  if (
     manifest.expertPreview?.id !== "2026-07-22" ||
     manifest.expertPreview.paidSequence !== 76 ||
     manifest.expertPreview.guidedOpeningSteps !== 12
@@ -43,6 +65,18 @@ export async function validatePdfPackArtifacts(root = process.cwd()): Promise<Pd
   }
   if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length < 5) {
     throw new Error("PDF pack manifest must list the paid archive and four free PDFs.");
+  }
+  const actualFreeArtifactPaths = manifest.artifacts
+    .filter((artifact) => artifact.kind === "pdf")
+    .map((artifact) => artifact.path)
+    .sort();
+  if (
+    actualFreeArtifactPaths.length !== expectedFreeArtifactPaths.length ||
+    actualFreeArtifactPaths.some(
+      (path, index) => path !== expectedFreeArtifactPaths[index],
+    )
+  ) {
+    throw new Error("PDF pack manifest must use the current versioned free sampler filenames.");
   }
 
   const normalizedRoot = `${resolve(root)}${sep}`;

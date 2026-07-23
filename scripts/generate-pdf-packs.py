@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "reportlab==5.0.0",
+# ]
+# ///
 """Generate deterministic free and paid Samurai Sudoku PDF packs."""
 
 from __future__ import annotations
@@ -70,8 +76,15 @@ def load_puzzle_index() -> list[dict]:
     return puzzles
 
 
-def select_curated_sampler(puzzles: list[dict]) -> tuple[list[dict], list[bool], dict]:
+def select_curated_sampler(puzzles: list[dict]) -> tuple[list[dict], list[bool], dict, str]:
     manifest = json.loads(SAMPLER_MANIFEST.read_text(encoding="utf-8"))
+    asset_version = manifest.get("assetVersion")
+    if (
+        not isinstance(asset_version, str)
+        or len(asset_version) != 8
+        or not asset_version.isdigit()
+    ):
+        raise ValueError("Printable sampler assetVersion must use YYYYMMDD format.")
     selections = manifest.get("puzzles")
     if not isinstance(selections, list) or len(selections) != 3:
         raise ValueError("Printable sampler manifest must contain exactly three puzzles.")
@@ -100,7 +113,7 @@ def select_curated_sampler(puzzles: list[dict]) -> tuple[list[dict], list[bool],
         raise ValueError("Expert sampler must provide a 12-step guided opening.")
     if guided_opening[0] != opening_hint:
         raise ValueError("Expert opening hint must be the first guided opening step.")
-    return selected, answers, expert_details
+    return selected, answers, expert_details, asset_version
 
 
 def select_balanced(puzzles: list[dict], per_difficulty: int) -> list[dict]:
@@ -1007,7 +1020,7 @@ def artifact(path: Path, kind: str) -> dict:
 
 def main() -> None:
     puzzles = load_puzzle_index()
-    starter, starter_answers, expert_details = select_curated_sampler(puzzles)
+    starter, starter_answers, expert_details, sampler_asset_version = select_curated_sampler(puzzles)
     paid = select_balanced(puzzles, 25)
     paid_ids = {puzzle["id"] for puzzle in paid}
     if any(puzzle["id"] not in paid_ids for puzzle in starter):
@@ -1020,10 +1033,18 @@ def main() -> None:
     PRIVATE_ASSETS.mkdir(parents=True, exist_ok=True)
     TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
-    free_a4 = PUBLIC_DOWNLOADS / "samurai-sudoku-starter-pack-with-solutions-a4.pdf"
-    free_letter = PUBLIC_DOWNLOADS / "samurai-sudoku-starter-pack-with-solutions-letter.pdf"
-    free_a4_two_up = PUBLIC_DOWNLOADS / "samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf"
-    free_letter_two_up = PUBLIC_DOWNLOADS / "samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf"
+    free_a4 = PUBLIC_DOWNLOADS / (
+        f"samurai-sudoku-free-3-puzzle-sampler-a4-v{sampler_asset_version}.pdf"
+    )
+    free_letter = PUBLIC_DOWNLOADS / (
+        f"samurai-sudoku-free-3-puzzle-sampler-letter-v{sampler_asset_version}.pdf"
+    )
+    free_a4_two_up = PUBLIC_DOWNLOADS / (
+        f"samurai-sudoku-free-3-puzzle-sampler-a4-2-per-page-v{sampler_asset_version}.pdf"
+    )
+    free_letter_two_up = PUBLIC_DOWNLOADS / (
+        f"samurai-sudoku-free-3-puzzle-sampler-letter-2-per-page-v{sampler_asset_version}.pdf"
+    )
     paid_a4 = TEMP_DIR / "samurai-sudoku-100-puzzles-with-solutions-a4.pdf"
     paid_letter = TEMP_DIR / "samurai-sudoku-100-puzzles-with-solutions-letter.pdf"
     paid_a4_two_up = TEMP_DIR / "samurai-sudoku-100-puzzles-with-solutions-a4-2-per-page.pdf"
@@ -1130,6 +1151,8 @@ Website: https://www.samuraisudoku.net/en/printable-samurai-sudoku#paid-100-puzz
         "productId": PRODUCT_ID,
         "paidPuzzleCount": len(paid),
         "freePuzzleCount": len(starter),
+        "freeAnswerCount": sum(1 for answer_included in starter_answers if answer_included),
+        "samplerAssetVersion": sampler_asset_version,
         "expertPreview": {
             "id": expert_details["id"],
             "paidSequence": expert_paid_sequence,

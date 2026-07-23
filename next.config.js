@@ -1,9 +1,12 @@
 const createNextIntlPlugin = require('next-intl/plugin');
+const printableSampler = require('./lib/printable-sampler.json');
+
+const printableSamplerAssetVersion = printableSampler.assetVersion;
 const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
   register: true,
-  publicExcludes: ['!puzzles/**/*.json'],
+  publicExcludes: ['!puzzles/**/*.json', '!downloads/**/*.pdf'],
   fallbacks: {
     document: '/offline.html',
   },
@@ -111,6 +114,10 @@ const withPWA = require('@ducanh2912/next-pwa').default({
         }
       },
       {
+        urlPattern: /\/downloads\/.*\.pdf(?:\?.*)?$/i,
+        handler: 'NetworkOnly'
+      },
+      {
         urlPattern: /\/api\/(?:paypal|download)\/.*/i,
         handler: 'NetworkOnly'
       },
@@ -189,7 +196,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+            value: 'public, max-age=31536000, immutable',
           },
           {
             key: 'X-Content-Type-Options',
@@ -211,6 +218,26 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: '/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf',
+        destination: `/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-v${printableSamplerAssetVersion}.pdf`,
+        permanent: true,
+      },
+      {
+        source: '/downloads/samurai-sudoku-starter-pack-with-solutions-letter.pdf',
+        destination: `/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-v${printableSamplerAssetVersion}.pdf`,
+        permanent: true,
+      },
+      {
+        source: '/downloads/samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf',
+        destination: `/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-2-per-page-v${printableSamplerAssetVersion}.pdf`,
+        permanent: true,
+      },
+      {
+        source: '/downloads/samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf',
+        destination: `/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-2-per-page-v${printableSamplerAssetVersion}.pdf`,
+        permanent: true,
+      },
       {
         source: '/daily',
         destination: '/en/games/samurai',

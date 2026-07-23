@@ -8,6 +8,13 @@ import { validatePdfPackArtifacts } from "./validate-pdf-packs";
 
 let root = "";
 
+const freeArtifactPaths = {
+  a4: "public/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-v20260724.pdf",
+  letter: "public/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-v20260724.pdf",
+  a4TwoUp: "public/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-2-per-page-v20260724.pdf",
+  letterTwoUp: "public/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-2-per-page-v20260724.pdf",
+} as const;
+
 afterEach(async () => {
   if (root) await rm(root, { recursive: true, force: true });
   root = "";
@@ -25,17 +32,17 @@ describe("validatePdfPackArtifacts", () => {
     const freeA4TwoUp = Buffer.from("%PDF free A4 two-up artifact");
     const freeLetterTwoUp = Buffer.from("%PDF free letter two-up artifact");
     await writeFile(join(root, "private-assets", "paid.zip"), paid);
-    await writeFile(join(root, "public", "downloads", "free-a4.pdf"), freeA4);
-    await writeFile(join(root, "public", "downloads", "free-letter.pdf"), freeLetter);
-    await writeFile(join(root, "public", "downloads", "free-a4-two-up.pdf"), freeA4TwoUp);
-    await writeFile(join(root, "public", "downloads", "free-letter-two-up.pdf"), freeLetterTwoUp);
+    await writeFile(join(root, freeArtifactPaths.a4), freeA4);
+    await writeFile(join(root, freeArtifactPaths.letter), freeLetter);
+    await writeFile(join(root, freeArtifactPaths.a4TwoUp), freeA4TwoUp);
+    await writeFile(join(root, freeArtifactPaths.letterTwoUp), freeLetterTwoUp);
 
     const artifacts = [
       ["private-assets/paid.zip", paid, "zip"],
-      ["public/downloads/free-a4.pdf", freeA4, "pdf"],
-      ["public/downloads/free-letter.pdf", freeLetter, "pdf"],
-      ["public/downloads/free-a4-two-up.pdf", freeA4TwoUp, "pdf"],
-      ["public/downloads/free-letter-two-up.pdf", freeLetterTwoUp, "pdf"],
+      [freeArtifactPaths.a4, freeA4, "pdf"],
+      [freeArtifactPaths.letter, freeLetter, "pdf"],
+      [freeArtifactPaths.a4TwoUp, freeA4TwoUp, "pdf"],
+      [freeArtifactPaths.letterTwoUp, freeLetterTwoUp, "pdf"],
     ].map(([path, content, kind]) => ({
       path,
       kind,
@@ -48,6 +55,8 @@ describe("validatePdfPackArtifacts", () => {
         productId: "samurai-sudoku-100-pack-v1",
         paidPuzzleCount: 100,
         freePuzzleCount: 3,
+        freeAnswerCount: 2,
+        samplerAssetVersion: "20260724",
         expertPreview: {
           id: "2026-07-22",
           paidSequence: 76,
@@ -68,10 +77,10 @@ describe("validatePdfPackArtifacts", () => {
     await mkdir(join(root, "private-assets"), { recursive: true });
     await mkdir(join(root, "public", "downloads"), { recursive: true });
     const artifactPath = join(root, "private-assets", "paid.zip");
-    const freeA4Path = join(root, "public", "downloads", "free-a4.pdf");
-    const freeLetterPath = join(root, "public", "downloads", "free-letter.pdf");
-    const freeA4TwoUpPath = join(root, "public", "downloads", "free-a4-two-up.pdf");
-    const freeLetterTwoUpPath = join(root, "public", "downloads", "free-letter-two-up.pdf");
+    const freeA4Path = join(root, freeArtifactPaths.a4);
+    const freeLetterPath = join(root, freeArtifactPaths.letter);
+    const freeA4TwoUpPath = join(root, freeArtifactPaths.a4TwoUp);
+    const freeLetterTwoUpPath = join(root, freeArtifactPaths.letterTwoUp);
     await writeFile(artifactPath, "PK original");
     await writeFile(freeA4Path, "%PDF free A4");
     await writeFile(freeLetterPath, "%PDF free letter");
@@ -83,6 +92,8 @@ describe("validatePdfPackArtifacts", () => {
         productId: "samurai-sudoku-100-pack-v1",
         paidPuzzleCount: 100,
         freePuzzleCount: 3,
+        freeAnswerCount: 2,
+        samplerAssetVersion: "20260724",
         expertPreview: {
           id: "2026-07-22",
           paidSequence: 76,
@@ -96,25 +107,25 @@ describe("validatePdfPackArtifacts", () => {
             sha256: createHash("sha256").update("PK original").digest("hex"),
           },
           {
-            path: "public/downloads/free-a4.pdf",
+            path: freeArtifactPaths.a4,
             kind: "pdf",
             bytes: Buffer.byteLength("%PDF free A4"),
             sha256: createHash("sha256").update("%PDF free A4").digest("hex"),
           },
           {
-            path: "public/downloads/free-letter.pdf",
+            path: freeArtifactPaths.letter,
             kind: "pdf",
             bytes: Buffer.byteLength("%PDF free letter"),
             sha256: createHash("sha256").update("%PDF free letter").digest("hex"),
           },
           {
-            path: "public/downloads/free-a4-two-up.pdf",
+            path: freeArtifactPaths.a4TwoUp,
             kind: "pdf",
             bytes: Buffer.byteLength("%PDF free A4 two-up"),
             sha256: createHash("sha256").update("%PDF free A4 two-up").digest("hex"),
           },
           {
-            path: "public/downloads/free-letter-two-up.pdf",
+            path: freeArtifactPaths.letterTwoUp,
             kind: "pdf",
             bytes: Buffer.byteLength("%PDF free letter two-up"),
             sha256: createHash("sha256").update("%PDF free letter two-up").digest("hex"),

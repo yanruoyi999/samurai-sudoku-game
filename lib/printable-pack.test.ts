@@ -7,7 +7,12 @@ import type { Puzzle, PuzzleMetadata } from "./sudoku/types";
 import {
   PRINTABLE_EXPERT_GUIDED_OPENING,
   PRINTABLE_EXPERT_OPENING_HINT,
+  PRINTABLE_STARTER_A4_PDF,
+  PRINTABLE_STARTER_A4_TWO_UP_PDF,
+  PRINTABLE_STARTER_ASSET_VERSION,
   PRINTABLE_STARTER_DIFFICULTIES,
+  PRINTABLE_STARTER_LETTER_PDF,
+  PRINTABLE_STARTER_LETTER_TWO_UP_PDF,
   isPrintableSamplerPreview,
   selectPrintablePaidPack,
   selectPrintableStarterPack,
@@ -25,6 +30,21 @@ function puzzle(id: string, difficulty: PuzzleMetadata["difficulty"]): PuzzleMet
 }
 
 describe("selectPrintableStarterPack", () => {
+  it("uses versioned three-puzzle URLs that cannot reuse the old 20-puzzle cache", () => {
+    expect(PRINTABLE_STARTER_ASSET_VERSION).toBe("20260724");
+    expect([
+      PRINTABLE_STARTER_A4_PDF,
+      PRINTABLE_STARTER_LETTER_PDF,
+      PRINTABLE_STARTER_A4_TWO_UP_PDF,
+      PRINTABLE_STARTER_LETTER_TWO_UP_PDF,
+    ]).toEqual([
+      "/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-v20260724.pdf",
+      "/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-v20260724.pdf",
+      "/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-2-per-page-v20260724.pdf",
+      "/downloads/samurai-sudoku-free-3-puzzle-sampler-letter-2-per-page-v20260724.pdf",
+    ]);
+  });
+
   it("selects the fixed three-puzzle progression in its intended order", () => {
     const puzzles = [
       puzzle("2026-07-22", "evil"),
