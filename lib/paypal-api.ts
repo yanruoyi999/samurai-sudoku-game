@@ -5,6 +5,7 @@ import { getPdfPackPriceAmount, getPdfPackProductName } from "@/lib/paypal";
 
 export const PDF_PACK_PRODUCT_ID = "samurai-sudoku-100-pack-v1";
 export const PDF_PACK_DOWNLOAD_FILENAME = "samurai-sudoku-100-puzzle-pack.zip";
+const LEGACY_PDF_PACK_AMOUNTS = new Set(["4.95"]);
 
 const PAYPAL_ORDER_ID_PATTERN = /^[A-Z0-9]{10,32}$/;
 const RECOVERY_KEY_PATTERN = /^[a-f0-9]{32}$/;
@@ -117,6 +118,11 @@ export function parseCompletedPayPalOrder(
   const unit = order?.purchase_units?.[0];
   const capture = unit?.payments?.captures?.find((item) => item.status === "COMPLETED");
   const expectedAmount = normalizeUsdAmount(getPdfPackPriceAmount());
+  const unitAmount = unit?.amount?.value ? normalizeUsdAmount(unit.amount.value) : "";
+  const captureAmount = capture?.amount?.value
+    ? normalizeUsdAmount(capture.amount.value)
+    : "";
+  const acceptedAmounts = new Set([expectedAmount, ...LEGACY_PDF_PACK_AMOUNTS]);
 
   if (!order?.id || order.status !== "COMPLETED") {
     throw new Error("PayPal order is not completed.");
@@ -130,9 +136,9 @@ export function parseCompletedPayPalOrder(
   }
   if (
     unit.amount?.currency_code !== "USD" ||
-    normalizeUsdAmount(unit.amount.value) !== expectedAmount ||
     capture?.amount?.currency_code !== "USD" ||
-    normalizeUsdAmount(capture.amount.value) !== expectedAmount
+    unitAmount !== captureAmount ||
+    !acceptedAmounts.has(unitAmount)
   ) {
     throw new Error("PayPal order amount does not match this product.");
   }
@@ -143,7 +149,7 @@ export function parseCompletedPayPalOrder(
   return {
     orderId: order.id,
     captureId: capture.id,
-    amount: expectedAmount,
+    amount: unitAmount,
     currency: "USD",
   };
 }

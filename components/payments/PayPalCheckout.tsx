@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { trackInteraction } from "@/lib/analytics/events";
+import { PAID_PACK_ACTIVATION_EVENT } from "@/lib/printable-offer-events";
 import {
   parsePayPalCaptureResponse,
   parsePayPalCreateResponse,
@@ -111,6 +112,19 @@ export function PayPalCheckout({
   }, [autoDeliveryEnabled, captureOrder]);
 
   useEffect(() => {
+    if (!autoDeliveryEnabled) return;
+
+    const handleOfferActivation = () => {
+      setActivated(true);
+    };
+
+    window.addEventListener(PAID_PACK_ACTIVATION_EVENT, handleOfferActivation);
+    return () => {
+      window.removeEventListener(PAID_PACK_ACTIVATION_EVENT, handleOfferActivation);
+    };
+  }, [autoDeliveryEnabled]);
+
+  useEffect(() => {
     if (
       !activated ||
       !autoDeliveryEnabled ||
@@ -203,7 +217,7 @@ export function PayPalCheckout({
         <p className="font-medium">
           {isZh ? "结账暂时不可用" : "Checkout temporarily unavailable"}
         </p>
-        <p className="mt-1 text-muted-foreground">
+        <p className="mt-1 text-foreground/80">
           {isZh
             ? "当前未开放付款入口，不会跳转到个人收款页面。"
             : "Payments are currently paused and will not redirect to a personal payment page."}
@@ -237,7 +251,7 @@ export function PayPalCheckout({
           });
         }}
       >
-        {isZh ? `以 ${price} 购买 100 题` : `Buy 100 puzzles for ${price}`}
+        {isZh ? `以 ${price} 解锁 30 天挑战` : `Unlock 30 days for ${price}`}
       </button>
     );
   }

@@ -83,8 +83,8 @@ export default async function HomePage() {
       href: `/${locale}/games/samurai/printable-practice-plan`,
       title: locale === 'zh' ? '打印练习计划' : 'Printable practice plan',
       body: locale === 'zh'
-        ? '用 PDF、答案页、日期题和每周流程做纸笔练习。'
-        : 'Use PDFs, answer keys, dated puzzles, and a weekly paper routine.',
+        ? '用 3 题精选样包验证纸笔流程，再按 30 天训练库系统练习。'
+        : 'Test the paper workflow with the 3-puzzle sampler, then follow the complete 30-day library.',
     },
     {
       href: `/${locale}/games/samurai/strategy-guide`,
@@ -108,18 +108,18 @@ export default async function HomePage() {
         : 'Practice slower solving with candidate notes, overlap marks, and review habits.',
     },
     {
-      href: `/${locale}/printable-samurai-sudoku`,
+      href: `/${locale}/printable-samurai-sudoku#free-3-puzzle-pack`,
       title: locale === 'zh' ? '可打印题目' : 'Printable puzzles',
       body: locale === 'zh'
-        ? '下载 20 道免费打印题，含答案、A4 和 US Letter 打印入口。'
-        : 'Download 20 free printable puzzles with answers, A4, and US Letter print entry points.',
+        ? '下载 3 道难度渐进精选题，包含前 2 题答案、带真实第一步提示的 Expert 预览、A4 和 US Letter。'
+        : 'Download 3 progressive puzzles with two answers and an Expert preview with a real first-step hint, in A4 or US Letter.',
     },
     {
       href: `/${locale}/printable-samurai-sudoku#paid-100-puzzle-pack`,
       title: locale === 'zh' ? 'PDF 打印包' : 'PDF pack',
       body: locale === 'zh'
-        ? '批量保存题面和答案，验证纸笔练习的付费需求。'
-        : 'Save bundled puzzle sheets and answer keys for offline practice.',
+        ? '30 天每日数独冥想：100 题、完整答案与一页 2 题随身版。'
+        : 'A 30-day daily Sudoku routine with 100 puzzles, every answer, and portable two-per-page editions.',
     },
   ];
 
@@ -471,8 +471,8 @@ export default async function HomePage() {
           <Link href={`/${locale}/games/samurai/solver`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '提示与求解' : 'Solver hints'}
           </Link>
-          <Link href={`/${locale}/printable-samurai-sudoku`} className="text-primary hover:text-primary/80">
-            {locale === 'zh' ? '可打印题目' : 'Printable puzzles'}
+          <Link href={`/${locale}/printable-samurai-sudoku#free-3-puzzle-pack`} className="text-primary hover:text-primary/80">
+            {locale === 'zh' ? '免费 3 题打印样包' : 'Free 3-puzzle print sampler'}
           </Link>
           <Link href={`/${locale}/games/samurai/printable-practice-plan`} className="text-primary hover:text-primary/80">
             {locale === 'zh' ? '打印练习计划' : 'Printable practice plan'}

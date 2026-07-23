@@ -24,13 +24,13 @@ function completedOrder() {
         reference_id: PDF_PACK_PRODUCT_ID,
         custom_id: PDF_PACK_PRODUCT_ID,
         invoice_id: recoveryKey,
-        amount: { currency_code: "USD", value: "4.95" },
+        amount: { currency_code: "USD", value: "9.90" },
         payments: {
           captures: [
             {
               id: "3Y662965014333303",
               status: "COMPLETED",
-              amount: { currency_code: "USD", value: "4.95" },
+              amount: { currency_code: "USD", value: "9.90" },
             },
           ],
         },

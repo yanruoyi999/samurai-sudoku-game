@@ -11,7 +11,7 @@ export async function GET() {
 
   const content = `# Samurai Sudoku
 
-> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily challenge, dated printable puzzle pages, PDF packs with solutions, hints, notes, offline support, and localized English/Chinese guides.
+> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily online challenge, a curated printable PDF sampler, a complete 30-day PDF library, hints, notes, offline support, and localized English/Chinese guides.
 
 Canonical site: [Samurai Sudoku](${baseUrl})
 Languages: English (/en), Chinese (/zh)
@@ -64,11 +64,12 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles.
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
 - The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
-- The daily puzzle hub automatically selects the newest validated dated puzzle and links to both the online board and its printable A4 or US Letter answer-key edition.
-- Printable practice uses dated puzzle URLs so players can choose a difficulty, print a board, and return online for hint/checking support.
-- The printable practice plan explains how to use printable Samurai Sudoku PDFs, answer keys, dated archive puzzles, and a one-week paper-solving routine without turning practice into guessing.
-- The free printable starter pack contains 20 verified puzzles, five each in Easy, Medium, Hard, and Evil, with answer keys in both A4 and US Letter PDFs.
-- The paid printable pack contains 100 verified puzzles, 25 per difficulty, with A4 and US Letter editions and complete answer keys in one ZIP download.
+- The daily puzzle hub automatically selects the newest validated dated puzzle for online play and directs paper solvers to the curated printable sampler.
+- Dated puzzle pages remain free online; one-click paper-solving actions use the shared three-puzzle PDF sampler instead of separate browser print pages.
+- The printable practice plan explains how to use the sampler, answer keys, and complete 30-day library without turning practice into guessing.
+- The free printable starter pack contains three verified puzzles: one Easy, one Medium, and one unanswered Expert preview with a real first-step hint. The first two answer keys are included in both A4 and US Letter PDFs.
+- The complete 100-puzzle library unlocks the Expert preview's verified 12-step opening and full answer as puzzle 076.
+- The paid printable pack contains 100 verified puzzles, 25 per difficulty, with a 30-day daily plan, A4 and US Letter editions, compact two-per-page layouts, and complete answer keys in one ZIP download.
 - Free printable downloads and the paid 100-puzzle checkout share the same canonical printable hub; legacy PDF sales and sample routes permanently redirect to that page.
 - The PDF pack uses PayPal Orders API automatic capture verification, the Samurai Sudoku checkout brand, and a seven-day signed download link. Payments pause instead of redirecting to a personal payment page when automatic checkout is unavailable.
 - The Minesweeper page is an adjacent high-frequency logic game experiment with beginner, intermediate, and expert boards.

@@ -25,16 +25,16 @@ describe("MiniSamuraiPreview", () => {
         puzzle={null}
         ariaLabel="Puzzle preview"
         action={{
-          href: "/en/games/samurai/printable/2026-07-22?paper=a4",
-          label: "Open this printable puzzle",
-          eventName: "printable_puzzle_open_click",
+          href: "/en/printable-samurai-sudoku#free-3-puzzle-pack",
+          label: "Open the 3-puzzle sampler",
+          eventName: "printable_sampler_details_click",
           eventProperties: { location: "hero_preview" },
         }}
       />,
     );
 
-    expect(html).toContain('href="/en/games/samurai/printable/2026-07-22?paper=a4"');
-    expect(html).toContain('aria-label="Open this printable puzzle"');
+    expect(html).toContain('href="/en/printable-samurai-sudoku#free-3-puzzle-pack"');
+    expect(html).toContain('aria-label="Open the 3-puzzle sampler"');
     expect(html).toContain('aria-label="Puzzle preview"');
   });
 

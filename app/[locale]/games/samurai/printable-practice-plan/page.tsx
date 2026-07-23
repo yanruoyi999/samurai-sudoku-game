@@ -65,7 +65,7 @@ const content: Record<Locale, PracticePlanContent> = {
       "Printable Samurai Sudoku is not just a different format. Paper changes the workflow: you need room for candidates, a clean way to check answers, and a difficulty plan that avoids wasting a full sheet on a puzzle that is too hard for today.",
     quickTitle: "Fast answer",
     quickAnswer:
-      "For printable Samurai Sudoku practice, print one Easy or Medium puzzle first, leave space for notes, solve overlap boxes in pencil, then check the answer key or reopen the dated online puzzle for hints. Move to Hard or Evil only after you can finish two paper sessions without guessing.",
+      "Start with the free three-puzzle sampler: solve Easy, continue with Medium, then attempt the Expert preview using its real first-step hint. The complete library unlocks that puzzle's 12-step opening and full answer, then extends the same format into a 30-day plan.",
     whyTitle: "Why printable practice is a high-intent use case",
     why: [
       {
@@ -107,8 +107,8 @@ const content: Record<Locale, PracticePlanContent> = {
       },
       {
         day: "Day 5",
-        title: "Print another Medium from the archive",
-        body: "Choose a dated puzzle instead of random switching. A same-level repeat is better practice than jumping to Evil after one good session.",
+        title: "Continue with Medium from the complete library",
+        body: "A same-level repeat from the structured pack is better practice than random switching or jumping to Expert after one good session.",
       },
       {
         day: "Day 6",
@@ -176,9 +176,9 @@ const content: Record<Locale, PracticePlanContent> = {
     ],
     nextTitle: "Build your printable workflow",
     nextBody:
-      "Start with the printable page, try the free PDF sample, then use the archive to choose another puzzle at the same difficulty instead of switching randomly.",
-    primaryCta: "Open printable puzzles",
-    secondaryCta: "Download PDF sample",
+      "Download the free three-puzzle sampler first. If the layout and difficulty progression fit your routine, unlock the complete 30-day library instead of collecting mismatched print pages.",
+    primaryCta: "Download the free 3-puzzle sampler",
+    secondaryCta: "Unlock the 30-day library",
     keywords: [
       "samurai sudoku printable practice",
       "samurai sudoku pdf with answers",
@@ -198,7 +198,7 @@ const content: Record<Locale, PracticePlanContent> = {
       "打印武士数独不是把线上棋盘换成纸而已。纸笔会改变解题流程：你需要候选数空间、答案核对方式，以及不会一上来就浪费一整页的难度安排。",
     quickTitle: "快速结论",
     quickAnswer:
-      "打印练习先从一题简单或中等开始，留出候选数空间，用铅笔处理重叠宫，再用答案页或同日期线上题做提示和核对。只有连续两次纸笔练习都能不靠猜完成，再挑战困难或 Evil。",
+      "先使用免费 3 题样包：完成 Easy，再做 Medium，最后用真实第一步提示挑战 Expert 预览。完整训练库解锁这道题的 12 步开局讲解与完整答案，再把同样的排版扩展成 30 天计划。",
     whyTitle: "为什么打印练习是高意图需求",
     why: [
       {
@@ -240,8 +240,8 @@ const content: Record<Locale, PracticePlanContent> = {
       },
       {
         day: "第 5 天",
-        title: "从题库归档再打印一题中等",
-        body: "选择同难度日期题，而不是随机切难度。连续同级练习，比一次顺利后马上跳 Evil 更有效。",
+        title: "从完整训练库继续一题中等",
+        body: "按结构化题包连续练同级题，比随机切换或一次顺利后马上跳 Expert 更有效。",
       },
       {
         day: "第 6 天",
@@ -309,9 +309,9 @@ const content: Record<Locale, PracticePlanContent> = {
     ],
     nextTitle: "建立你的打印练习流程",
     nextBody:
-      "先打开可打印题，试用免费 PDF 样张，再用题库归档选择同难度下一题，避免无目的切换。",
-    primaryCta: "打开可打印题",
-    secondaryCta: "下载 PDF 样张",
+      "先下载免费 3 题样包。如果排版和难度梯度适合你的练习习惯，再解锁完整 30 天训练库，不必收集格式不一致的单题打印页。",
+    primaryCta: "下载免费 3 题打印样包",
+    secondaryCta: "解锁 30 天训练库",
     keywords: [
       "武士数独打印练习",
       "武士数独 PDF 带答案",
@@ -511,13 +511,13 @@ export default async function PrintablePracticePlanPage({ params }: PageProps) {
           <p className="mt-3 leading-7 text-muted-foreground">{page.nextBody}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
-              href={`/${normalizedLocale}/printable-samurai-sudoku`}
+              href={`/${normalizedLocale}/printable-samurai-sudoku#free-3-puzzle-pack`}
               className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
             >
               {page.primaryCta}
             </Link>
             <Link
-              href={`/${normalizedLocale}/printable-samurai-sudoku#free-20-puzzle-pack`}
+              href={`/${normalizedLocale}/printable-samurai-sudoku#paid-100-puzzle-pack`}
               className="rounded-lg border border-primary px-6 py-3 font-medium text-primary hover:bg-primary/10"
             >
               {page.secondaryCta}

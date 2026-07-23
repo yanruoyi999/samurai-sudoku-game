@@ -44,12 +44,22 @@ describe("validatePdfPackArtifacts", () => {
     }));
     await writeFile(
       join(root, "private-assets", "pdf-pack-manifest.json"),
-      JSON.stringify({ productId: "samurai-sudoku-100-pack-v1", paidPuzzleCount: 100, freePuzzleCount: 20, artifacts }),
+      JSON.stringify({
+        productId: "samurai-sudoku-100-pack-v1",
+        paidPuzzleCount: 100,
+        freePuzzleCount: 3,
+        expertPreview: {
+          id: "2026-07-22",
+          paidSequence: 76,
+          guidedOpeningSteps: 12,
+        },
+        artifacts,
+      }),
     );
 
     await expect(validatePdfPackArtifacts(root)).resolves.toMatchObject({
       paidPuzzleCount: 100,
-      freePuzzleCount: 20,
+      freePuzzleCount: 3,
     });
   });
 
@@ -72,7 +82,12 @@ describe("validatePdfPackArtifacts", () => {
       JSON.stringify({
         productId: "samurai-sudoku-100-pack-v1",
         paidPuzzleCount: 100,
-        freePuzzleCount: 20,
+        freePuzzleCount: 3,
+        expertPreview: {
+          id: "2026-07-22",
+          paidSequence: 76,
+          guidedOpeningSteps: 12,
+        },
         artifacts: [
           {
             path: "private-assets/paid.zip",

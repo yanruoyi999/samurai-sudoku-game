@@ -4,7 +4,8 @@ import { Difficulty } from '@/lib/sudoku/types';
 import { getTranslations } from 'next-intl/server';
 import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { GameHistoryArchive } from '@/components/GameHistoryArchive';
-import { PRINTABLE_PUZZLE_OPEN_EVENT } from '@/lib/analytics/event-names';
+import { PrintableFreeDownloadLink } from '@/components/printable/PrintablePackOffer';
+import { PRINTABLE_STARTER_A4_PDF } from '@/lib/printable-pack';
 import { getPuzzleIndex, isPuzzleDifficulty } from '@/lib/puzzles';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 
@@ -31,10 +32,10 @@ export async function generateMetadata({
   const hasFilteredView = Boolean(resolvedSearchParams.difficulty || resolvedSearchParams.page);
 
   return {
-    title: isZh ? '武士数独题库归档 - 在线玩与打印' : 'Samurai Sudoku Archive - Play or Print Daily Puzzles',
+    title: isZh ? '武士数独题库归档 - 按日期在线玩' : 'Samurai Sudoku Archive - Play Daily Puzzles by Date',
     description: isZh
-      ? '按日期与难度浏览全部公开武士数独，可直接在线游玩，或打印题面与答案并保存为 PDF。'
-      : 'Browse public Samurai Sudoku puzzles by date and difficulty. Play online or print each puzzle with its answer key and save it as PDF.',
+      ? '按日期与难度浏览全部公开武士数独并在线游玩；需要纸笔体验时，可下载为打印优化的 3 题精选 PDF 样包。'
+      : 'Browse public Samurai Sudoku puzzles by date and difficulty and play online; for paper practice, download the print-optimized 3-puzzle PDF sampler.',
     alternates: {
       canonical,
       languages: buildLanguageAlternates('/games/samurai/archive'),
@@ -46,19 +47,19 @@ export async function generateMetadata({
         }
       : undefined,
     openGraph: {
-      title: isZh ? '武士数独题库归档 - 在线玩与打印' : 'Samurai Sudoku Archive - Play or Print Daily Puzzles',
+      title: isZh ? '武士数独题库归档 - 按日期在线玩' : 'Samurai Sudoku Archive - Play Daily Puzzles by Date',
       description: isZh
-        ? '按日期与难度浏览全部公开武士数独，可在线游玩或打印题面和答案。'
-        : 'Browse dated Samurai Sudoku puzzles, play online, or print each puzzle with its answer key.',
+        ? '按日期与难度浏览全部公开武士数独并在线游玩，纸笔练习可使用 3 题精选 PDF 样包。'
+        : 'Browse dated Samurai Sudoku puzzles, play online, or use the curated 3-puzzle PDF sampler for paper practice.',
       url: canonical,
       type: 'website',
     },
     twitter: {
       card: 'summary',
-      title: isZh ? '武士数独题库归档 - 在线玩与打印' : 'Samurai Sudoku Archive - Play or Print Daily Puzzles',
+      title: isZh ? '武士数独题库归档 - 按日期在线玩' : 'Samurai Sudoku Archive - Play Daily Puzzles by Date',
       description: isZh
-        ? '按日期与难度浏览公开武士数独，在线玩或打印答案版。'
-        : 'Browse dated Samurai Sudoku puzzles, play online, or print answer-key editions.',
+        ? '按日期与难度浏览公开武士数独并在线玩，另有 3 题精选打印样包。'
+        : 'Browse dated Samurai Sudoku puzzles online, with a separate curated 3-puzzle print sampler.',
     },
   };
 }
@@ -124,12 +125,12 @@ export default async function ArchivePage({
                 </Link>
               ))}
               <TrackedLink
-                href={`/${locale}/printable-samurai-sudoku`}
+                href={`/${locale}/printable-samurai-sudoku#free-3-puzzle-pack`}
                 eventName="archive_printable_hub_click"
                 eventProperties={{ locale, location: 'archive_header' }}
                 className="rounded-md border border-primary/40 px-3 py-1 font-medium text-primary hover:bg-primary/10 transition-colors"
               >
-                {locale === 'zh' ? '免费可打印题' : 'Free printables'}
+                {locale === 'zh' ? '免费 3 题打印样包' : 'Free 3-puzzle print sampler'}
               </TrackedLink>
             </div>
           </div>
@@ -145,6 +146,37 @@ export default async function ArchivePage({
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8">
+        <section className="mb-7 flex flex-col gap-4 rounded-lg border border-primary/30 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">
+              {locale === 'zh' ? '想在纸上玩？先体验 3 道精选题' : 'Want to solve on paper? Try 3 curated puzzles'}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {locale === 'zh'
+                ? '1 题 Easy、1 题 Medium、1 题 Expert 预览；预览题含真实第一步提示，采用精美无广告排版。'
+                : 'One Easy, one Medium, and one Expert preview with a real first-step hint, in a polished ad-free layout.'}
+            </p>
+          </div>
+          <div className="shrink-0">
+            <PrintableFreeDownloadLink
+              href={PRINTABLE_STARTER_A4_PDF}
+              eventProperties={{
+                locale,
+                pack_id: 'curated_sampler_3',
+                paper: 'a4',
+                location: 'archive_banner',
+                experiment_id: 'printable_hub_72h_v3',
+              }}
+              className="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-5 py-3 text-center font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              {locale === 'zh' ? '下载免费包（含 Expert 预览）' : 'Download Free Pack (Includes Expert Preview)'}
+            </PrintableFreeDownloadLink>
+            <p className="mt-1 text-center text-xs text-muted-foreground">
+              {locale === 'zh' ? '完整库解锁预览题讲解与答案' : 'Full library unlocks its walkthrough + answer'}
+            </p>
+          </div>
+        </section>
+
         {/* Filters */}
         <div className="mb-6 flex items-center gap-4">
           <span className="text-sm font-medium">{tGame('difficulty.label')}:</span>
@@ -245,19 +277,6 @@ export default async function ArchivePage({
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-2">
-                          <TrackedLink
-                            href={`/${locale}/games/samurai/printable/${puzzle.id}`}
-                            eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
-                            eventProperties={{
-                              locale,
-                              puzzle_id: puzzle.id,
-                              difficulty: puzzle.difficulty,
-                              location: 'archive_table',
-                            }}
-                            className="inline-flex rounded-md border px-3 py-1 font-medium text-primary hover:bg-primary/10"
-                          >
-                            {locale === 'zh' ? '打印 / PDF' : 'Print / PDF'}
-                          </TrackedLink>
                           <Link
                             href={`/${locale}/games/samurai/${puzzle.id}`}
                             className="inline-flex rounded-md bg-primary px-3 py-1 text-primary-foreground hover:bg-primary/90"
@@ -325,16 +344,16 @@ export default async function ArchivePage({
             </p>
             <p>
               {locale === 'zh'
-                ? '纸笔解题时，点击每行的“打印 / PDF”打开黑白题面与独立答案页。需要批量下载时，请使用免费可打印武士数独中心的 20 题 A4 或 US Letter PDF。'
-                : 'For paper solving, use Print / PDF on any row to open a clean black-and-white puzzle and a separate answer page. For a batch download, use the free printable Samurai Sudoku center and its 20-puzzle A4 or US Letter PDFs.'}
+                ? '题库归档专注于按日期在线游玩。需要纸笔解题时，请使用免费打印中心的 3 题精选 A4 或 US Letter PDF，体验统一且清晰的排版。'
+                : 'The archive focuses on dated online play. For paper solving, use the printable center and its curated three-puzzle A4 or US Letter PDF for a consistent, polished layout.'}
             </p>
           </div>
           <div className="mt-5 flex flex-wrap gap-2 text-sm">
             <Link href={`/${locale}/games/samurai/daily`} className="rounded-md border px-3 py-2 hover:bg-accent">
               {locale === 'zh' ? '今日武士数独' : "Today's Samurai Sudoku"}
             </Link>
-            <Link href={`/${locale}/printable-samurai-sudoku`} className="rounded-md border px-3 py-2 hover:bg-accent">
-              {locale === 'zh' ? '免费可打印武士数独' : 'Free printable Samurai Sudoku'}
+            <Link href={`/${locale}/printable-samurai-sudoku#free-3-puzzle-pack`} className="rounded-md border px-3 py-2 hover:bg-accent">
+              {locale === 'zh' ? '免费 3 题打印样包' : 'Free 3-puzzle print sampler'}
             </Link>
             <Link href={`/${locale}/games/samurai/paper-practice`} className="rounded-md border px-3 py-2 hover:bg-accent">
               {locale === 'zh' ? '纸笔练习流程' : 'Paper practice workflow'}

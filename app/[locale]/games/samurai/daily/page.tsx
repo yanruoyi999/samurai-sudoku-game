@@ -5,8 +5,9 @@ import Script from "next/script";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { MiniSamuraiPreview } from "@/components/printable/MiniSamuraiPreview";
-import { PRINTABLE_PUZZLE_OPEN_EVENT } from "@/lib/analytics/event-names";
+import { PrintableFreeDownloadLink } from "@/components/printable/PrintablePackOffer";
 import { selectRecentDailyPuzzles } from "@/lib/daily-puzzles";
+import { PRINTABLE_STARTER_A4_PDF } from "@/lib/printable-pack";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
@@ -30,11 +31,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const index = await getPuzzleIndex();
   const latest = selectRecentDailyPuzzles(index.puzzles, 1)[0];
   const title = isZh
-    ? "每日武士数独 - 今日免费题目与打印版"
-    : "Daily Samurai Sudoku - Today's Free Puzzle & Printable";
+    ? "每日武士数独 - 今日免费在线题目"
+    : "Daily Samurai Sudoku - Today's Free Online Puzzle";
   const description = isZh
-    ? `挑战${latest ? ` ${latest.id}` : "今日"}每日武士数独，可在线游玩或打印保存 PDF，并浏览按日期归档的历史题目。`
-    : `Play the ${latest?.id ?? "latest"} daily Samurai Sudoku online or print and save it as PDF, with a dated archive for more free puzzles.`;
+    ? `在线挑战${latest ? ` ${latest.id}` : "今日"}每日武士数独，并浏览按日期归档的历史题目；纸笔玩家可下载精美 3 题打印体验包。`
+    : `Play the ${latest?.id ?? "latest"} daily Samurai Sudoku online and browse the dated archive; paper solvers can download the polished 3-puzzle print sampler.`;
   const canonical = buildLocalizedUrl(locale, PATH);
 
   return {
@@ -93,19 +94,18 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
   const displayDate = formatPuzzleDate(latest.id, isZh);
   const pageUrl = buildAbsoluteUrl(`/${locale}${PATH}`);
   const playHref = `/${locale}/games/samurai/${latest.id}`;
-  const printHref = `/${locale}/games/samurai/printable/${latest.id}?paper=a4`;
-  const printableHubHref = `/${locale}/printable-samurai-sudoku`;
+  const printableHubHref = `/${locale}/printable-samurai-sudoku#free-3-puzzle-pack`;
   const archiveHref = `/${locale}/games/samurai/archive`;
   const faqItems = isZh
     ? [
-        ["今天的武士数独免费吗？", "免费。今日题可以直接在线游玩，单题打印页也不需要注册或邮箱。"],
-        ["可以把今日题保存成 PDF 吗？", "可以。打开打印版后选择 A4 或 US Letter，再使用浏览器的打印或存储为 PDF 功能。答案会从独立页面开始。"],
+        ["今天的武士数独免费吗？", "免费。今日题可以直接在线游玩，无需注册；纸笔体验统一通过免费的 3 题精美 PDF 样包提供。"],
+        ["可以把今日题保存成 PDF 吗？", "在线每日题不提供一键打印。需要纸笔练习时，请下载为打印优化的 3 题样包，包含 A4、US Letter 与前 2 题答案。"],
         ["每日题什么时候更新？", "题库按日期持续增加。页面会自动选择公开题库中日期最新、已经完成结构和答案校验的题目。"],
         ["错过的每日题在哪里？", "近期题目列在本页下方，全部历史题可以在题库归档中按日期和难度浏览。"],
       ]
     : [
-        ["Is today's Samurai Sudoku free?", "Yes. You can play today's puzzle or open its printable page without registration or email."],
-        ["Can I save today's puzzle as a PDF?", "Yes. Open the printable version, choose A4 or US Letter, then use your browser's Print or Save as PDF command. The answer key starts on a separate page."],
+        ["Is today's Samurai Sudoku free?", "Yes. You can play today's puzzle online without registration; the free paper experience is provided through the polished 3-puzzle PDF sampler."],
+        ["Can I save today's puzzle as a PDF?", "The online daily puzzle does not include one-click printing. For paper practice, download the print-optimized 3-puzzle sampler with A4, US Letter, and two answer keys."],
         ["When is the daily puzzle updated?", "The library grows by date. This page automatically selects the newest public puzzle that has passed the site's structure and answer checks."],
         ["Where can I find missed daily puzzles?", "Recent dates are listed below, and the full archive lets you browse every public puzzle by date and difficulty."],
       ];
@@ -196,8 +196,8 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
               </h1>
               <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted-foreground">
                 {isZh
-                  ? `今天的免费题是 ${displayDate} ${difficultyLabel} 武士数独，预计 ${latest.estimatedTime} 分钟。你可以在线游玩，也可以打开清晰打印版并保存为 PDF。`
-                  : `Today's free puzzle is the ${displayDate} ${difficultyLabel} Samurai Sudoku, estimated at ${latest.estimatedTime} minutes. Play online or open the clean printable version and save it as PDF.`}
+                  ? `今天的免费题是 ${displayDate} ${difficultyLabel} 武士数独，预计 ${latest.estimatedTime} 分钟。在线完成今日挑战；需要纸笔体验时，下载为打印优化的 3 题精选 PDF。`
+                  : `Today's free puzzle is the ${displayDate} ${difficultyLabel} Samurai Sudoku, estimated at ${latest.estimatedTime} minutes. Solve it online, or use the print-optimized 3-puzzle PDF sampler for paper practice.`}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <TrackedLink
@@ -208,23 +208,33 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
                 >
                   {isZh ? "开始今日题" : "Play Today's Puzzle"}
                 </TrackedLink>
-                <TrackedLink
-                  href={printHref}
-                  eventName={PRINTABLE_PUZZLE_OPEN_EVENT}
-                  eventProperties={{ locale, puzzle_id: latest.id, difficulty: latest.difficulty, paper: "a4", location: "daily_hero" }}
+                <PrintableFreeDownloadLink
+                  href={PRINTABLE_STARTER_A4_PDF}
+                  eventProperties={{
+                    locale,
+                    pack_id: "curated_sampler_3",
+                    paper: "a4",
+                    location: "daily_hero",
+                    experiment_id: "printable_hub_72h_v3",
+                  }}
                   className="rounded-lg border border-primary px-6 py-3 font-semibold text-primary hover:bg-primary/10"
                 >
-                  {isZh ? "打印 / 保存 PDF" : "Print / Save PDF"}
-                </TrackedLink>
+                  {isZh ? "下载免费包（含 Expert 预览）" : "Download Free Pack (Includes Expert Preview)"}
+                </PrintableFreeDownloadLink>
                 <TrackedLink
                   href={printableHubHref}
                   eventName="daily_printable_hub_click"
                   eventProperties={{ locale, puzzle_id: latest.id, location: "daily_hero" }}
                   className="rounded-lg border px-6 py-3 font-semibold hover:bg-accent"
                 >
-                  {isZh ? "下载 20 道免费 PDF" : "Download 20 Free PDFs"}
+                  {isZh ? "查看打印版详情" : "View print options"}
                 </TrackedLink>
               </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {isZh
+                  ? "内含 Expert 预览与真实第一步提示；完整库解锁其 12 步开局讲解和答案。"
+                  : "Includes an Expert preview and real first-step hint; unlock its 12-step opening and answer in the full library."}
+              </p>
               <dl className="mt-7 grid max-w-2xl grid-cols-2 gap-3 text-sm sm:grid-cols-4">
                 {[
                   [isZh ? "日期" : "Date", latest.id],
@@ -272,14 +282,14 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
               </Link>
             </section>
             <section className="border-t pt-5">
-              <h2 className="text-2xl font-semibold">{isZh ? "打印后慢慢推理" : "Print it for slower paper solving"}</h2>
+              <h2 className="text-2xl font-semibold">{isZh ? "用精选样包体验纸笔推理" : "Try the curated paper-solving sampler"}</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
                 {isZh
-                  ? "打印版把答案放在独立页，支持 A4 和 US Letter。先完成题面，再核对答案；需要更多练习时进入免费可打印武士数独中心。"
-                  : "The printable version starts the answer key on a separate page and supports A4 and US Letter. Solve first, check later, then use the free printable Samurai Sudoku center when you need more sheets."}
+                  ? "免费样包提供 1 题 Easy、1 题 Medium 和 1 题 Expert 预览，支持 A4 与 US Letter。前 2 题附答案，第 3 题给出真实第一步提示；其 12 步开局讲解与答案在完整库中。"
+                  : "The free sampler includes 1 Easy, 1 Medium, and 1 Expert preview in A4 and US Letter. The first two answers are included; puzzle 3 gives a real first-step hint, while its 12-step opening and answer unlock in the full library."}
               </p>
               <Link href={printableHubHref} className="mt-4 inline-flex font-semibold text-primary hover:underline">
-                {isZh ? "免费可打印武士数独题目" : "Free printable Samurai Sudoku puzzles"} →
+                {isZh ? "免费 3 题打印体验包" : "Free 3-puzzle print sampler"} →
               </Link>
             </section>
           </div>
@@ -292,7 +302,7 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
             <div>
               <h2 className="text-3xl font-semibold">{isZh ? "最近的每日武士数独" : "Recent Daily Samurai Sudoku Puzzles"}</h2>
               <p className="mt-2 text-muted-foreground">
-                {isZh ? "错过某一天？按日期继续在线玩或直接打开打印版。" : "Missed a day? Continue online or open a printable copy by date."}
+                {isZh ? "错过某一天？按日期继续在线玩；纸笔练习统一使用精选 PDF 样包。" : "Missed a day? Continue online by date; use the curated PDF sampler for paper practice."}
               </p>
             </div>
             <Link href={archiveHref} className="font-semibold text-primary hover:underline">
@@ -314,9 +324,6 @@ export default async function DailySamuraiSudokuPage({ params }: PageProps) {
                   <div className="mt-4 flex gap-3 text-sm font-semibold">
                     <Link href={`/${locale}/games/samurai/${puzzle.id}`} className="text-primary hover:underline">
                       {isZh ? "在线玩" : "Play"}
-                    </Link>
-                    <Link href={`/${locale}/games/samurai/printable/${puzzle.id}?paper=a4`} className="text-primary hover:underline">
-                      {isZh ? "打印 / PDF" : "Print / PDF"}
                     </Link>
                   </div>
                 </article>

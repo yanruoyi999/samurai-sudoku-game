@@ -9,7 +9,7 @@ import {
   parseCompletedPayPalOrder,
 } from "./paypal-api";
 
-function completedOrder(overrides: Record<string, unknown> = {}) {
+function completedOrder(overrides: Record<string, unknown> = {}, amount = "9.90") {
   return {
     id: "5O190127TN364715T",
     status: "COMPLETED",
@@ -18,13 +18,13 @@ function completedOrder(overrides: Record<string, unknown> = {}) {
         reference_id: PDF_PACK_PRODUCT_ID,
         custom_id: PDF_PACK_PRODUCT_ID,
         invoice_id: "recovery-key",
-        amount: { currency_code: "USD", value: "4.95" },
+        amount: { currency_code: "USD", value: amount },
         payments: {
           captures: [
             {
               id: "3Y662965014333303",
               status: "COMPLETED",
-              amount: { currency_code: "USD", value: "4.95" },
+              amount: { currency_code: "USD", value: amount },
             },
           ],
         },
@@ -47,12 +47,12 @@ describe("PayPal PDF pack orders", () => {
       reference_id: PDF_PACK_PRODUCT_ID,
       custom_id: PDF_PACK_PRODUCT_ID,
       invoice_id: "recovery-key",
-      amount: { currency_code: "USD", value: "4.95" },
+      amount: { currency_code: "USD", value: "9.90" },
     });
     expect(payload.purchase_units[0].items?.[0]).toMatchObject({
       category: "DIGITAL_GOODS",
       quantity: "1",
-      unit_amount: { currency_code: "USD", value: "4.95" },
+      unit_amount: { currency_code: "USD", value: "9.90" },
     });
     expect(payload).not.toHaveProperty("application_context");
     expect(payload.payment_source.paypal.experience_context).toEqual({
@@ -76,8 +76,14 @@ describe("PayPal PDF pack orders", () => {
     expect(parseCompletedPayPalOrder(completedOrder(), "recovery-key")).toEqual({
       orderId: "5O190127TN364715T",
       captureId: "3Y662965014333303",
-      amount: "4.95",
+      amount: "9.90",
       currency: "USD",
+    });
+  });
+
+  it("honors a completed order created at the previous price", () => {
+    expect(parseCompletedPayPalOrder(completedOrder({}, "4.95"), "recovery-key")).toMatchObject({
+      amount: "4.95",
     });
   });
 

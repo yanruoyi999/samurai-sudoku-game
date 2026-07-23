@@ -108,7 +108,7 @@ pnpm start
 
 ### Printable PDF packs
 
-The repository contains four public 20-puzzle starter PDFs and one private 100-puzzle ZIP. Both A4 and US Letter are available in one-puzzle-per-page and two-puzzles-per-page layouts. To regenerate them deterministically:
+The repository contains four public three-puzzle curated sampler PDFs and one private 100-puzzle ZIP. The sampler progresses through one Easy, one Medium, and one unanswered Expert preview with a verified first-step hint. The paid PDFs unlock that preview's verified 12-step opening and full answer as puzzle 076. Both A4 and US Letter are available in one-puzzle-per-page and two-puzzles-per-page layouts. To regenerate them deterministically:
 
 ```bash
 python3 -m pip install -r scripts/requirements-pdf.txt
@@ -118,15 +118,17 @@ pnpm validate-pdf-packs
 
 The paid ZIP stays under `private-assets/` and is served only by the signed download route after a completed PayPal order is verified. The canonical customer funnel is `/{locale}/printable-samurai-sudoku`; legacy PDF sales and sample URLs permanently redirect to the matching section on that page.
 
-For the seven-day printable experiment, use these funnel events:
+For the 72-hour printable offer experiment, use these funnel events:
 
-- `download_free_pdf`: a visitor selected one of the public 20-puzzle PDFs.
+- `download_free_pdf`: a visitor selected one of the public three-puzzle sampler PDFs.
+- `free_pack_upgrade_prompt_view`: the post-download upgrade prompt became visible.
+- `pdf_expert_preview_arrival`: a visitor returned through the tracked Expert-preview link inside the PDF.
 - `paid_pack_view`: a visitor opened the deferred PayPal checkout.
 - `paid_pack_checkout_created`: PayPal created the 100-puzzle order.
 - `paid_pack_purchase`: the server verified and captured the matching payment.
 - `paid_pack_download`: the buyer selected the signed ZIP download.
 
-The canonical hub tags these events with `experiment_id=printable_hub_7d_v1` where applicable.
+The canonical hub tags these events with `experiment_id=printable_hub_72h_v3` where applicable.
 
 ### PayPal automatic delivery
 

@@ -18,17 +18,17 @@ describe("PDF pack PayPal checkout", () => {
   });
 
   it("normalizes the configured display price for server verification", () => {
-    vi.stubEnv("NEXT_PUBLIC_SUDOKU_PDF_PACK_PRICE", "$4.95");
+    vi.stubEnv("NEXT_PUBLIC_SUDOKU_PDF_PACK_PRICE", "$12.50");
 
-    expect(getPdfPackPrice()).toBe("$4.95");
-    expect(getPdfPackPriceAmount()).toBe("4.95");
+    expect(getPdfPackPrice()).toBe("$12.50");
+    expect(getPdfPackPriceAmount()).toBe("12.50");
   });
 
   it("falls back to the default product and price when env values are absent or malformed", () => {
     vi.stubEnv("NEXT_PUBLIC_SUDOKU_PDF_PACK_PRICE", "pay what you want");
 
     expect(getPdfPackProductName()).toBe("100 Samurai Sudoku Printable Puzzles");
-    expect(getPdfPackPrice()).toBe("$4.95");
-    expect(getPdfPackPriceAmount()).toBe("4.95");
+    expect(getPdfPackPrice()).toBe("$9.90");
+    expect(getPdfPackPriceAmount()).toBe("9.90");
   });
 });

@@ -453,7 +453,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
   paperPractice: {
     path: '/games/samurai/paper-practice',
     backHref: '/games/samurai/archive',
-    primaryHref: '/games/samurai/archive',
+    primaryHref: '/printable-samurai-sudoku#free-3-puzzle-pack',
     secondaryHref: '/games/samurai/strategy-guide',
     keywords: {
       en: ['samurai sudoku paper practice', 'print samurai sudoku practice', 'paper sudoku notes'],
@@ -485,7 +485,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             body: 'If a contradiction appears, return to the last unsupported assumption and rebuild the candidate notes.',
           },
         ],
-        primaryCta: 'Choose a puzzle',
+        primaryCta: 'Download the free 3-puzzle sampler',
         secondaryCta: 'Read solving strategy',
       },
       zh: {
@@ -511,7 +511,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             body: '如果出现矛盾，回到最近一次无依据猜测，重新检查候选数。',
           },
         ],
-        primaryCta: '选择一道题',
+        primaryCta: '下载免费 3 题打印样包',
         secondaryCta: '查看解题策略',
       },
     },
@@ -519,7 +519,7 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
   printable: {
     path: '/printable-samurai-sudoku',
     backHref: '/games/samurai/paper-practice',
-    primaryHref: '/games/samurai/archive',
+    primaryHref: '/printable-samurai-sudoku#free-3-puzzle-pack',
     secondaryHref: '/printable-samurai-sudoku#paid-100-puzzle-pack',
     numbered: true,
     keywords: {
@@ -530,9 +530,9 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
       en: {
         title: 'Printable Samurai Sudoku',
         description:
-          'Use Samurai Sudoku as printable logic practice: choose a dated puzzle, print cleanly from the browser, and keep answer checking online.',
+          'Use the curated Samurai Sudoku PDF sampler for polished paper practice, then continue with the complete 30-day training library.',
         intro:
-          'Printable Samurai Sudoku works best when the page is treated as a practice sheet: choose the right difficulty, print the puzzle view, solve slowly, then return online to check progress.',
+          'The free sampler proves the print quality with one Easy, one Medium, and one Expert preview with a real first-step hint. The complete library unlocks its 12-step opening and full answer, then extends the same layout into a structured 30-day routine.',
         backLabel: 'Back to paper practice',
         items: [
           {
@@ -540,8 +540,8 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             body: 'Easy and Medium are better for classrooms or casual practice. Hard and Evil are better for long sessions where candidate notes matter.',
           },
           {
-            title: 'Print one dated puzzle at a time',
-            body: 'A dated URL makes the sheet easy to file, share, and revisit. Use the archive to pick the exact board you want to print.',
+            title: 'Start with the three-puzzle sampler',
+            body: 'The Easy-to-Expert progression lets you judge the layout and puzzle quality, then use the final preview hint before deciding whether to unlock its walkthrough and answer.',
           },
           {
             title: 'Leave space for candidates',
@@ -552,13 +552,13 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             body: 'After paper solving, open the same dated puzzle online to use conflict highlighting, hints, and completion tracking.',
           },
         ],
-        primaryCta: 'Choose a printable puzzle',
-        secondaryCta: 'Get the PDF pack',
+        primaryCta: 'Download the free pack with Expert preview',
+        secondaryCta: 'Unlock the 30-day library',
       },
       zh: {
         title: '可打印武士数独',
-        description: '把武士数独作为可打印逻辑练习：选择日期题目，在浏览器中打印，并回到线上检查进度。',
-        intro: '可打印武士数独最适合作为纸笔练习单：先选合适难度，打印题面，慢慢推理，再回到线上检查和继续。',
+        description: '先用 3 题精选 PDF 体验精美纸笔排版，再用完整 30 天训练库建立稳定练习。',
+        intro: '免费样包用 1 题 Easy、1 题 Medium 和 1 题带真实第一步提示的 Expert 预览证明打印质量；完整库解锁其 12 步开局讲解与答案，再扩展成 30 天系统训练。',
         backLabel: '返回纸笔练习',
         items: [
           {
@@ -566,8 +566,8 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             body: '简单和中等适合课堂、休闲或老人练习；困难和 Evil 更适合需要候选数的长时间推理。',
           },
           {
-            title: '一次打印一道日期题',
-            body: '日期 URL 方便归档、分享和复盘。你可以在题库里选择具体某一天的棋盘打印。',
+            title: '先体验 3 题精选样包',
+            body: '从 Easy 到 Expert 的梯度可以先验证排版和题目质量，再用最后一题的真实提示决定是否解锁其讲解与答案。',
           },
           {
             title: '给候选数留空间',
@@ -578,8 +578,8 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             body: '纸上推理后，打开同一日期题的线上版本，可使用冲突高亮、提示和完成状态记录。',
           },
         ],
-        primaryCta: '选择可打印题目',
-        secondaryCta: '查看 PDF 打印包',
+        primaryCta: '下载含 Expert 预览的免费包',
+        secondaryCta: '解锁 30 天训练库',
       },
     },
   },

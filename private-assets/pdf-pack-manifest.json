@@ -1,55 +1,60 @@
 {
   "artifacts": [
     {
-      "bytes": 2336214,
+      "bytes": 2381149,
       "kind": "zip",
       "path": "private-assets/samurai-sudoku-100-puzzle-pack.zip",
-      "sha256": "6e9118fb0879334989f852c8c242188a794c7445e747b3d427fc1ed2dd5a59ce"
+      "sha256": "8bfd4a857ee2c4d269cfbf4d47b4fac2d28292a95496a03cb8e7ac62ad976e9a"
     },
     {
-      "bytes": 218265,
+      "bytes": 36506,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf",
-      "sha256": "4a938e280d95bff3c4a8dcc23a7eace0dfdf9e101d6af63eb9f61107ce4b62c8"
+      "sha256": "deb7546ac59f29686fa0a8438f4919758809a0533779d13265040f57da09a2ac"
     },
     {
-      "bytes": 218005,
+      "bytes": 36408,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-letter.pdf",
-      "sha256": "ba45f189882cb918620dbe5a17b9dd69531da4ebd68d3fe7430fcfdb2a3d5402"
+      "sha256": "2e1a1eface6f4b6bcd570e3321309a62b429d8baead551aaa2a2280881acf0fd"
     },
     {
-      "bytes": 195670,
+      "bytes": 33982,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-a4-2-per-page.pdf",
-      "sha256": "cd2ee8e688b0982b557ac17049af538adf76f880b6b9c6204a97517a4fc4d673"
+      "sha256": "283a42568125d378d467afd1f694cc807788ffd55ef8243789743fd257c820f5"
     },
     {
-      "bytes": 193655,
+      "bytes": 33702,
       "kind": "pdf",
       "path": "public/downloads/samurai-sudoku-starter-pack-with-solutions-letter-2-per-page.pdf",
-      "sha256": "d527243fa959d0a1ce4725b4b018e9cf91a8ef019006111f5e4e8ec4e3e1f029"
+      "sha256": "e4bfcf8bd10c1bf3204f472f9a03fbe7d66626c7de98a56c7d325aac67a5500e"
     }
   ],
   "difficultyCounts": {
     "easy": {
-      "free": 5,
+      "free": 1,
       "paid": 25
     },
     "evil": {
-      "free": 5,
+      "free": 1,
       "paid": 25
     },
     "hard": {
-      "free": 5,
+      "free": 0,
       "paid": 25
     },
     "medium": {
-      "free": 5,
+      "free": 1,
       "paid": 25
     }
   },
-  "freePuzzleCount": 20,
+  "expertPreview": {
+    "guidedOpeningSteps": 12,
+    "id": "2026-07-22",
+    "paidSequence": 76
+  },
+  "freePuzzleCount": 3,
   "paidPuzzleCount": 100,
   "productId": "samurai-sudoku-100-pack-v1"
 }

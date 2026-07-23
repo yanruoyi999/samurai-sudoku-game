@@ -16,6 +16,11 @@ interface PdfPackManifest {
   productId: string;
   paidPuzzleCount: number;
   freePuzzleCount: number;
+  expertPreview: {
+    id: string;
+    paidSequence: number;
+    guidedOpeningSteps: number;
+  };
   artifacts: PdfPackArtifact[];
 }
 
@@ -26,8 +31,15 @@ export async function validatePdfPackArtifacts(root = process.cwd()): Promise<Pd
   if (manifest.productId !== PDF_PACK_PRODUCT_ID) {
     throw new Error(`PDF pack manifest product must be ${PDF_PACK_PRODUCT_ID}.`);
   }
-  if (manifest.paidPuzzleCount !== 100 || manifest.freePuzzleCount !== 20) {
-    throw new Error("PDF pack manifest must contain 100 paid and 20 free puzzles.");
+  if (manifest.paidPuzzleCount !== 100 || manifest.freePuzzleCount !== 3) {
+    throw new Error("PDF pack manifest must contain 100 paid and 3 free puzzles.");
+  }
+  if (
+    manifest.expertPreview?.id !== "2026-07-22" ||
+    manifest.expertPreview.paidSequence !== 76 ||
+    manifest.expertPreview.guidedOpeningSteps !== 12
+  ) {
+    throw new Error("PDF pack manifest must include the verified Expert preview walkthrough.");
   }
   if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length < 5) {
     throw new Error("PDF pack manifest must list the paid archive and four free PDFs.");

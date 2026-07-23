@@ -31,7 +31,7 @@ describe("PayPalCheckout fallback", () => {
         autoDeliveryEnabled={false}
         clientId=""
         locale="en"
-        price="$4.95"
+        price="$9.90"
         supportHref="/en/contact"
       />,
     );
@@ -48,7 +48,7 @@ describe("PayPalCheckout fallback", () => {
         autoDeliveryEnabled
         clientId="test-client-id"
         locale="en"
-        price="$4.95"
+        price="$9.90"
         supportHref="/en/contact"
       />,
     );
@@ -66,12 +66,12 @@ describe("PayPalCheckout fallback", () => {
         clientId="test-client-id"
         deferUntilActivated
         locale="en"
-        price="$4.95"
+        price="$9.90"
         supportHref="/en/contact"
       />,
     );
 
-    expect(html).toContain("Buy 100 puzzles for $4.95");
+    expect(html).toContain("Unlock 30 days for $9.90");
     expect(html).not.toContain("https://www.paypal.com/sdk/js");
     expect(html.toLowerCase()).not.toContain("paypal.me");
   });

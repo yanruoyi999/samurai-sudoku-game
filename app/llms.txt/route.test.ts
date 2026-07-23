@@ -39,7 +39,8 @@ describe("llms.txt", () => {
     const response = await GET();
     const body = await response.text();
 
-    expect(body).toContain("20 verified puzzles");
+    expect(body).toContain("three verified puzzles");
+    expect(body).toContain("verified 12-step opening");
     expect(body).toContain("100 verified puzzles");
     expect(body).toContain("PayPal Orders API");
     expect(body).toContain("seven-day signed download link");

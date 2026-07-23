@@ -6,5 +6,5 @@ interface PageProps {
 
 export default async function LegacyPrintableSamuraiSudokuPage({ params }: PageProps) {
   const { locale } = await params;
-  permanentRedirect(`/${locale}/printable-samurai-sudoku`);
+  permanentRedirect(`/${locale}/printable-samurai-sudoku#free-3-puzzle-pack`);
 }

@@ -1,42 +1,65 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import {
-  PRINTABLE_PUZZLE_OPEN_EVENT,
-  PRINT_PUZZLE_EVENT,
-} from "./event-names";
-
-const NAVIGATION_FILES = [
+const FUNNEL_FILES = [
   "app/[locale]/printable-samurai-sudoku/page.tsx",
   "app/[locale]/games/samurai/daily/page.tsx",
   "app/[locale]/games/samurai/[id]/page.tsx",
   "app/[locale]/games/samurai/archive/page.tsx",
 ];
 
-describe("print analytics event contract", () => {
-  it("keeps printable-page navigation separate from a real browser print", () => {
-    expect(PRINTABLE_PUZZLE_OPEN_EVENT).toBe("printable_puzzle_open_click");
-    expect(PRINT_PUZZLE_EVENT).toBe("print_puzzle");
-    expect(PRINTABLE_PUZZLE_OPEN_EVENT).not.toBe(PRINT_PUZZLE_EVENT);
-  });
-
-  it("uses the navigation event for links that only open printable pages", () => {
-    for (const file of NAVIGATION_FILES) {
+describe("print funnel contract", () => {
+  it("routes visible paper-solving actions through the three-puzzle sampler", () => {
+    for (const file of FUNNEL_FILES) {
       const source = readFileSync(resolve(process.cwd(), file), "utf8");
 
-      expect(source).toContain("PRINTABLE_PUZZLE_OPEN_EVENT");
-      expect(source).not.toContain('eventName="print_puzzle"');
+      expect(source).toContain("PrintableFreeDownloadLink");
+      expect(source).toContain("curated_sampler_3");
+      expect(source).not.toContain("/games/samurai/printable/${");
+      expect(source).not.toContain("window.print()");
     }
   });
 
-  it("reserves print_puzzle for the handler that invokes window.print", () => {
+  it("redirects legacy single-puzzle print URLs to the canonical sampler", () => {
     const source = readFileSync(
-      resolve(process.cwd(), "components/printable/PrintButton.tsx"),
+      resolve(
+        process.cwd(),
+        "app/[locale]/games/samurai/printable/[id]/page.tsx",
+      ),
       "utf8",
     );
 
-    expect(source).toContain("trackInteraction(PRINT_PUZZLE_EVENT");
-    expect(source).toContain("window.print()");
+    expect(source).toContain("permanentRedirect");
+    expect(source).toContain("#free-3-puzzle-pack");
+  });
+
+  it("does not ship one-click browser print button components", () => {
+    expect(
+      existsSync(resolve(process.cwd(), "components/printable/PrintButton.tsx")),
+    ).toBe(false);
+    expect(
+      existsSync(resolve(process.cwd(), "components/printable/PrintPackButton.tsx")),
+    ).toBe(false);
+  });
+
+  it("attributes Expert-preview PDF returns to the paid offer", () => {
+    const offerSource = readFileSync(
+      resolve(process.cwd(), "components/printable/PrintablePackOffer.tsx"),
+      "utf8",
+    );
+    const generatorSource = readFileSync(
+      resolve(process.cwd(), "scripts/generate-pdf-packs.py"),
+      "utf8",
+    );
+
+    expect(generatorSource).toContain("utm_source=free_pdf");
+    expect(generatorSource).toContain("utm_campaign=expert_preview");
+    expect(generatorSource).toContain("utm_content=puzzle_3_lock");
+    expect(generatorSource).toContain("#paid-100-puzzle-pack");
+    expect(offerSource).toContain('query.get("utm_source") !== "free_pdf"');
+    expect(offerSource).toContain('"pdf_expert_preview_arrival"');
+    expect(offerSource).toContain('location: "expert_preview_pdf"');
+    expect(offerSource).toContain("PAID_PACK_ACTIVATION_EVENT");
   });
 });

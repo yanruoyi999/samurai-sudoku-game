@@ -1,4 +1,4 @@
-const DEFAULT_PDF_PACK_PRICE = "$4.95";
+const DEFAULT_PDF_PACK_PRICE = "$9.90";
 const DEFAULT_PDF_PACK_PRODUCT_NAME = "100 Samurai Sudoku Printable Puzzles";
 
 function getEnvValue(...names: string[]) {
@@ -25,7 +25,7 @@ export function getPdfPackPrice() {
 }
 
 export function getPdfPackPriceAmount() {
-  return extractUsdAmount(getPdfPackPrice()) || extractUsdAmount(DEFAULT_PDF_PACK_PRICE) || "4.95";
+  return extractUsdAmount(getPdfPackPrice()) || extractUsdAmount(DEFAULT_PDF_PACK_PRICE) || "9.90";
 }
 
 function extractUsdAmount(price: string) {

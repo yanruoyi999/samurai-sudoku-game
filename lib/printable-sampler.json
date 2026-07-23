@@ -1,0 +1,44 @@
+{
+  "version": "2026-07-23",
+  "puzzles": [
+    {
+      "id": "2026-06-29",
+      "difficulty": "easy",
+      "difficultyScore": 8,
+      "answerIncluded": true
+    },
+    {
+      "id": "2026-07-20",
+      "difficulty": "medium",
+      "difficultyScore": 51,
+      "answerIncluded": true
+    },
+    {
+      "id": "2026-07-22",
+      "difficulty": "evil",
+      "difficultyScore": 93,
+      "answerIncluded": false,
+      "openingHint": {
+        "grid": 0,
+        "row": 3,
+        "col": 2,
+        "value": 7,
+        "technique": "naked-single"
+      },
+      "guidedOpening": [
+        { "grid": 0, "row": 3, "col": 2, "value": 7, "technique": "naked-single" },
+        { "grid": 0, "row": 3, "col": 6, "value": 3, "technique": "naked-single" },
+        { "grid": 0, "row": 3, "col": 1, "value": 6, "technique": "naked-single" },
+        { "grid": 0, "row": 3, "col": 3, "value": 2, "technique": "naked-single" },
+        { "grid": 1, "row": 3, "col": 5, "value": 4, "technique": "naked-single" },
+        { "grid": 1, "row": 3, "col": 3, "value": 3, "technique": "naked-single" },
+        { "grid": 1, "row": 4, "col": 3, "value": 7, "technique": "naked-single" },
+        { "grid": 1, "row": 5, "col": 3, "value": 9, "technique": "naked-single" },
+        { "grid": 1, "row": 7, "col": 5, "value": 8, "technique": "naked-single" },
+        { "grid": 0, "row": 8, "col": 8, "value": 1, "technique": "naked-single" },
+        { "grid": 2, "row": 6, "col": 1, "value": 8, "technique": "naked-single" },
+        { "grid": 3, "row": 0, "col": 2, "value": 7, "technique": "naked-single" }
+      ]
+    }
+  ]
+}
