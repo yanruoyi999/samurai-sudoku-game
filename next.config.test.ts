@@ -19,6 +19,13 @@ describe("PWA puzzle data caching", () => {
     const protectedApiRule = "urlPattern: /\\/api\\/(?:paypal|download)\\/.*/i";
     expect(source).toContain(protectedApiRule);
     expect(source.slice(source.indexOf(protectedApiRule))).toMatch(/handler: 'NetworkOnly'/);
+
+    const legacyDownloadRule =
+      "urlPattern: /\\/samuraisudoku\\.zip(?:\\?.*)?$/i";
+    expect(source).toContain(legacyDownloadRule);
+    expect(source.slice(source.indexOf(legacyDownloadRule))).toMatch(
+      /handler: 'NetworkOnly'/,
+    );
   });
 
   it("caches only public PDF downloads while leaving paid downloads protected", () => {

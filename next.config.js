@@ -115,6 +115,10 @@ const withPWA = require('@ducanh2912/next-pwa').default({
         handler: 'NetworkOnly'
       },
       {
+        urlPattern: /\/samuraisudoku\.zip(?:\?.*)?$/i,
+        handler: 'NetworkOnly'
+      },
+      {
         urlPattern: /\/api\/.*/i,
         handler: 'NetworkFirst',
         options: {

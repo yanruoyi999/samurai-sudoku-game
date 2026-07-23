@@ -596,6 +596,13 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                   ? "自动验单配置未完成时不会接收付款，也不会跳转到个人收款页。"
                   : "No payment is accepted while automatic verification is unavailable, and no personal payment page is used."}
             </p>
+            {autoDeliveryEnabled && (
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                {isZh
+                  ? "如果旧下载地址将你带到这里，请使用付款时的同一浏览器：已完成订单会自动恢复下载。仍无法下载时，请携 PayPal 订单号联系支持。"
+                  : "If an older download address brought you here, use the same browser as checkout so a completed order can recover automatically. If it still fails, contact support with the PayPal order ID."}
+              </p>
+            )}
           </aside>
 
           <div className="lg:col-start-1">
