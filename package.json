@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
-    "prebuild": "pnpm build-index && pnpm validate-puzzles && pnpm validate-pdf-packs",
+    "prebuild": "pnpm test:indexnow && pnpm build-index && pnpm validate-puzzles && pnpm validate-pdf-packs",
     "generate-puzzles": "tsx scripts/puzzles/generate.ts",
     "build-index": "tsx scripts/puzzles/build-index.ts",
     "generate-pwa-assets": "tsx scripts/generate-pwa-assets.ts",
@@ -18,7 +18,9 @@
     "audit:internal-links": "tsx scripts/audit-internal-links.ts",
     "audit:page-quality": "tsx scripts/page-quality-audit.ts",
     "test": "vitest run",
-    "test:sudoku": "vitest run lib/sudoku"
+    "test:sudoku": "vitest run lib/sudoku",
+    "test:indexnow": "node --test scripts/submit-indexnow.test.mjs",
+    "seo:indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "10.2.9",
