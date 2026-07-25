@@ -22,11 +22,19 @@ describe("buildSiteNavigation", () => {
 
     expect(navigation.items.map((item) => item.id)).toEqual([
       "today",
+      "kids",
       "printable",
       "archive",
       "guides",
       "pdf-pack",
     ]);
+    expect(navigation.items).toContainEqual(
+      expect.objectContaining({
+        id: "kids",
+        href: "/en/sudoku-for-kids",
+        label: "Kids 4×4",
+      }),
+    );
     expect(navigation.items.at(-1)?.label).toBe("PDF Pack · $9.90");
     expect(navigation.items.at(-1)?.href).toBe(
       "/en/printable-samurai-sudoku#paid-100-puzzle-pack",
@@ -43,6 +51,13 @@ describe("buildSiteNavigation", () => {
         id: "guides",
         href: "/zh/games/samurai/how-to-play",
         label: "玩法攻略",
+      }),
+    );
+    expect(navigation.items).toContainEqual(
+      expect.objectContaining({
+        id: "kids",
+        href: "/zh/sudoku-for-kids",
+        label: "儿童 4×4",
       }),
     );
     expect(navigation.items.at(-1)?.label).toBe("PDF 题包 · $3.99");
