@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -78,5 +79,17 @@ describe('kids Sudoku puzzle library', () => {
     expect(checkKidsSudokuGrid(incomplete, puzzle)).toBe('incomplete');
     expect(checkKidsSudokuGrid(incorrect, puzzle)).toBe('incorrect');
     expect(checkKidsSudokuGrid(puzzle.solution, puzzle)).toBe('complete');
+  });
+});
+
+describe('kids Sudoku activity component contract', () => {
+  it('provides check, next-puzzle, and print actions', () => {
+    const componentPath = 'components/kids/KidsSudoku4x4.tsx';
+    expect(existsSync(componentPath)).toBe(true);
+
+    const source = readFileSync(componentPath, 'utf8');
+    expect(source).toContain('kids_sudoku_check');
+    expect(source).toContain('kids_sudoku_next');
+    expect(source).toContain('window.print()');
   });
 });
