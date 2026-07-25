@@ -2,6 +2,13 @@
 
 A modern, feature-rich Samurai Sudoku web application built with Next.js 15, React 18, TypeScript, next-intl, and PWA support.
 
+## 🌐 Live Pages
+
+- [Play Samurai Sudoku](https://www.samuraisudoku.net/en/games/samurai)
+- [Play Daily Samurai Sudoku](https://www.samuraisudoku.net/en/games/samurai/daily)
+- [Play Sudoku for Kids](https://www.samuraisudoku.net/en/sudoku-for-kids)
+- [Download Printable Samurai Sudoku](https://www.samuraisudoku.net/en/printable-samurai-sudoku)
+
 ## 🎯 Project Status
 
 **Current status** ✅ **Production-oriented game app**
