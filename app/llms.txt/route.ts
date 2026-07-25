@@ -11,7 +11,7 @@ export async function GET() {
 
   const content = `# Samurai Sudoku
 
-> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily online challenge, a curated printable PDF sampler, a complete 30-day PDF library, hints, notes, offline support, and localized English/Chinese guides.
+> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily online challenge, a curated printable PDF sampler, a complete 30-day PDF library, hints, notes, offline support, a free 4x4 Sudoku for Kids activity, and localized English/Chinese guides.
 
 Canonical site: [Samurai Sudoku](${baseUrl})
 Languages: English (/en), Chinese (/zh)
@@ -23,6 +23,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 
 - [Play today's Samurai Sudoku](${baseUrl}/en/games/samurai)
 - [Daily puzzle hub with today's play and print links](${baseUrl}/en/games/samurai/daily)
+- [Free 4x4 Sudoku for Kids for parents and teachers](${baseUrl}/en/sudoku-for-kids)
 - [Puzzle archive](${baseUrl}/en/games/samurai/archive)
 - [What is Samurai Sudoku](${baseUrl}/en/games/samurai/what-is-samurai-sudoku)
 - [How to play Samurai Sudoku: rules and controls](${baseUrl}/en/games/samurai/how-to-play)
@@ -58,6 +59,7 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Every row, column, and 3x3 box in each 9x9 grid must contain 1 through 9 without repetition.
 - Overlap cells belong to two grids and must satisfy both grids at the same time.
 - The site provides easy, medium, hard, and evil difficulty landing pages.
+- The Sudoku for Kids page provides three verified 4x4 puzzles with fixed clues, answer checking, reset, next-puzzle, keyboard/touch input, and browser printing. It is written for parents and teachers, requires no registration, and does not collect a child's name or email.
 - The first move strategy guide explains how new players should select a cell before tapping a number, scan overlap boxes first, and use Easy puzzles before moving to harder boards.
 - The difficulty selection guide explains when to choose Easy, Medium, Hard, or Evil, how New Game behaves, and when to use the All Puzzles archive instead of random switching.
 - The Common mistakes guide explains why players get stuck, restart, switch difficulty repeatedly, or stall after a few grids; it recommends choosing one active overlap box, rebuilding candidates from both connected grids, and switching difficulty deliberately.
