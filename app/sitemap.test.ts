@@ -29,7 +29,7 @@ describe('sitemap', () => {
     }
   });
 
-  it('includes high-intent long-tail and methodology pages', async () => {
+  it('includes high-intent long-tail, kids, and methodology pages', async () => {
     const entries = await sitemap();
     const urls = new Set(entries.map((entry) => entry.url));
 
@@ -37,6 +37,8 @@ describe('sitemap', () => {
     expect(urls.has('https://www.samuraisudoku.net/zh/games/samurai/common-mistakes')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/en/games/samurai/printable-practice-plan')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/zh/games/samurai/printable-practice-plan')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/sudoku-for-kids')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/sudoku-for-kids')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/en/about/puzzle-methodology')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/zh/about/puzzle-methodology')).toBe(true);
   });
