@@ -17,9 +17,11 @@
     "check-difficulty": "tsx scripts/puzzles/check-difficulty.ts",
     "audit:internal-links": "tsx scripts/audit-internal-links.ts",
     "audit:page-quality": "tsx scripts/page-quality-audit.ts",
+    "audit:site": "bash scripts/run-site-audits.sh",
     "test": "vitest run",
     "test:sudoku": "vitest run lib/sudoku",
     "test:indexnow": "node --test scripts/submit-indexnow.node-test.mjs",
+    "test:site-audits": "node --test scripts/run-site-audits.node-test.mjs",
     "seo:indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
