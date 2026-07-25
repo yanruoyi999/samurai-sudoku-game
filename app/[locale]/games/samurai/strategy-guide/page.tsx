@@ -211,7 +211,7 @@ export default async function StrategyGuidePage({ params }: PageProps) {
         </Link>
       </section>
 
-      <footer className="mt-12 grid gap-3 rounded-2xl border bg-muted/30 p-6 md:grid-cols-3">
+      <footer className="mt-12 grid gap-3 rounded-2xl border bg-muted/30 p-6 md:grid-cols-2 lg:grid-cols-4">
         <Link href={`/${normalizedLocale}/games/samurai/solving-tips`} className="rounded-lg border bg-background px-4 py-3 hover:border-primary hover:bg-primary/5">
           {isZh ? '返回通关技巧主页面' : 'Back to solving tips'}
         </Link>
@@ -220,6 +220,9 @@ export default async function StrategyGuidePage({ params }: PageProps) {
         </Link>
         <Link href={`/${normalizedLocale}/games/samurai/archive`} className="rounded-lg border bg-background px-4 py-3 hover:border-primary hover:bg-primary/5">
           {isZh ? '浏览全部题库' : 'Browse all puzzles'}
+        </Link>
+        <Link href={`/${normalizedLocale}/about/puzzle-methodology`} className="rounded-lg border bg-background px-4 py-3 hover:border-primary hover:bg-primary/5">
+          {isZh ? '题目如何生成与验证' : 'How puzzles are validated'}
         </Link>
       </footer>
     </article>
