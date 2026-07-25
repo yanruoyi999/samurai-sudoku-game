@@ -1,5 +1,6 @@
 const createNextIntlPlugin = require('next-intl/plugin');
 const printableSampler = require('./lib/printable-sampler.json');
+const puzzleCachePolicy = require('./lib/pwa/puzzle-cache-policy.json');
 
 const printableSamplerAssetVersion = printableSampler.assetVersion;
 const withPWA = require('@ducanh2912/next-pwa').default({
@@ -93,12 +94,12 @@ const withPWA = require('@ducanh2912/next-pwa').default({
       },
       {
         urlPattern: /\/puzzles\/\d{4}\/\d{4}-\d{2}-\d{2}\.json$/i,
-        handler: 'CacheFirst',
+        handler: puzzleCachePolicy.runtimeHandler,
         options: {
           cacheName: 'puzzle-data',
           expiration: {
-            maxEntries: 200,
-            maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+            maxEntries: puzzleCachePolicy.runtimeMaxEntries,
+            maxAgeSeconds: puzzleCachePolicy.runtimeMaxAgeSeconds
           }
         }
       },
@@ -178,7 +179,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: puzzleCachePolicy.httpCacheControl,
           },
         ],
       },
