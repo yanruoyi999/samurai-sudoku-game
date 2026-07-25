@@ -67,6 +67,13 @@ export default async function HomePage() {
         ? '把今日题作为固定入口，先完成一题，再进入历史题库补练。'
         : 'Use the daily puzzle as the main habit loop before browsing older boards.',
     },
+    {
+      href: `/${locale}/sudoku-for-kids`,
+      title: isZh ? '儿童 4×4 数独' : 'Sudoku for Kids',
+      body: isZh
+        ? '给家长和教师的免费 4×4 入门题，支持在线检查、换题和浏览器打印。'
+        : 'A free 4×4 beginner activity for parents and teachers with checking, new puzzles, and browser printing.',
+    },
     ...guideLinks,
     {
       href: `/${locale}/games/samurai/common-mistakes`,
