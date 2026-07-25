@@ -57,6 +57,32 @@ describe('page quality scoring', () => {
     expect(minesweeper.breakdown.demand).toBeGreaterThanOrEqual(16);
   });
 
+  it('classifies Sudoku for Kids as a high-intent learning guide', () => {
+    const result = scoreHtmlPage(
+      new URL('https://www.samuraisudoku.net/en/sudoku-for-kids'),
+      `
+        <html>
+          <head>
+            <title>Sudoku for Kids: Free Easy 4x4 Puzzle</title>
+            <meta name="description" content="Play free easy 4x4 Sudoku for kids online with answer checking and printable browser worksheets for parents and teachers." />
+            <link rel="canonical" href="https://www.samuraisudoku.net/en/sudoku-for-kids" />
+            <script type="application/ld+json">{"@type":"LearningResource"}</script>
+          </head>
+          <body>
+            <h1>Sudoku for Kids</h1>
+            <p>${'Easy 4x4 Sudoku teaches rows, columns, boxes, and logical elimination. '.repeat(30)}</p>
+            <a href="/en">Home</a>
+            <a href="/en/games/samurai/daily">Daily puzzle</a>
+            <button>Check puzzle</button>
+          </body>
+        </html>
+      `,
+    );
+    expect(result.category).toBe('kids-sudoku-guide');
+    expect(result.breakdown.demand).toBeGreaterThanOrEqual(16);
+    expect(result.score).toBeGreaterThanOrEqual(80);
+  });
+
   it('classifies nested About methodology pages as trust pages', () => {
     const result = scoreHtmlPage(
       new URL('https://www.samuraisudoku.net/zh/about/puzzle-methodology'),
