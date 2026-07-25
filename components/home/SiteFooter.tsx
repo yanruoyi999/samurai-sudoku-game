@@ -42,6 +42,9 @@ export function SiteFooter({
         <Link href={`/${locale}/support`} className="text-primary hover:text-primary/80">
           {isZh ? '支持与订阅' : 'Support / Subscribe'}
         </Link>
+        <Link href={`/${locale}/sudoku-for-kids`} className="text-primary hover:text-primary/80">
+          {isZh ? '儿童 4×4 数独' : 'Kids Sudoku'}
+        </Link>
         <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="text-primary hover:text-primary/80">
           {isZh ? '武士数独介绍' : 'What is Samurai Sudoku?'}
         </Link>
