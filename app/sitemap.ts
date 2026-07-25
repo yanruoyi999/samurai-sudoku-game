@@ -21,7 +21,6 @@ interface StaticSitemapRoute {
 function getPuzzleAgeDays(puzzleId: string, referenceDate: Date) {
   const puzzleDate = new Date(`${puzzleId}T00:00:00.000Z`);
   if (Number.isNaN(puzzleDate.getTime())) return Number.POSITIVE_INFINITY;
-
   return Math.max(0, Math.floor((referenceDate.getTime() - puzzleDate.getTime()) / DAY_MS));
 }
 
@@ -30,37 +29,21 @@ function getPuzzleSitemapHints(puzzle: PuzzleMetadata, referenceDate: Date) {
   const isHighIntent = HIGH_INTENT_DIFFICULTIES.has(puzzle.difficulty);
 
   if (ageDays <= 14) {
-    return {
-      changeFrequency: 'weekly' as const,
-      priority: isHighIntent ? 0.72 : 0.68,
-    };
+    return { changeFrequency: 'weekly' as const, priority: isHighIntent ? 0.72 : 0.68 };
   }
-
   if (ageDays <= 90) {
-    return {
-      changeFrequency: 'monthly' as const,
-      priority: isHighIntent ? 0.58 : 0.54,
-    };
+    return { changeFrequency: 'monthly' as const, priority: isHighIntent ? 0.58 : 0.54 };
   }
-
-  return {
-    changeFrequency: 'yearly' as const,
-    priority: isHighIntent ? 0.44 : 0.4,
-  };
+  return { changeFrequency: 'yearly' as const, priority: isHighIntent ? 0.44 : 0.4 };
 }
 
 function getDifficultyLastModifiedDates(puzzles: PuzzleMetadata[]) {
   const dates = new Map<Difficulty, Date>();
-
   for (const puzzle of puzzles) {
     const puzzleDate = new Date(`${puzzle.id}T00:00:00.000Z`);
     const currentDate = dates.get(puzzle.difficulty);
-
-    if (!currentDate || puzzleDate > currentDate) {
-      dates.set(puzzle.difficulty, puzzleDate);
-    }
+    if (!currentDate || puzzleDate > currentDate) dates.set(puzzle.difficulty, puzzleDate);
   }
-
   return dates;
 }
 
@@ -90,6 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/games/samurai/strategy-guide', changeFrequency: 'monthly', priority: 0.72 },
     { path: '/games/samurai/beginners', changeFrequency: 'monthly', priority: 0.71 },
     { path: '/games/samurai/paper-practice', changeFrequency: 'monthly', priority: 0.69 },
+    { path: '/about/puzzle-methodology', changeFrequency: 'monthly', priority: 0.5 },
     { path: '/games/minesweeper', changeFrequency: 'weekly', priority: 0.66 },
     ...MINESWEEPER_GUIDE_SLUGS.map((slug) => ({
       path: `/games/minesweeper/${slug}`,
@@ -102,12 +86,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       lastModified: difficultyLastModifiedDates.get(difficulty) ?? indexLastModified,
     })),
-    { path: '/about', changeFrequency: 'yearly', priority: 0.45 },
-    { path: '/about/puzzle-methodology', changeFrequency: 'monthly', priority: 0.5 },
-    { path: '/contact', changeFrequency: 'yearly', priority: 0.35 },
-    { path: '/privacy', changeFrequency: 'yearly', priority: 0.3 },
-    { path: '/terms', changeFrequency: 'yearly', priority: 0.3 },
-    { path: '/support', changeFrequency: 'monthly', priority: 0.45 },
   ];
   const entries: MetadataRoute.Sitemap = [];
 
@@ -124,9 +102,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route.priority,
         alternates: {
           languages: {
-            ...Object.fromEntries(
-              locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${route.path}`)]),
-            ),
+            ...Object.fromEntries(locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${route.path}`)])),
             'x-default': buildAbsoluteUrl(`/en${route.path}`),
           },
         },
@@ -143,9 +119,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: hints.priority,
         alternates: {
           languages: {
-            ...Object.fromEntries(
-              locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${path}`)]),
-            ),
+            ...Object.fromEntries(locales.map((loc) => [loc, buildAbsoluteUrl(`/${loc}${path}`)])),
             'x-default': buildAbsoluteUrl(`/en${path}`),
           },
         },
