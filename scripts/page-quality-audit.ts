@@ -63,6 +63,7 @@ function categorizePath(pathname: string) {
   const path = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
+  if (path === '/sudoku-for-kids') return 'kids-sudoku-guide';
   if (path === '/games/minesweeper') return 'minesweeper-core';
   if (path.startsWith('/games/minesweeper/')) return 'minesweeper-guide';
   if (/^\/games\/samurai\/\d{4}-\d{2}-\d{2}$/.test(path)) return 'samurai-puzzle';
@@ -86,6 +87,7 @@ function scoreDemand(pathname: string, category: string) {
   if (path.includes('printable') || path.includes('pdf')) return 20;
   if (path.includes('daily') || path.includes('archive')) return 18;
   if (path.includes('/games/minesweeper')) return 18;
+  if (category === 'kids-sudoku-guide') return 17;
   if (path.includes('/difficulty/evil') || path.includes('/difficulty/hard')) return 17;
   if (path.includes('rules') || path.includes('how-to-play') || path.includes('overlap')) return 17;
   if (path.includes('first-move') || path.includes('choose-difficulty')) return 16;
