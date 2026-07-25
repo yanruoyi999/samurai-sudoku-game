@@ -2,6 +2,7 @@
 set -euo pipefail
 
 BASE_URL="${SITE_AUDIT_BASE_URL:-http://127.0.0.1:3000}"
+SITEMAP_URL="${BASE_URL}/sitemap.xml"
 SERVER_LOG="${SITE_AUDIT_LOG:-/tmp/samurai-next.log}"
 SERVER_PID=""
 
@@ -20,7 +21,7 @@ SERVER_PID=$!
 
 READY=0
 for _ in $(seq 1 60); do
-  if curl --fail --silent --show-error "${BASE_URL}/sitemap.xml" > /dev/null; then
+  if curl --fail --silent --show-error "${SITEMAP_URL}" > /dev/null; then
     READY=1
     break
   fi
@@ -35,7 +36,7 @@ for _ in $(seq 1 60); do
 done
 
 if [[ "${READY}" -ne 1 ]]; then
-  echo "Timed out waiting for ${BASE_URL}/sitemap.xml." >&2
+  echo "Timed out waiting for ${SITEMAP_URL}." >&2
   cat "${SERVER_LOG}" >&2
   exit 1
 fi
