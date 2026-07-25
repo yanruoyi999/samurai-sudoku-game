@@ -15,7 +15,7 @@ The existing completion event, game controls, puzzle generation, storage, and sc
 
 ## In-game help panel
 
-The panel appears inside the game controls on desktop and below the mobile controls. It contains four contextual links:
+The panel appears above the board in the shared game body, so desktop, tablet, and mobile layouts all use the same component without duplicating ActionBar code. It contains four contextual links:
 
 - Solving tips: complete start-to-finish workflow.
 - First move guide: select a cell before entering a number.
@@ -44,7 +44,7 @@ The panel must not generate a new puzzle automatically. It links to canonical di
 
 ## Architecture
 
-Create a focused client component at `components/sudoku/GameGuidancePanel.tsx` for the reusable help links. Keep completion actions in `SamuraiGameClient.tsx`, because completion state and the current puzzle difficulty already live there.
+Create a focused client component at `components/sudoku/GameGuidancePanel.tsx` for the reusable help links. Render it from `SamuraiGameClient.tsx` so every responsive game layout receives the same panel. Keep completion actions in `SamuraiGameClient.tsx`, because completion state and the current puzzle difficulty already live there.
 
 Create pure helper functions in `lib/sudoku/game-guidance.ts` for difficulty progression and localized guidance link metadata. Unit-test these helpers with Vitest before wiring the UI.
 
