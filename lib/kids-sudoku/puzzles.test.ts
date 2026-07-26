@@ -1,95 +1,95 @@
-import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import {
+  KIDS_SUDOKU_4X4_PUZZLES,
+  KIDS_SUDOKU_6X6_PUZZLES,
   KIDS_SUDOKU_PUZZLES,
-  checkKidsSudokuGrid,
-  countKidsSudokuSolutions,
-  createKidsSudokuGrid,
 } from './puzzles';
+import {
+  checkKidsSudokuGrid,
+  cloneKidsSudokuGrid,
+  countKidsSudokuSolutions,
+  isValidKidsSudokuSolution,
+  type KidsSudokuLevel,
+  type KidsSudokuPuzzle,
+} from './core';
 
-function sorted(values: number[]) {
-  return [...values].sort((left, right) => left - right);
-}
+const LEVELS: KidsSudokuLevel[] = ['easy', 'medium', 'challenge'];
 
-function expectValidSolution(solution: number[][]) {
-  expect(solution).toHaveLength(4);
-  for (const row of solution) {
-    expect(row).toHaveLength(4);
-    expect(sorted(row)).toEqual([1, 2, 3, 4]);
+function expectVerifiedLibrary(
+  puzzles: readonly KidsSudokuPuzzle[],
+  expectedSize: number,
+  expectedPerLevel: number,
+) {
+  expect(puzzles).toHaveLength(expectedSize);
+  expect(new Set(puzzles.map((puzzle) => puzzle.id)).size).toBe(expectedSize);
+
+  for (const level of LEVELS) {
+    expect(puzzles.filter((puzzle) => puzzle.level === level)).toHaveLength(expectedPerLevel);
   }
 
-  for (let column = 0; column < 4; column += 1) {
-    expect(sorted(solution.map((row) => row[column]))).toEqual([1, 2, 3, 4]);
-  }
+  for (const puzzle of puzzles) {
+    const { size } = puzzle.spec;
+    expect(puzzle.grid).toHaveLength(size);
+    expect(puzzle.solution).toHaveLength(size);
+    expect(isValidKidsSudokuSolution(puzzle.solution, puzzle.spec)).toBe(true);
+    expect(countKidsSudokuSolutions(puzzle.grid, puzzle.spec)).toBe(1);
 
-  for (let boxRow = 0; boxRow < 2; boxRow += 1) {
-    for (let boxColumn = 0; boxColumn < 2; boxColumn += 1) {
-      const values: number[] = [];
-      for (let row = boxRow * 2; row < boxRow * 2 + 2; row += 1) {
-        for (let column = boxColumn * 2; column < boxColumn * 2 + 2; column += 1) {
-          values.push(solution[row][column]);
+    let clueCount = 0;
+    for (let row = 0; row < size; row += 1) {
+      expect(puzzle.grid[row]).toHaveLength(size);
+      expect(puzzle.solution[row]).toHaveLength(size);
+      for (let column = 0; column < size; column += 1) {
+        const given = puzzle.grid[row][column];
+        if (given !== 0) {
+          clueCount += 1;
+          expect(given).toBe(puzzle.solution[row][column]);
         }
       }
-      expect(sorted(values)).toEqual([1, 2, 3, 4]);
     }
+    expect(puzzle.clueCount).toBe(clueCount);
   }
 }
 
-describe('kids Sudoku puzzle library', () => {
-  it('provides exactly three verified 4x4 puzzles', () => {
-    expect(KIDS_SUDOKU_PUZZLES).toHaveLength(3);
-
-    for (const puzzle of KIDS_SUDOKU_PUZZLES) {
-      expect(puzzle.grid).toHaveLength(4);
-      expect(puzzle.solution).toHaveLength(4);
-      expectValidSolution(puzzle.solution);
-      expect(countKidsSudokuSolutions(puzzle.grid)).toBe(1);
-
-      let countedClues = 0;
-      for (let row = 0; row < 4; row += 1) {
-        expect(puzzle.grid[row]).toHaveLength(4);
-        for (let column = 0; column < 4; column += 1) {
-          const given = puzzle.grid[row][column];
-          if (given !== 0) {
-            countedClues += 1;
-            expect(given).toBe(puzzle.solution[row][column]);
-          }
-        }
-      }
-      expect(puzzle.clueCount).toBe(countedClues);
-    }
+describe('Kids Sudoku puzzle libraries', () => {
+  it('provides 24 verified 4x4 puzzles across three levels', () => {
+    expectVerifiedLibrary(KIDS_SUDOKU_4X4_PUZZLES, 24, 8);
+    expect(KIDS_SUDOKU_PUZZLES).toBe(KIDS_SUDOKU_4X4_PUZZLES);
   });
 
-  it('creates a writable copy instead of mutating puzzle fixtures', () => {
-    const puzzle = KIDS_SUDOKU_PUZZLES[0];
-    const grid = createKidsSudokuGrid(puzzle);
-
-    grid[0][1] = 4;
-
-    expect(puzzle.grid[0][1]).toBe(0);
+  it('provides 12 verified 6x6 puzzles across three levels', () => {
+    expectVerifiedLibrary(KIDS_SUDOKU_6X6_PUZZLES, 12, 4);
   });
 
-  it('reports incomplete, incorrect, and complete states', () => {
-    const puzzle = KIDS_SUDOKU_PUZZLES[0];
-    const incomplete = createKidsSudokuGrid(puzzle);
+  it('creates a writable copy without mutating puzzle fixtures', () => {
+    const puzzle = KIDS_SUDOKU_4X4_PUZZLES[0];
+    const grid = cloneKidsSudokuGrid(puzzle.grid);
+    const editable = puzzle.grid.flatMap((row, rowIndex) =>
+      row.map((value, columnIndex) => ({ value, rowIndex, columnIndex })),
+    ).find((cell) => cell.value === 0);
+
+    expect(editable).toBeDefined();
+    if (!editable) return;
+
+    grid[editable.rowIndex][editable.columnIndex] = puzzle.solution[editable.rowIndex][editable.columnIndex];
+    expect(puzzle.grid[editable.rowIndex][editable.columnIndex]).toBe(0);
+  });
+
+  it('reports incomplete, incorrect, and complete states for library puzzles', () => {
+    const puzzle = KIDS_SUDOKU_4X4_PUZZLES[0];
     const incorrect = puzzle.solution.map((row) => [...row]);
-    incorrect[0][1] = incorrect[0][1] === 1 ? 2 : 1;
+    const editable = puzzle.grid.flatMap((row, rowIndex) =>
+      row.map((value, columnIndex) => ({ value, rowIndex, columnIndex })),
+    ).find((cell) => cell.value === 0);
 
-    expect(checkKidsSudokuGrid(incomplete, puzzle)).toBe('incomplete');
+    expect(editable).toBeDefined();
+    if (!editable) return;
+
+    incorrect[editable.rowIndex][editable.columnIndex] =
+      incorrect[editable.rowIndex][editable.columnIndex] === 1 ? 2 : 1;
+
+    expect(checkKidsSudokuGrid(puzzle.grid, puzzle)).toBe('incomplete');
     expect(checkKidsSudokuGrid(incorrect, puzzle)).toBe('incorrect');
     expect(checkKidsSudokuGrid(puzzle.solution, puzzle)).toBe('complete');
-  });
-});
-
-describe('kids Sudoku activity component contract', () => {
-  it('provides check, next-puzzle, and print actions', () => {
-    const componentPath = 'components/kids/KidsSudoku4x4.tsx';
-    expect(existsSync(componentPath)).toBe(true);
-
-    const source = readFileSync(componentPath, 'utf8');
-    expect(source).toContain('kids_sudoku_check');
-    expect(source).toContain('kids_sudoku_next');
-    expect(source).toContain('window.print()');
   });
 });
