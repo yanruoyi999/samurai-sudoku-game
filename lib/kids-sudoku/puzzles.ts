@@ -1,136 +1,146 @@
-export type KidsSudokuGrid = number[][];
-export type KidsSudokuStatus = 'incomplete' | 'incorrect' | 'complete';
+import {
+  KIDS_4X4_SPEC,
+  KIDS_6X6_SPEC,
+  buildKidsSudokuPuzzle,
+  checkKidsSudokuGrid,
+  cloneKidsSudokuGrid,
+  countKidsSudokuSolutions,
+  type KidsSudokuGrid,
+  type KidsSudokuLevel,
+  type KidsSudokuPuzzle,
+  type KidsSudokuStatus,
+  type KidsSudokuSpec,
+} from './core';
 
-export interface KidsSudokuPuzzle {
-  id: string;
-  grid: KidsSudokuGrid;
-  solution: KidsSudokuGrid;
-  clueCount: number;
+export {
+  KIDS_4X4_SPEC,
+  KIDS_6X6_SPEC,
+  checkKidsSudokuGrid,
+  cloneKidsSudokuGrid,
+  countKidsSudokuSolutions,
+};
+export type {
+  KidsSudokuGrid,
+  KidsSudokuLevel,
+  KidsSudokuPuzzle,
+  KidsSudokuSpec,
+  KidsSudokuStatus,
+};
+
+const LEVELS: readonly KidsSudokuLevel[] = ['easy', 'medium', 'challenge'];
+
+const TARGET_CLUES: Record<number, Record<KidsSudokuLevel, number>> = {
+  4: {
+    easy: 10,
+    medium: 8,
+    challenge: 6,
+  },
+  6: {
+    easy: 24,
+    medium: 20,
+    challenge: 16,
+  },
+};
+
+function createBaseSolution(spec: KidsSudokuSpec): KidsSudokuGrid {
+  return Array.from({ length: spec.size }, (_, row) =>
+    Array.from(
+      { length: spec.size },
+      (_, column) => ((row * spec.boxColumns + Math.floor(row / spec.boxRows) + column) % spec.size) + 1,
+    ),
+  );
 }
 
-export const KIDS_SUDOKU_PUZZLES: readonly KidsSudokuPuzzle[] = [
-  {
-    id: 'kids-4x4-1',
-    clueCount: 8,
-    grid: [
-      [1, 0, 3, 0],
-      [0, 4, 1, 2],
-      [0, 0, 4, 3],
-      [0, 3, 0, 0],
-    ],
-    solution: [
-      [1, 2, 3, 4],
-      [3, 4, 1, 2],
-      [2, 1, 4, 3],
-      [4, 3, 2, 1],
-    ],
-  },
-  {
-    id: 'kids-4x4-2',
-    clueCount: 7,
-    grid: [
-      [0, 4, 0, 0],
-      [1, 0, 0, 0],
-      [4, 2, 0, 1],
-      [3, 0, 4, 0],
-    ],
-    solution: [
-      [2, 4, 1, 3],
-      [1, 3, 2, 4],
-      [4, 2, 3, 1],
-      [3, 1, 4, 2],
-    ],
-  },
-  {
-    id: 'kids-4x4-3',
-    clueCount: 6,
-    grid: [
-      [0, 0, 2, 0],
-      [0, 4, 1, 0],
-      [0, 1, 0, 0],
-      [4, 0, 3, 0],
-    ],
-    solution: [
-      [1, 3, 2, 4],
-      [2, 4, 1, 3],
-      [3, 1, 4, 2],
-      [4, 2, 3, 1],
-    ],
-  },
+function rotate<T>(values: T[], amount: number) {
+  if (values.length === 0) return values;
+  const normalized = ((amount % values.length) + values.length) % values.length;
+  return [...values.slice(normalized), ...values.slice(0, normalized)];
+}
+
+function buildGroupedOrder(size: number, groupSize: number, variant: number) {
+  const groupCount = size / groupSize;
+  let groups = Array.from({ length: groupCount }, (_, index) => index);
+  groups = rotate(groups, variant % groupCount);
+  if ((variant & 1) === 1) groups.reverse();
+
+  const order: number[] = [];
+  for (const group of groups) {
+    let within = Array.from({ length: groupSize }, (_, index) => index);
+    within = rotate(within, Math.floor(variant / 2) % groupSize);
+    if ((variant & 2) === 2) within.reverse();
+    order.push(...within.map((index) => group * groupSize + index));
+  }
+  return order;
+}
+
+function transformSolution(
+  base: KidsSudokuGrid,
+  spec: KidsSudokuSpec,
+  variant: number,
+): KidsSudokuGrid {
+  const rowOrder = buildGroupedOrder(spec.size, spec.boxRows, variant + 1);
+  const columnOrder = buildGroupedOrder(spec.size, spec.boxColumns, variant * 3 + 2);
+  const digitOffset = variant % spec.size;
+  const reverseDigits = (variant & 4) === 4;
+
+  return rowOrder.map((sourceRow) =>
+    columnOrder.map((sourceColumn) => {
+      const value = base[sourceRow][sourceColumn];
+      const shifted = ((value - 1 + digitOffset) % spec.size) + 1;
+      return reverseDigits ? spec.size + 1 - shifted : shifted;
+    }),
+  );
+}
+
+function createPuzzleLibrary(
+  prefix: string,
+  spec: KidsSudokuSpec,
+  variantsPerLevel: number,
+): readonly KidsSudokuPuzzle[] {
+  const base = createBaseSolution(spec);
+  const puzzles: KidsSudokuPuzzle[] = [];
+
+  for (const level of LEVELS) {
+    for (let index = 0; index < variantsPerLevel; index += 1) {
+      const variant = index + LEVELS.indexOf(level) * variantsPerLevel;
+      const id = `${prefix}-${level}-${String(index + 1).padStart(2, '0')}`;
+      const solution = transformSolution(base, spec, variant);
+      puzzles.push(
+        buildKidsSudokuPuzzle({
+          id,
+          level,
+          spec,
+          solution,
+          targetClues: TARGET_CLUES[spec.size][level],
+          seed: `${id}-clues`,
+        }),
+      );
+    }
+  }
+
+  return puzzles;
+}
+
+export const KIDS_SUDOKU_4X4_PUZZLES = createPuzzleLibrary(
+  'kids-4x4',
+  KIDS_4X4_SPEC,
+  8,
+);
+
+export const KIDS_SUDOKU_6X6_PUZZLES = createPuzzleLibrary(
+  'kids-6x6',
+  KIDS_6X6_SPEC,
+  4,
+);
+
+export const ALL_KIDS_SUDOKU_PUZZLES = [
+  ...KIDS_SUDOKU_4X4_PUZZLES,
+  ...KIDS_SUDOKU_6X6_PUZZLES,
 ] as const;
 
+// Backward-compatible alias used by the original 4×4 page and existing imports.
+export const KIDS_SUDOKU_PUZZLES = KIDS_SUDOKU_4X4_PUZZLES;
+
 export function createKidsSudokuGrid(puzzle: KidsSudokuPuzzle): KidsSudokuGrid {
-  return puzzle.grid.map((row) => [...row]);
-}
-
-function canPlaceValue(grid: KidsSudokuGrid, row: number, column: number, value: number) {
-  if (grid[row].includes(value)) return false;
-  if (grid.some((currentRow) => currentRow[column] === value)) return false;
-
-  const startRow = Math.floor(row / 2) * 2;
-  const startColumn = Math.floor(column / 2) * 2;
-  for (let boxRow = startRow; boxRow < startRow + 2; boxRow += 1) {
-    for (let boxColumn = startColumn; boxColumn < startColumn + 2; boxColumn += 1) {
-      if (grid[boxRow][boxColumn] === value) return false;
-    }
-  }
-
-  return true;
-}
-
-export function countKidsSudokuSolutions(input: KidsSudokuGrid, limit = 2): number {
-  const grid = input.map((row) => [...row]);
-  let solutions = 0;
-
-  function solve() {
-    if (solutions >= limit) return;
-
-    let bestCell: { row: number; column: number; candidates: number[] } | null = null;
-    for (let row = 0; row < 4; row += 1) {
-      for (let column = 0; column < 4; column += 1) {
-        if (grid[row][column] !== 0) continue;
-
-        const candidates = [1, 2, 3, 4].filter((value) =>
-          canPlaceValue(grid, row, column, value),
-        );
-        if (!bestCell || candidates.length < bestCell.candidates.length) {
-          bestCell = { row, column, candidates };
-        }
-      }
-    }
-
-    if (!bestCell) {
-      solutions += 1;
-      return;
-    }
-
-    for (const value of bestCell.candidates) {
-      grid[bestCell.row][bestCell.column] = value;
-      solve();
-      grid[bestCell.row][bestCell.column] = 0;
-    }
-  }
-
-  solve();
-  return solutions;
-}
-
-export function checkKidsSudokuGrid(
-  grid: KidsSudokuGrid,
-  puzzle: KidsSudokuPuzzle,
-): KidsSudokuStatus {
-  for (let row = 0; row < 4; row += 1) {
-    for (let column = 0; column < 4; column += 1) {
-      const value = grid[row]?.[column] ?? 0;
-      if (value !== 0 && value !== puzzle.solution[row][column]) {
-        return 'incorrect';
-      }
-    }
-  }
-
-  if (grid.some((row) => row.some((value) => value === 0))) {
-    return 'incomplete';
-  }
-
-  return 'complete';
+  return cloneKidsSudokuGrid(puzzle.grid);
 }
