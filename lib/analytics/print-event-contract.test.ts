@@ -18,9 +18,25 @@ describe("print funnel contract", () => {
       expect(source).toContain("curated_sampler_3");
       expect(source).not.toContain("/games/samurai/printable/${");
       expect(source).not.toContain("window.print()");
-      expect(source).not.toContain("free-20-puzzle-pack");
-      expect(source).not.toContain("free-5-puzzle-pack");
+      expect(source).not.toContain('href="#free-20-puzzle-pack"');
+      expect(source).not.toContain('href="#free-5-puzzle-pack"');
     }
+  });
+
+  it("keeps historical sampler fragments as non-visible aliases only", () => {
+    const source = readFileSync(
+      resolve(
+        process.cwd(),
+        "app/[locale]/printable-samurai-sudoku/page.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(source).toContain('id="free-20-puzzle-pack"');
+    expect(source).toContain('id="free-5-puzzle-pack"');
+    expect(source).toContain('id="free-3-puzzle-pack"');
+    expect(source).not.toContain('href="#free-20-puzzle-pack"');
+    expect(source).not.toContain('href="#free-5-puzzle-pack"');
   });
 
   it("redirects legacy single-puzzle print URLs to the canonical sampler", () => {

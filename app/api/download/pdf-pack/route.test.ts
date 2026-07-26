@@ -38,8 +38,14 @@ describe("GET /api/download/pdf-pack", () => {
     const response = await GET(
       new Request("http://localhost/api/download/pdf-pack?token=invalid"),
     );
+    const body = await response.json();
 
     expect(response.status).toBe(403);
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(response.headers.get("x-robots-tag")).toContain("noindex");
+    expect(body).toEqual({
+      error: "This download link is invalid or has expired.",
+    });
   });
 
   it("treats a weak signing secret as unconfigured", async () => {
