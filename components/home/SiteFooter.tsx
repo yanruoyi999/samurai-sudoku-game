@@ -45,6 +45,12 @@ export function SiteFooter({
         <Link href={`/${locale}/sudoku-for-kids`} className="text-primary hover:text-primary/80">
           {isZh ? '儿童 4×4 数独' : 'Kids Sudoku'}
         </Link>
+        <Link href={`/${locale}/sudoku-for-kids/printable`} className="text-primary hover:text-primary/80">
+          {isZh ? '儿童数独打印' : 'Kids worksheets'}
+        </Link>
+        <Link href={`/${locale}/sudoku-for-kids/worksheet-generator`} className="text-primary hover:text-primary/80">
+          {isZh ? '儿童练习纸生成器' : 'Kids worksheet generator'}
+        </Link>
         <Link href={`/${locale}/games/samurai/what-is-samurai-sudoku`} className="text-primary hover:text-primary/80">
           {isZh ? '武士数独介绍' : 'What is Samurai Sudoku?'}
         </Link>
