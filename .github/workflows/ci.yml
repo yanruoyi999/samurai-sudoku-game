@@ -18,7 +18,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -50,6 +50,9 @@ jobs:
           set -o pipefail
           pnpm test 2>&1 | tee vitest.log
 
+      - name: Test site audit runner
+        run: pnpm test:site-audits
+
       - name: Upload test diagnostics
         if: failure() && steps.vitest.outcome == 'failure'
         uses: actions/upload-artifact@v4
@@ -61,3 +64,22 @@ jobs:
 
       - name: Validate puzzle corpus
         run: pnpm validate-puzzles
+
+      - name: Build production application
+        run: pnpm build
+
+      - name: Audit internal links and page quality
+        id: site-audits
+        run: pnpm audit:site
+
+      - name: Upload site audit diagnostics
+        if: failure() && steps.site-audits.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-audit-diagnostics
+          path: |
+            /tmp/samurai-next.log
+            /tmp/internal-links-audit.log
+            /tmp/page-quality-audit.log
+          if-no-files-found: warn
+          retention-days: 7

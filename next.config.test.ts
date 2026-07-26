@@ -1,18 +1,27 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
+import puzzleCachePolicy from "./lib/pwa/puzzle-cache-policy.json";
+
 const source = readFileSync("next.config.js", "utf8");
 
 describe("PWA puzzle data caching", () => {
-  it("does not cache the mutable puzzle index with the dated puzzle CacheFirst rule", () => {
+  it("keeps the mutable index separate and refreshes dated puzzle data", () => {
     expect(source).toContain("urlPattern: /\\/puzzles\\/index\\.json$/i");
     expect(source).toMatch(
       /urlPattern: \/\\\/puzzles\\\/index\\\.json\$\/i,[\s\S]*?handler: 'NetworkFirst'/,
     );
     expect(source).toMatch(
-      /urlPattern: \/\\\/puzzles\\\/\\d\{4\}\\\/\\d\{4\}-\\d\{2\}-\\d\{2\}\\\.json\$\/i,[\s\S]*?handler: 'CacheFirst'/,
+      /urlPattern: \/\\\/puzzles\\\/\\d\{4\}\\\/\\d\{4\}-\\d\{2\}-\\d\{2\}\\\.json\$\/i,[\s\S]*?handler: puzzleCachePolicy\.runtimeHandler/,
     );
+    expect(puzzleCachePolicy.runtimeHandler).toBe("StaleWhileRevalidate");
     expect(source).not.toContain("urlPattern: /\\/puzzles\\/.*/i");
+  });
+
+  it("requires browser revalidation for corrected dated puzzles", () => {
+    expect(source).toContain("value: puzzleCachePolicy.httpCacheControl");
+    expect(puzzleCachePolicy.httpCacheControl).toContain("max-age=0");
+    expect(puzzleCachePolicy.httpCacheControl).not.toContain("immutable");
   });
 
   it("never caches PayPal or paid download API responses", () => {

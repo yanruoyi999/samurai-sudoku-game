@@ -11,7 +11,7 @@ export async function GET() {
 
   const content = `# Samurai Sudoku
 
-> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily online challenge, a curated printable PDF sampler, a complete 30-day PDF library, hints, notes, offline support, and localized English/Chinese guides.
+> Free Samurai Sudoku puzzles with five overlapping 9x9 grids, a daily online challenge, a curated printable PDF sampler, a complete 30-day PDF library, hints, notes, offline support, a localized Sudoku for Kids learning cluster, and English/Chinese guides.
 
 Canonical site: [Samurai Sudoku](${baseUrl})
 Languages: English (/en), Chinese (/zh)
@@ -23,14 +23,20 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 
 - [Play today's Samurai Sudoku](${baseUrl}/en/games/samurai)
 - [Daily puzzle hub with today's play and print links](${baseUrl}/en/games/samurai/daily)
+- [Sudoku for Kids hub with 24 playable 4x4 puzzles](${baseUrl}/en/sudoku-for-kids)
+- [Printable Sudoku for Kids worksheets](${baseUrl}/en/sudoku-for-kids/printable)
+- [Sudoku for Kids answer keys](${baseUrl}/en/sudoku-for-kids/answers)
+- [Playable 6x6 Sudoku for Kids](${baseUrl}/en/sudoku-for-kids/6x6)
+- [Sudoku worksheet generator for parents and teachers](${baseUrl}/en/sudoku-for-kids/worksheet-generator)
+- [Parent and teacher resources for teaching Kids Sudoku](${baseUrl}/en/sudoku-for-kids/resources)
 - [Puzzle archive](${baseUrl}/en/games/samurai/archive)
 - [What is Samurai Sudoku](${baseUrl}/en/games/samurai/what-is-samurai-sudoku)
-- [How to play Samurai Sudoku](${baseUrl}/en/games/samurai/how-to-play)
+- [How to play Samurai Sudoku: rules and controls](${baseUrl}/en/games/samurai/how-to-play)
 - [First move strategy](${baseUrl}/en/games/samurai/first-move-strategy)
 - [Difficulty selection guide](${baseUrl}/en/games/samurai/choose-difficulty)
 - [Common mistakes and stuck recovery](${baseUrl}/en/games/samurai/common-mistakes)
-- [Solving tips guide](${baseUrl}/en/games/samurai/solving-tips)
-- [Strategy guide](${baseUrl}/en/games/samurai/strategy-guide)
+- [Start-to-finish solving tips](${baseUrl}/en/games/samurai/solving-tips)
+- [Advanced techniques: pairs, locked candidates, and cross-grid logic](${baseUrl}/en/games/samurai/strategy-guide)
 - [Overlap boxes explained](${baseUrl}/en/games/samurai/overlap-boxes)
 - [Candidate notes guide](${baseUrl}/en/games/samurai/candidate-notes)
 - [Evil solving path](${baseUrl}/en/games/samurai/evil-solving-path)
@@ -41,6 +47,8 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - [100-puzzle ZIP pack](${baseUrl}/en/printable-samurai-sudoku#paid-100-puzzle-pack)
 - [Beginner guide](${baseUrl}/en/games/samurai/beginners)
 - [Evil Samurai Sudoku puzzles](${baseUrl}/en/games/samurai/difficulty/evil)
+- [Puzzle generation, validation, difficulty, and correction methodology](${baseUrl}/en/about/puzzle-methodology)
+- [About Samurai Sudoku](${baseUrl}/en/about)
 - [Minesweeper Online](${baseUrl}/en/games/minesweeper)
 - [How to play Minesweeper](${baseUrl}/en/games/minesweeper/how-to-play)
 - [Minesweeper beginner strategy](${baseUrl}/en/games/minesweeper/beginner-strategy)
@@ -56,14 +64,27 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - Every row, column, and 3x3 box in each 9x9 grid must contain 1 through 9 without repetition.
 - Overlap cells belong to two grids and must satisfy both grids at the same time.
 - The site provides easy, medium, hard, and evil difficulty landing pages.
+- The Kids Sudoku cluster contains 24 verified 4x4 puzzles and 12 verified 6x6 puzzles across Easy, Medium, and Challenge levels. Every puzzle is checked for valid rows, columns, boxes, givens, and one solution.
+- The interactive Kids Sudoku boards support touch and keyboard input, three levels, answer checking, reset, next puzzle, browser printing, solved-count feedback, and local progress that expires after 30 days.
+- Kids Sudoku progress stores only a puzzle ID, grid values, completed puzzle IDs, and a timestamp in the current browser. The tools do not request or save a child's name, email, school, class, or profile.
+- The printable Kids Sudoku page provides six ready-made 4x4 worksheets with matching separate answer keys.
+- The playable 6x6 page uses 2x3 boxes as a bridge from 4x4 toward regular 9x9 Sudoku.
+- The worksheet generator selects 2, 4, or 6 puzzles from verified 4x4 or 6x6 libraries by level and can append answer keys. It does not generate unchecked puzzles in the browser.
+- The parent and teacher resource page includes a 10-minute lesson, parent prompts, classroom differentiation, progression guidance, and privacy boundaries.
 - The first move strategy guide explains how new players should select a cell before tapping a number, scan overlap boxes first, and use Easy puzzles before moving to harder boards.
 - The difficulty selection guide explains when to choose Easy, Medium, Hard, or Evil, how New Game behaves, and when to use the All Puzzles archive instead of random switching.
 - The Common mistakes guide explains why players get stuck, restart, switch difficulty repeatedly, or stall after a few grids; it recommends choosing one active overlap box, rebuilding candidates from both connected grids, and switching difficulty deliberately.
-- The solving tips guide gives a start-to-finish workflow: choose the right difficulty, start near overlap boxes, use naked and hidden singles, switch to candidate notes when stuck, and rescan connected grids after each overlap placement.
+- The solving tips guide owns the broad start-to-finish workflow: choose the right difficulty, start near overlap boxes, use naked and hidden singles, switch to candidate notes when stuck, and rescan connected grids after each overlap placement.
+- The advanced techniques guide is intentionally narrower and covers hidden singles, candidate pairs, box-line reduction, cross-grid transfers, and disciplined rollback.
 - The overlap boxes guide explains the four shared 3x3 boxes that connect the center grid with the corner grids.
 - The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles.
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
 - The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
+- Puzzle generation starts from a complete randomized five-grid solution and removes clues only while a bounded Samurai solver confirms one solution.
+- Published puzzle validation checks dimensions, values, clue/solution agreement, overlap consistency, completed-board conflicts, and uniqueness.
+- Difficulty profiles currently use different target clue counts, minimum clues per grid, and estimated times rather than claiming an identical experience for every player.
+- Dated puzzle JSON is revalidated by browsers and refreshed in the background by the service worker while remaining available as an offline fallback.
+- Pull-request CI runs lint, TypeScript, unit tests, puzzle-corpus validation, a production build, internal-link auditing, and page-quality auditing.
 - The daily puzzle hub automatically selects the newest validated dated puzzle for online play and directs paper solvers to the curated printable sampler.
 - Dated puzzle pages remain free online; one-click paper-solving actions use the shared three-puzzle PDF sampler instead of separate browser print pages.
 - The printable practice plan explains how to use the sampler, answer keys, and complete 30-day library without turning practice into guessing.

@@ -1,5 +1,6 @@
 export type SiteNavigationItemId =
   | "today"
+  | "kids"
   | "printable"
   | "archive"
   | "guides"
@@ -46,6 +47,11 @@ export function buildSiteNavigation(
         id: "today",
         href: `${localeRoot}/games/samurai`,
         label: isZh ? "今日题目" : "Today",
+      },
+      {
+        id: "kids",
+        href: `${localeRoot}/sudoku-for-kids`,
+        label: isZh ? "儿童 4×4" : "Kids 4×4",
       },
       {
         id: "printable",
