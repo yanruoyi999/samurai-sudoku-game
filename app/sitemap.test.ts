@@ -4,6 +4,15 @@ import { getPuzzleIndex } from '@/lib/puzzles';
 import type { Difficulty } from '@/lib/sudoku/types';
 import sitemap from './sitemap';
 
+const KIDS_SUDOKU_PATHS = [
+  '/sudoku-for-kids',
+  '/sudoku-for-kids/printable',
+  '/sudoku-for-kids/answers',
+  '/sudoku-for-kids/6x6',
+  '/sudoku-for-kids/worksheet-generator',
+  '/sudoku-for-kids/resources',
+] as const;
+
 describe('sitemap', () => {
   it("uses each difficulty archive's newest puzzle date as lastModified", async () => {
     const entries = await sitemap();
@@ -37,10 +46,14 @@ describe('sitemap', () => {
     expect(urls.has('https://www.samuraisudoku.net/zh/games/samurai/common-mistakes')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/en/games/samurai/printable-practice-plan')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/zh/games/samurai/printable-practice-plan')).toBe(true);
-    expect(urls.has('https://www.samuraisudoku.net/en/sudoku-for-kids')).toBe(true);
-    expect(urls.has('https://www.samuraisudoku.net/zh/sudoku-for-kids')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/en/about/puzzle-methodology')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/zh/about/puzzle-methodology')).toBe(true);
+
+    for (const locale of ['en', 'zh']) {
+      for (const path of KIDS_SUDOKU_PATHS) {
+        expect(urls.has(`https://www.samuraisudoku.net/${locale}${path}`)).toBe(true);
+      }
+    }
   });
 
   it('uses printable-samurai-sudoku as the canonical printable resource page', async () => {
