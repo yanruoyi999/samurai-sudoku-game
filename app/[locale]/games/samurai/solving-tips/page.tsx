@@ -308,7 +308,13 @@ export default async function SolvingTipsPage({ params }: PageProps) {
         </div>
       </header>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-4">
+      <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <Link href={`/${normalizedLocale}/sudoku-cross-hatching`} className="rounded-xl border bg-background p-5 hover:border-primary hover:bg-primary/5">
+          <h2 className="text-lg font-semibold text-primary">{isZh ? '交叉排除' : 'Cross hatching'}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {isZh ? '先学会用行列扫描找到唯一落点。' : 'Use row and column scans to reveal one legal position.'}
+          </p>
+        </Link>
         <Link href={`/${normalizedLocale}/games/samurai/first-move-strategy`} className="rounded-xl border bg-background p-5 hover:border-primary hover:bg-primary/5">
           <h2 className="text-lg font-semibold text-primary">{isZh ? '第一步' : 'First move'}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

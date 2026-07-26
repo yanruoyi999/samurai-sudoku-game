@@ -41,6 +41,23 @@ const highQualityKidsPage = `
   </body>
 </html>`;
 
+const highQualitySudokuGuide = `
+<html>
+  <head>
+    <title>Sudoku Cross Hatching: Step-by-Step Scanning Technique</title>
+    <meta name="description" content="Learn Sudoku cross hatching with an interactive 9x9 example, row and column scanning, practice exercises, and Samurai overlap tips." />
+    <link rel="canonical" href="https://www.samuraisudoku.net/en/sudoku-cross-hatching" />
+    <script type="application/ld+json">{"@type":"HowTo"}</script>
+  </head>
+  <body>
+    <h1>Sudoku Cross Hatching Explained</h1>
+    <p>${'Cross hatching scans rows and columns to find one legal cell for a digit. '.repeat(45)}</p>
+    <a href="/en/games/samurai/first-move-strategy">First move</a>
+    <a href="/en/games/samurai/overlap-boxes">Overlap boxes</a>
+    <button>Show row exclusions</button>
+  </body>
+</html>`;
+
 describe('page quality scoring', () => {
   it('scores a high-quality long-tail printable guide above the publishing threshold', () => {
     const result = scoreHtmlPage(
@@ -89,6 +106,48 @@ describe('page quality scoring', () => {
       );
       expect(result.category).toBe('kids-sudoku');
       expect(result.breakdown.demand).toBeGreaterThanOrEqual(16);
+      expect(result.score).toBeGreaterThanOrEqual(80);
+    }
+  });
+
+  it('classifies the cross-hatching tutorial as a high-intent Sudoku guide', () => {
+    const result = scoreHtmlPage(
+      new URL('https://www.samuraisudoku.net/en/sudoku-cross-hatching'),
+      highQualitySudokuGuide,
+    );
+
+    expect(result.category).toBe('sudoku-guide');
+    expect(result.breakdown.demand).toBeGreaterThanOrEqual(16);
+    expect(result.score).toBeGreaterThanOrEqual(80);
+  });
+
+  it('classifies standalone technique pages as high-intent Sudoku guides', () => {
+    for (const path of [
+      '/en/sudoku-naked-triple',
+      '/en/sudoku-swordfish',
+      '/en/killer-sudoku-cheat-sheet',
+    ]) {
+      const result = scoreHtmlPage(
+        new URL(`https://www.samuraisudoku.net${path}`),
+        highQualitySudokuGuide,
+      );
+      expect(result.category).toBe('sudoku-guide');
+      expect(result.breakdown.demand).toBeGreaterThanOrEqual(16);
+      expect(result.score).toBeGreaterThanOrEqual(80);
+    }
+  });
+
+  it('keeps standard printable tools separate from the Samurai printable funnel', () => {
+    for (const path of [
+      '/en/printable-sudoku',
+      '/en/blank-sudoku-grid-printable',
+    ]) {
+      const result = scoreHtmlPage(
+        new URL(`https://www.samuraisudoku.net${path}`),
+        highQualityGuide,
+      );
+      expect(result.category).toBe('sudoku-printable');
+      expect(result.breakdown.demand).toBe(20);
       expect(result.score).toBeGreaterThanOrEqual(80);
     }
   });

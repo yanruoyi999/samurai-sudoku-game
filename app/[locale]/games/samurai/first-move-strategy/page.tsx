@@ -260,7 +260,13 @@ export default async function FirstMoveStrategyPage({ params }: PageProps) {
         </div>
       </header>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-3">
+      <section className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Link href={`/${normalizedLocale}/sudoku-cross-hatching`} className="rounded-xl border bg-background p-5 hover:border-primary hover:bg-primary/5">
+          <h2 className="text-lg font-semibold text-primary">{isZh ? '交叉排除图解' : 'Visual cross hatching'}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {isZh ? '用互动 9×9 棋盘练会行列扫描，再进入重叠宫。' : 'Practice row-and-column scanning on an interactive 9×9 board before using it in overlaps.'}
+          </p>
+        </Link>
         <Link href={`/${normalizedLocale}/games/samurai/what-is-samurai-sudoku`} className="rounded-xl border bg-background p-5 hover:border-primary hover:bg-primary/5">
           <h2 className="text-lg font-semibold text-primary">{isZh ? '先看五宫布局' : 'Review the five-grid layout'}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

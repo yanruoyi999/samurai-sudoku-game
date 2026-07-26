@@ -61,9 +61,17 @@ function uniqueInternalLinks(html: string, url: URL) {
 
 function categorizePath(pathname: string) {
   const path = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
+  const standaloneSudokuGuides = new Set([
+    '/sudoku-cross-hatching',
+    '/sudoku-naked-triple',
+    '/sudoku-swordfish',
+    '/killer-sudoku-cheat-sheet',
+  ]);
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
+  if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
+  if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
   if (path === '/games/minesweeper') return 'minesweeper-core';
   if (path.startsWith('/games/minesweeper/')) return 'minesweeper-guide';
   if (/^\/games\/samurai\/\d{4}-\d{2}-\d{2}$/.test(path)) return 'samurai-puzzle';
@@ -86,6 +94,7 @@ function scoreDemand(pathname: string, category: string) {
   if (path === '/en' || path === '/zh' || path.endsWith('/games/samurai')) return 20;
   if (path.includes('printable') || path.includes('pdf')) return 20;
   if (path.includes('daily') || path.includes('archive')) return 18;
+  if (category === 'sudoku-guide') return 17;
   if (path.includes('/games/minesweeper')) return 18;
   if (category === 'kids-sudoku') return 17;
   if (path.includes('/difficulty/evil') || path.includes('/difficulty/hard')) return 17;
@@ -120,6 +129,8 @@ function scorePlayability(category: string, html: string) {
   if (category === 'samurai-puzzle') return hasInteractiveControl ? 15 : 12;
   if (category === 'samurai-difficulty' || category === 'samurai-archive') return hasInteractiveControl ? 14 : 12;
   if (category === 'samurai-printable') return hasInteractiveControl ? 13 : 12;
+  if (category === 'sudoku-printable') return hasInteractiveControl ? 15 : 12;
+  if (category === 'sudoku-guide') return hasInteractiveControl ? 15 : 11;
   if (category.endsWith('-guide')) return 11;
   if (category === 'trust-page') return 8;
   return 7;

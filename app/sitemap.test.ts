@@ -48,6 +48,18 @@ describe('sitemap', () => {
     expect(urls.has('https://www.samuraisudoku.net/zh/games/samurai/printable-practice-plan')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/en/about/puzzle-methodology')).toBe(true);
     expect(urls.has('https://www.samuraisudoku.net/zh/about/puzzle-methodology')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/sudoku-cross-hatching')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/sudoku-cross-hatching')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/sudoku-naked-triple')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/sudoku-naked-triple')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/sudoku-swordfish')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/sudoku-swordfish')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/killer-sudoku-cheat-sheet')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/killer-sudoku-cheat-sheet')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/printable-sudoku')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/printable-sudoku')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/en/blank-sudoku-grid-printable')).toBe(true);
+    expect(urls.has('https://www.samuraisudoku.net/zh/blank-sudoku-grid-printable')).toBe(true);
 
     for (const locale of ['en', 'zh']) {
       for (const path of KIDS_SUDOKU_PATHS) {

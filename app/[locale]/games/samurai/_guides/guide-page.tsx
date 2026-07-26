@@ -323,8 +323,15 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
     secondaryHref: '/games/samurai/solver',
     numbered: true,
     keywords: {
-      en: ['samurai sudoku candidates', 'samurai sudoku candidate notes', 'sudoku pencil marks', 'samurai sudoku notes'],
-      zh: ['武士数独候选数', '武士数独笔记', '数独候选标记', '武士数独铅笔标记'],
+      en: [
+        'samurai sudoku candidates',
+        'samurai sudoku candidate notes',
+        'sudoku pencil marks',
+        'samurai sudoku notes',
+        'what is auto candidate mode in sudoku',
+        'sudoku auto candidate mode',
+      ],
+      zh: ['武士数独候选数', '武士数独笔记', '数独候选标记', '武士数独铅笔标记', '数独自动候选模式', '自动候选数'],
     },
     content: {
       en: {
@@ -351,6 +358,14 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
             title: 'Look for pairs and locked candidates',
             body: 'On harder puzzles, two cells sharing the same pair can remove those digits elsewhere. Candidate notes make these patterns visible.',
           },
+          {
+            title: 'Know what auto candidate mode actually does',
+            body: 'Auto candidate mode recalculates the currently legal digits in each empty cell after confirmed placements. It is bookkeeping, not a hint: it does not prove which candidate is correct or explain the next logical move.',
+          },
+          {
+            title: 'Choose automatic or manual notes deliberately',
+            body: 'Manual notes train scanning and expose why a candidate was removed; automatic notes reduce repetitive bookkeeping. In Samurai Sudoku, still verify overlap cells against both grids, and update candidates only after a confirmed placement.',
+          },
         ],
         primaryCta: "Practice with today's puzzle",
         secondaryCta: 'Use hint guide',
@@ -376,6 +391,14 @@ const guidePages: Record<GuideKey, GuideDefinition> = {
           {
             title: '寻找候选对和锁定候选',
             body: '困难题里，两个格子共享同一组候选时，可以排除其他位置。候选笔记能让这些模式变得可见。',
+          },
+          {
+            title: '先理解自动候选模式真正做什么',
+            body: '自动候选模式会在确认落子后，重新计算每个空格当前仍合法的数字。它只是代替重复记录，不是提示：不会证明哪个候选正确，也不会解释下一步逻辑。',
+          },
+          {
+            title: '按训练目标选择自动或手动候选',
+            body: '手写候选能训练扫描能力，并让你看见候选为何被排除；自动候选适合减少机械记录。武士数独的重叠格仍要同时检查两个网格，而且只应在确认落子后更新候选。',
           },
         ],
         primaryCta: '用今日题练习',
@@ -841,6 +864,49 @@ export function SamuraiGuidePage({ guide, locale }: SamuraiGuidePageProps) {
             </Link>
           </div>
         </section>
+        {guide === 'candidateNotes' ? (
+          <section className="mt-10 border-t pt-10">
+            <p className="text-sm font-semibold text-primary">
+              {isZh ? '候选数学习路径' : 'Candidate technique path'}
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold">
+              {isZh ? '从基础扫描到候选集合与鱼形' : 'Move from scanning to candidate sets and fish patterns'}
+            </h2>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  href: '/sudoku-cross-hatching',
+                  title: isZh ? '数独交叉排除法' : 'Sudoku cross hatching',
+                  body: isZh ? '先用行、列和宫扫描缩小候选。' : 'Reduce candidates with row, column, and box scans.',
+                },
+                {
+                  href: '/sudoku-naked-triple',
+                  title: isZh ? '显性三数组' : 'Naked triple',
+                  body: isZh ? '学习三个格如何锁定三个候选。' : 'Learn how three cells lock three candidates.',
+                },
+                {
+                  href: '/sudoku-swordfish',
+                  title: isZh ? '数独剑鱼技巧' : 'Sudoku Swordfish',
+                  body: isZh ? '用三行或三列形成进阶排除。' : 'Build advanced eliminations across three lines.',
+                },
+                {
+                  href: '/blank-sudoku-grid-printable',
+                  title: isZh ? '空白数独候选练习纸' : 'Blank Sudoku candidate grids',
+                  body: isZh ? '打印空白网格练习手写候选。' : 'Print blank grids for manual candidate practice.',
+                },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={localizedHref(normalizedLocale, item.href)}
+                  className="rounded-lg border p-4 hover:border-primary hover:bg-primary/5"
+                >
+                  <h3 className="font-semibold text-primary">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
         <footer className="mt-10 flex flex-wrap gap-3">
           <TrackedLink
             href={localizedHref(normalizedLocale, definition.primaryHref)}

@@ -29,6 +29,12 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - [Playable 6x6 Sudoku for Kids](${baseUrl}/en/sudoku-for-kids/6x6)
 - [Sudoku worksheet generator for parents and teachers](${baseUrl}/en/sudoku-for-kids/worksheet-generator)
 - [Parent and teacher resources for teaching Kids Sudoku](${baseUrl}/en/sudoku-for-kids/resources)
+- [Printable 9x9 Sudoku generator with answer keys](${baseUrl}/en/printable-sudoku)
+- [Blank printable Sudoku grids in 4x4, 6x6, 9x9, and Samurai layouts](${baseUrl}/en/blank-sudoku-grid-printable)
+- [Sudoku cross hatching visual scanning guide](${baseUrl}/en/sudoku-cross-hatching)
+- [Sudoku naked triple candidate-set guide and trainer](${baseUrl}/en/sudoku-naked-triple)
+- [Sudoku Swordfish row and column pattern guide and trainer](${baseUrl}/en/sudoku-swordfish)
+- [Killer Sudoku cheat sheet and cage combination calculator](${baseUrl}/en/killer-sudoku-cheat-sheet)
 - [Puzzle archive](${baseUrl}/en/games/samurai/archive)
 - [What is Samurai Sudoku](${baseUrl}/en/games/samurai/what-is-samurai-sudoku)
 - [How to play Samurai Sudoku: rules and controls](${baseUrl}/en/games/samurai/how-to-play)
@@ -71,13 +77,20 @@ Hard or evil puzzle count: ${hardOrEvilCount}
 - The playable 6x6 page uses 2x3 boxes as a bridge from 4x4 toward regular 9x9 Sudoku.
 - The worksheet generator selects 2, 4, or 6 puzzles from verified 4x4 or 6x6 libraries by level and can append answer keys. It does not generate unchecked puzzles in the browser.
 - The parent and teacher resource page includes a 10-minute lesson, parent prompts, classroom differentiation, progression guidance, and privacy boundaries.
+- Cross hatching is a visual Sudoku scanning technique: choose one digit and one 3x3 box, eliminate cells whose row and column already contain that digit, and place it only when one legal cell remains.
+- The cross-hatching guide includes three interactive 9x9 examples, distinguishes hidden singles from naked singles and locked candidates, and explains how to verify an overlap cell against both connected Samurai grids.
+- The standard printable Sudoku page selects from 24 verified 9x9 puzzles across Easy, Medium, Hard, and Expert levels and supports 1, 2, 4, or 6 puzzles, answer keys, large print, A4, and US Letter.
+- The blank-grid page provides printable 4x4, 6x6, 9x9, and Samurai layouts in normal or bold line weights, with browser print plus SVG and PNG downloads.
+- A naked triple exists when three cells in one row, column, or box have a combined candidate union of exactly three digits; those digits can then be removed from other cells in that unit.
+- A Swordfish uses one digit across three rows and three columns, or three columns and three rows, so that digit can be removed from other cells on the opposite three lines.
+- The Killer Sudoku cheat sheet is an isolated adjacent-variant resource. Its calculator lists no-repeat digit combinations for cage sizes from 2 through 6, while the printable table summarizes common 2-, 3-, and 4-cell cage sums.
 - The first move strategy guide explains how new players should select a cell before tapping a number, scan overlap boxes first, and use Easy puzzles before moving to harder boards.
 - The difficulty selection guide explains when to choose Easy, Medium, Hard, or Evil, how New Game behaves, and when to use the All Puzzles archive instead of random switching.
 - The Common mistakes guide explains why players get stuck, restart, switch difficulty repeatedly, or stall after a few grids; it recommends choosing one active overlap box, rebuilding candidates from both connected grids, and switching difficulty deliberately.
 - The solving tips guide owns the broad start-to-finish workflow: choose the right difficulty, start near overlap boxes, use naked and hidden singles, switch to candidate notes when stuck, and rescan connected grids after each overlap placement.
 - The advanced techniques guide is intentionally narrower and covers hidden singles, candidate pairs, box-line reduction, cross-grid transfers, and disciplined rollback.
 - The overlap boxes guide explains the four shared 3x3 boxes that connect the center grid with the corner grids.
-- The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles.
+- The candidate notes guide explains pencil-mark workflow for overlap cells, pairs, and harder puzzles. Auto candidate mode recalculates currently legal digits after confirmed placements; it reduces bookkeeping but does not prove a next move or replace overlap verification.
 - The evil solving path guide gives a practical workflow for hard and evil Samurai Sudoku puzzles without guessing.
 - The evil stuck after two grids guide diagnoses the common long-tail problem where a player finishes two grids but cannot unlock the third grid because of missed overlap transfers, stale candidates, or hidden pairs.
 - Puzzle generation starts from a complete randomized five-grid solution and removes clues only while a bounded Samurai solver confirms one solution.

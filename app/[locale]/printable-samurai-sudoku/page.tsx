@@ -123,6 +123,8 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
   const rulesHref = `/${locale}/games/samurai/how-to-play`;
   const strategyHref = `/${locale}/games/samurai/strategy-guide`;
   const solverHref = `/${locale}/games/samurai/solver`;
+  const printableSudokuHref = `/${locale}/printable-sudoku`;
+  const blankGridHref = `/${locale}/blank-sudoku-grid-printable`;
   const paidPackPrice = getPdfPackPrice();
   const paidPackPriceAmount = getPdfPackPriceAmount();
   const paidPackDailyPrice = (Number(paidPackPriceAmount) / 30).toFixed(2);
@@ -667,6 +669,12 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
               </Link>
               <Link href={dailyHref} className="rounded-md border px-3 py-2 hover:bg-accent">
                 {isZh ? "每日武士数独" : "Daily puzzle"}
+              </Link>
+              <Link href={printableSudokuHref} className="rounded-md border px-3 py-2 hover:bg-accent">
+                {isZh ? "标准 9×9 数独打印" : "Standard 9×9 printable Sudoku"}
+              </Link>
+              <Link href={blankGridHref} className="rounded-md border px-3 py-2 hover:bg-accent">
+                {isZh ? "空白数独网格" : "Blank Sudoku grids"}
               </Link>
             </div>
           </section>

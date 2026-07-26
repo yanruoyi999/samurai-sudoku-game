@@ -190,7 +190,13 @@ export default async function StrategyGuidePage({ params }: PageProps) {
         </div>
       </section>
 
-      <section className="mt-12 grid gap-4 md:grid-cols-3">
+      <section className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Link href={`/${normalizedLocale}/sudoku-cross-hatching`} className="rounded-xl border bg-background p-5 hover:border-primary hover:bg-primary/5">
+          <h2 className="text-lg font-semibold text-primary">{isZh ? '交叉排除基础' : 'Cross-hatching basics'}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {isZh ? '先掌握行列扫描与隐藏唯一，再进入区块排除。' : 'Master row-and-column scanning and hidden singles before locked candidates.'}
+          </p>
+        </Link>
         <Link href={`/${normalizedLocale}/games/samurai/candidate-notes`} className="rounded-xl border bg-background p-5 hover:border-primary hover:bg-primary/5">
           <h2 className="text-lg font-semibold text-primary">{isZh ? '候选数专项' : 'Candidate notes'}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
