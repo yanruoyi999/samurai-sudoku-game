@@ -63,7 +63,7 @@ function categorizePath(pathname: string) {
   const path = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
-  if (path === '/sudoku-for-kids') return 'kids-sudoku-guide';
+  if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/games/minesweeper') return 'minesweeper-core';
   if (path.startsWith('/games/minesweeper/')) return 'minesweeper-guide';
   if (/^\/games\/samurai\/\d{4}-\d{2}-\d{2}$/.test(path)) return 'samurai-puzzle';
@@ -87,7 +87,7 @@ function scoreDemand(pathname: string, category: string) {
   if (path.includes('printable') || path.includes('pdf')) return 20;
   if (path.includes('daily') || path.includes('archive')) return 18;
   if (path.includes('/games/minesweeper')) return 18;
-  if (category === 'kids-sudoku-guide') return 17;
+  if (category === 'kids-sudoku') return 17;
   if (path.includes('/difficulty/evil') || path.includes('/difficulty/hard')) return 17;
   if (path.includes('rules') || path.includes('how-to-play') || path.includes('overlap')) return 17;
   if (path.includes('first-move') || path.includes('choose-difficulty')) return 16;
@@ -116,6 +116,7 @@ function scorePlayability(category: string, html: string) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
+  if (category === 'kids-sudoku') return hasInteractiveControl ? 15 : 11;
   if (category === 'samurai-puzzle') return hasInteractiveControl ? 15 : 12;
   if (category === 'samurai-difficulty' || category === 'samurai-archive') return hasInteractiveControl ? 14 : 12;
   if (category === 'samurai-printable') return hasInteractiveControl ? 13 : 12;
