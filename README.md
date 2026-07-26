@@ -1,19 +1,22 @@
 # Samurai Sudoku
 
-A modern, feature-rich Samurai Sudoku web application built with Next.js 15, React 18, TypeScript, next-intl, and PWA support.
+A modern, feature-rich Sudoku application built with Next.js 15, React 18, TypeScript, next-intl, and PWA support.
 
 ## 🌐 Live Pages
 
 - [Play Samurai Sudoku](https://www.samuraisudoku.net/en/games/samurai)
 - [Play Daily Samurai Sudoku](https://www.samuraisudoku.net/en/games/samurai/daily)
 - [Play Sudoku for Kids](https://www.samuraisudoku.net/en/sudoku-for-kids)
+- [Print Sudoku for Kids Worksheets](https://www.samuraisudoku.net/en/sudoku-for-kids/printable)
+- [Play 6×6 Sudoku for Kids](https://www.samuraisudoku.net/en/sudoku-for-kids/6x6)
+- [Build a Kids Sudoku Worksheet](https://www.samuraisudoku.net/en/sudoku-for-kids/worksheet-generator)
 - [Download Printable Samurai Sudoku](https://www.samuraisudoku.net/en/printable-samurai-sudoku)
 
 ## 🎯 Project Status
 
-**Current status** ✅ **Production-oriented game app**
+**Current status** ✅ **Production-oriented game and learning app**
 
-The implementation includes the core Samurai Sudoku game, localized SEO pages, daily puzzle data, offline support, local progress persistence, analytics hooks, printable PDF packs, PayPal order verification, and automated puzzle validation.
+The implementation includes the core Samurai Sudoku game, localized SEO pages, daily puzzle data, offline support, local progress persistence, a verified 4×4/6×6 Sudoku for Kids learning cluster, printable PDF packs, PayPal order verification, analytics hooks, and automated puzzle validation.
 
 ### ✅ Completed Features
 
@@ -25,14 +28,14 @@ The implementation includes the core Samurai Sudoku game, localized SEO pages, d
    - Zustand state management
    - Vitest testing setup
 
-2. **Coordinate System** (✅ 34/34 tests passing)
+2. **Coordinate System**
    - 21×21 global coordinate system
    - 5-grid local coordinate system
    - Overlap zone mapping between grids
    - Bidirectional coordinate conversion
    - Comprehensive test coverage
 
-3. **Sudoku Engine**
+3. **Samurai Sudoku Engine**
    - Board initialization from puzzle data
    - Cell value management
    - Conflict detection (row, column, box, overlap)
@@ -48,7 +51,7 @@ The implementation includes the core Samurai Sudoku game, localized SEO pages, d
    - Game status tracking
 
 5. **UI Components**
-   - Responsive 21×21 grid board
+   - Responsive 21×21 Samurai board
    - Interactive cells with keyboard navigation
    - Timer display
    - Action bar (undo, redo, reset, pause)
@@ -60,9 +63,20 @@ The implementation includes the core Samurai Sudoku game, localized SEO pages, d
    - Generated index for archive, sitemap, and difficulty pages
    - Structural validation and difficulty analysis scripts
 
-7. **PWA / SEO**
+7. **Sudoku for Kids**
+   - 24 verified 4×4 puzzles across Easy, Medium, and Challenge
+   - 12 verified 6×6 puzzles using 2×3 boxes
+   - Touch and keyboard play, answer checking, level selection, and printing
+   - Browser-only progress with a 30-day expiry
+   - Printable worksheets and matching answer keys
+   - Deterministic teacher worksheet generator using verified puzzles only
+   - Parent and teacher lesson resources
+   - No child name, email, school, class, or profile collection
+
+8. **PWA / SEO**
    - Offline fallback and service worker
    - Locale-aware metadata, sitemap, robots, canonical, and structured data
+   - Internal-link and page-quality audits in CI
    - Vercel Analytics, Speed Insights, and optional Clarity consent handling
 
 ## 🚀 Getting Started
@@ -86,7 +100,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser, or pass `-p 3001` if port 3000 is already in use.
+Open [http://localhost:3000](http://localhost:3000), or pass `-p 3001` if port 3000 is already in use.
 
 ### Testing
 
@@ -102,6 +116,10 @@ pnpm validate-puzzles
 
 # Validate committed free and paid PDF artifacts
 pnpm validate-pdf-packs
+
+# Build and audit the production site locally
+pnpm build
+pnpm audit:site
 ```
 
 ### Build
@@ -111,11 +129,13 @@ pnpm build
 pnpm start
 ```
 
-`pnpm build` rebuilds the puzzle index, validates every puzzle, verifies the PDF artifact checksums, and then runs the production Next.js build.
+`pnpm build` rebuilds the puzzle index, validates every Samurai puzzle, verifies the PDF artifact checksums, and runs the production Next.js build.
 
 ### Printable PDF packs
 
-The repository contains four public three-puzzle curated sampler PDFs and one private 100-puzzle ZIP. The sampler progresses through one Easy, one Medium, and one unanswered Expert preview with a verified first-step hint. The paid PDFs unlock that preview's verified 12-step opening and full answer as puzzle 076. Both A4 and US Letter are available in one-puzzle-per-page and two-puzzles-per-page layouts. To regenerate them deterministically:
+The repository contains four public three-puzzle curated sampler PDFs and one private 100-puzzle ZIP. The sampler progresses through one Easy, one Medium, and one unanswered Expert preview with a verified first-step hint. The paid PDFs unlock that preview's verified 12-step opening and full answer as puzzle 076. Both A4 and US Letter are available in one-puzzle-per-page and two-puzzles-per-page layouts.
+
+To regenerate them deterministically:
 
 ```bash
 python3 -m pip install -r scripts/requirements-pdf.txt
@@ -125,9 +145,9 @@ pnpm validate-pdf-packs
 
 The paid ZIP stays under `private-assets/` and is served only by the signed download route after a completed PayPal order is verified. The canonical customer funnel is `/{locale}/printable-samurai-sudoku`; legacy PDF sales and sample URLs permanently redirect to the matching section on that page.
 
-For the 72-hour printable offer experiment, use these funnel events:
+For the printable offer experiment, use these funnel events:
 
-- `download_free_pdf`: a visitor selected one of the public three-puzzle sampler PDFs.
+- `download_free_pdf`: a visitor selected one of the public sampler PDFs.
 - `free_pack_upgrade_prompt_view`: the post-download upgrade prompt became visible.
 - `pdf_expert_preview_arrival`: a visitor returned through the tracked Expert-preview link inside the PDF.
 - `paid_pack_view`: a visitor opened the deferred PayPal checkout.
@@ -152,84 +172,36 @@ When any REST credential is absent, the canonical printable hub pauses payment a
 
 ## 📁 Project Structure
 
-```
-├── app/                          # Next.js App Router
-│   ├── layout.tsx               # Root layout
-│   ├── [locale]/page.tsx        # Localized home page
-│   ├── globals.css              # Global styles & CSS variables
-│   └── [locale]/games/samurai/ # Game, archive, puzzle, and SEO pages
-│
-├── components/                   # React components
-│   ├── theme-provider.tsx      # Theme context
+```text
+├── app/
+│   ├── [locale]/page.tsx
+│   ├── [locale]/games/samurai/
+│   ├── [locale]/sudoku-for-kids/
+│   └── globals.css
+├── components/
+│   ├── kids/
+│   ├── sudoku/
+│   └── printable/
+├── lib/
+│   ├── kids-sudoku/
 │   └── sudoku/
-│       ├── SamuraiBoard.tsx    # 21×21 game board
-│       ├── Cell.tsx            # Individual cell component
-│       ├── TimerDisplay.tsx    # Timer component
-│       └── ActionBar.tsx       # Control buttons
-│
-├── lib/                         # Core logic
-│   ├── utils.ts                # Utility functions
-│   └── sudoku/
-│       ├── coordinates.ts      # Coordinate system
-│       ├── coordinates.test.ts # Coordinate tests
-│       ├── engine.ts           # Game engine
-│       ├── types.ts            # Type definitions
-│       └── sample-puzzle.ts    # Test puzzle data
-│
-├── stores/                      # State management
-│   └── sudoku-store.ts         # Zustand store
-│
-└── public/                      # Static assets
-    └── puzzles/                # Daily puzzle data and generated index
+├── stores/
+│   └── sudoku-store.ts
+└── public/
+    └── puzzles/
 ```
 
-## 🎮 How to Play
+## 🎮 How to Play Samurai Sudoku
 
-1. **Navigate**: Use arrow keys or click/tap cells
-2. **Fill cells**: Press 1-9 or use number pad (mobile)
-3. **Clear**: Press Backspace or Delete
-4. **Undo/Redo**: Use the action bar buttons
-5. **Conflicts**: Highlighted automatically (toggle in action bar)
+1. **Navigate**: Use arrow keys or click/tap cells.
+2. **Fill cells**: Press 1–9 or use the number pad.
+3. **Clear**: Press Backspace or Delete.
+4. **Undo/Redo**: Use the action bar buttons.
+5. **Conflicts**: Toggle automatic conflict highlighting.
 
-## 🧪 Testing
+## 🧒 Kids Sudoku Data Boundary
 
-The coordinate system has comprehensive test coverage:
-
-- ✅ Local to global conversion
-- ✅ Global to local conversion
-- ✅ Overlap zone detection
-- ✅ Overlapping cell mapping
-- ✅ Grid, box, row, column cell queries
-- ✅ Affected cells calculation
-- ✅ Position validation
-- ✅ Position equality
-
-Run tests with:
-```bash
-pnpm test:sudoku
-```
-
-## 🎨 Features
-
-### Current
-- 21×21 Samurai Sudoku grid
-- Keyboard and mouse/touch input
-- Real-time conflict detection
-- Undo/redo functionality
-- Timer with pause
-- Progress tracking
-- Dark mode support
-- Responsive design
-
-### Included
-- Daily puzzle generation
-- Puzzle archive and difficulty landing pages
-- Hint system
-- Candidate marking
-- Mobile optimization
-- Offline support
-- Statistics and in-progress tracking
-- Multiple difficulty levels
+The Kids Sudoku activity stores only the current puzzle ID, grid values, completed puzzle IDs, and an update timestamp in the current browser. The record expires after 30 days. The worksheet tools do not request or store names, email addresses, schools, classes, scores, or child profiles.
 
 ## 🛠️ Technology Stack
 
@@ -237,48 +209,19 @@ pnpm test:sudoku
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **Internationalization**: next-intl
-- **State Management**: Zustand
+- **State Management**: Zustand + browser localStorage
 - **Testing**: Vitest
 - **Theme**: next-themes
-
-## 📝 Development Notes
-
-### Coordinate System
-The Samurai Sudoku uses a dual coordinate system:
-
-1. **Global Coordinates**: 21×21 grid (row, col: 0-20)
-2. **Local Coordinates**: Grid index (0-4) + position within grid (row, col: 0-8)
-
-Grid layout:
-```
-Grid 0 (Top-Left)      Grid 1 (Top-Right)
-       Grid 2 (Center)
-Grid 3 (Bottom-Left)   Grid 4 (Bottom-Right)
-```
-
-Overlap zones connect the grids at their corners.
-
-### State Management
-The Zustand store persists to localStorage:
-- Current board state
-- Move history
-- Timer state
-- Candidates
-- Game status
 
 ## 🔧 Configuration
 
 ### Tailwind CSS Variables
-Custom CSS variables in `app/globals.css`:
-- `--cell-bg`: Cell background
-- `--cell-border`: Cell border
-- `--cell-highlight`: Highlighted cells
-- `--cell-selected`: Selected cell
-- `--conflict`: Conflict indicator
-- `--candidate-color`: Candidate numbers
+
+Custom CSS variables in `app/globals.css` include cell backgrounds, borders, highlights, selected states, conflict colors, and candidate colors.
 
 ### Next.js Config
-Cache headers configured for puzzle data in `next.config.js`.
+
+Cache headers and PWA runtime caching are configured in `next.config.js`. Dated puzzle JSON is revalidated online while remaining available as an offline fallback.
 
 ## 📄 License
 
@@ -286,10 +229,10 @@ MIT
 
 ## 🤝 Contributing
 
-This is a development project. Contributions welcome!
+This is a development project. Contributions are welcome.
 
 ---
 
 **Status**: Ready for local development and production builds.
 
-Last Updated: 2026-07-13
+Last Updated: 2026-07-26
