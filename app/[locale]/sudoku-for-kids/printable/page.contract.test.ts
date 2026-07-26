@@ -14,9 +14,10 @@ describe('printable Sudoku for Kids page contract', () => {
     expect(source).toContain('KidsPrintButton');
   });
 
-  it('renders at least six curated worksheets and connects answers and generator', () => {
+  it('renders two worksheets per level and connects answers and generator', () => {
     const source = readFileSync(pagePath, 'utf8');
-    expect(source).toContain('slice(0, 6)');
+    expect(source).toContain("['easy', 'medium', 'challenge']");
+    expect(source).toContain('slice(0, 2)');
     expect(source).toContain('/sudoku-for-kids/answers');
     expect(source).toContain('/sudoku-for-kids/worksheet-generator');
     expect(source).toContain('/sudoku-for-kids');
