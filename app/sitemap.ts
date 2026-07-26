@@ -54,7 +54,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const difficultyLastModifiedDates = getDifficultyLastModifiedDates(index.puzzles);
   const routes: StaticSitemapRoute[] = [
     { path: '', changeFrequency: 'daily', priority: 1, followsIndex: true },
-    { path: '/sudoku-for-kids', changeFrequency: 'monthly', priority: 0.72 },
+    { path: '/sudoku-for-kids', changeFrequency: 'weekly', priority: 0.78 },
+    { path: '/sudoku-for-kids/printable', changeFrequency: 'monthly', priority: 0.75 },
+    { path: '/sudoku-for-kids/answers', changeFrequency: 'monthly', priority: 0.68 },
+    { path: '/sudoku-for-kids/6x6', changeFrequency: 'monthly', priority: 0.73 },
+    { path: '/sudoku-for-kids/worksheet-generator', changeFrequency: 'monthly', priority: 0.76 },
+    { path: '/sudoku-for-kids/resources', changeFrequency: 'monthly', priority: 0.7 },
     { path: '/games/samurai', changeFrequency: 'daily', priority: 0.9, followsIndex: true },
     { path: '/games/samurai/daily', changeFrequency: 'daily', priority: 0.86, followsIndex: true },
     { path: '/games/samurai/archive', changeFrequency: 'weekly', priority: 0.85, followsIndex: true },
