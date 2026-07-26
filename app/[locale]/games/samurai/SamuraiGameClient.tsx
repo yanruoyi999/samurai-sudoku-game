@@ -10,8 +10,10 @@ import Link from "next/link";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BoardSkeleton, ActionBarSkeleton, NumberPadSkeleton, StatsPanelSkeleton } from "@/components/LoadingSkeleton";
+import { GameGuidancePanel } from "@/components/sudoku/GameGuidancePanel";
 import { GameOnboardingPrompt } from "@/components/sudoku/GameOnboardingPrompt";
 import { trackInteraction } from "@/lib/analytics/events";
+import { getNextDifficulty } from "@/lib/sudoku/game-guidance";
 
 const SamuraiBoard = dynamic(() => import("@/components/sudoku/SamuraiBoard").then(mod => ({ default: mod.SamuraiBoard })), {
   loading: () => <BoardSkeleton />,
@@ -43,6 +45,7 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   const locale = useLocale();
 
   const puzzleId = useSudokuStore((state) => state.puzzleId);
+  const currentDifficulty = useSudokuStore((state) => state.difficulty);
   const loadPuzzle = useSudokuStore((state) => state.loadPuzzle);
   const status = useSudokuStore((state) => state.status);
   const loadedInitialPuzzleId = useRef<string | null>(null);
@@ -51,6 +54,11 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
   const [isTransitioning, setIsTransitioning] = useState(false);
   const trackedOpenPuzzleId = useRef<string | null>(null);
   const trackedCompletedPuzzleId = useRef<string | null>(null);
+
+  const activeDifficulty = currentDifficulty ?? initialPuzzle.difficulty;
+  const nextDifficulty = getNextDifficulty(activeDifficulty);
+  const activeDifficultyLabel = tGame(`difficulty.${activeDifficulty}`);
+  const nextDifficultyLabel = nextDifficulty ? tGame(`difficulty.${nextDifficulty}`) : null;
 
   useEffect(() => {
     if (puzzleId && puzzleId !== prevPuzzleId) {
@@ -162,14 +170,90 @@ export default function SamuraiGameClient({ initialPuzzle }: SamuraiGameClientPr
 
       <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {status === "completed" && (
-          <div className="mx-4 mt-4 p-4 bg-primary/10 border border-primary/40 rounded-lg text-center">
+          <section className="mx-4 mt-4 rounded-xl border border-primary/40 bg-primary/10 p-4 text-center lg:mx-auto lg:w-full lg:max-w-3xl">
             <p className="text-lg font-semibold text-primary">
               {tGame('completed')}
             </p>
-          </div>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {locale === 'zh'
+                ? '继续保持解题节奏：可以做同难度下一题、提高一级，或先复盘通关技巧。'
+                : 'Keep the solving loop going: play another puzzle at this level, move up, or review the solving guide.'}
+            </p>
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <TrackedLink
+                href={`/${locale}/games/samurai/difficulty/${activeDifficulty}`}
+                eventName="game_completion_cta_click"
+                eventProperties={{
+                  destination: `difficulty/${activeDifficulty}`,
+                  difficulty: activeDifficulty,
+                  locale,
+                  puzzle_id: puzzleId,
+                }}
+                className="rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              >
+                {locale === 'zh' ? `继续${activeDifficultyLabel}题` : `More ${activeDifficultyLabel} puzzles`}
+              </TrackedLink>
+
+              {nextDifficulty && nextDifficultyLabel && (
+                <TrackedLink
+                  href={`/${locale}/games/samurai/difficulty/${nextDifficulty}`}
+                  eventName="game_completion_cta_click"
+                  eventProperties={{
+                    destination: `difficulty/${nextDifficulty}`,
+                    difficulty: activeDifficulty,
+                    locale,
+                    next_difficulty: nextDifficulty,
+                    puzzle_id: puzzleId,
+                  }}
+                  className="rounded-lg border border-primary px-4 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
+                >
+                  {locale === 'zh' ? `挑战${nextDifficultyLabel}` : `Try ${nextDifficultyLabel}`}
+                </TrackedLink>
+              )}
+
+              <TrackedLink
+                href={`/${locale}/games/samurai/archive`}
+                eventName="game_completion_cta_click"
+                eventProperties={{
+                  destination: 'archive',
+                  difficulty: activeDifficulty,
+                  locale,
+                  puzzle_id: puzzleId,
+                }}
+                className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-accent"
+              >
+                {locale === 'zh' ? '全部题库' : 'All puzzles'}
+              </TrackedLink>
+
+              <TrackedLink
+                href={`/${locale}/games/samurai/solving-tips`}
+                eventName="game_completion_cta_click"
+                eventProperties={{
+                  destination: 'solving-tips',
+                  difficulty: activeDifficulty,
+                  locale,
+                  puzzle_id: puzzleId,
+                }}
+                className="rounded-lg border px-4 py-3 text-sm font-semibold text-primary hover:bg-primary/10"
+              >
+                {locale === 'zh' ? '复盘通关技巧' : 'Review solving tips'}
+              </TrackedLink>
+            </div>
+          </section>
         )}
 
         <GameOnboardingPrompt className="mx-4 mt-4 shrink-0 lg:mx-auto lg:w-full lg:max-w-3xl" />
+
+        {status === "playing" && (
+          <GameGuidancePanel
+            className="mx-4 mt-4 shrink-0 lg:mx-auto lg:w-full lg:max-w-3xl"
+            difficulty={activeDifficulty}
+            locale={locale}
+            location="game_body"
+            puzzleId={puzzleId}
+          />
+        )}
 
         <div className="hidden min-h-0 flex-1 lg:flex">
           <div className="flex-1 overflow-y-auto p-4">
