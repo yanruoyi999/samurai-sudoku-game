@@ -1,9 +1,8 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { locales } from './i18n';
+import { getCanonicalRedirectUrl } from './lib/canonical-host';
 
-const CANONICAL_HOST = 'www.samuraisudoku.net';
-const REDIRECT_HOSTS = new Set(['samuraisudoku.net']);
 const CRAWL_ENTRY_PATHS = new Set(['/sitemap.xml', '/robots.txt', '/ads.txt', '/llms.txt']);
 
 const intlMiddleware = createMiddleware({
@@ -22,14 +21,13 @@ const intlMiddleware = createMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
-  const hostname = request.headers.get('host')?.split(':')[0].toLowerCase();
+  const redirectUrl = getCanonicalRedirectUrl(
+    request.nextUrl,
+    request.headers.get('host')
+  );
 
-  if (hostname && REDIRECT_HOSTS.has(hostname)) {
-    const url = request.nextUrl.clone();
-    url.protocol = 'https:';
-    url.hostname = CANONICAL_HOST;
-    url.port = '';
-    return NextResponse.redirect(url, 308);
+  if (redirectUrl) {
+    return NextResponse.redirect(redirectUrl, 308);
   }
 
   if (CRAWL_ENTRY_PATHS.has(request.nextUrl.pathname)) {
