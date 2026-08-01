@@ -14,12 +14,14 @@ describe('same-origin request validation', () => {
   });
 
   it('rejects cross-site, mismatched, null, and malformed origins', () => {
-    for (const headers of [
+    const invalidHeaders: HeadersInit[] = [
       { Origin: 'https://attacker.example', 'Sec-Fetch-Site': 'cross-site' },
       { Origin: 'https://attacker.example' },
       { Origin: 'null' },
       { Origin: 'not a url' },
-    ]) {
+    ];
+
+    for (const headers of invalidHeaders) {
       expect(isTrustedSameOriginRequest(new Request('https://www.samuraisudoku.net/api/paypal/orders', {
         method: 'POST',
         headers,
