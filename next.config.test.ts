@@ -28,7 +28,7 @@ describe("PWA puzzle data caching", () => {
     const protectedApiRule = "urlPattern: /\\/api\\/(?:paypal|download)\\/.*/i";
     expect(source).toContain(protectedApiRule);
     const protectedApiIndex = source.indexOf(protectedApiRule);
-    const genericApiIndex = source.indexOf("urlPattern: /\/api\/.*/i");
+    const genericApiIndex = source.indexOf("cacheName: 'apis'");
     expect(source.slice(protectedApiIndex)).toMatch(/handler: 'NetworkOnly'/);
     expect(protectedApiIndex).toBeLessThan(genericApiIndex);
 
