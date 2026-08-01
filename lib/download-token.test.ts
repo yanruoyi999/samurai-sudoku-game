@@ -31,6 +31,7 @@ describe("paid pack download tokens", () => {
     const tamperedBody = `${body.slice(0, -1)}${body.endsWith("A") ? "B" : "A"}`;
 
     expect(() => verifyDownloadToken(`${tamperedBody}.${signature}`, secret, { nowSeconds: 1_100 })).toThrow();
+    expect(() => verifyDownloadToken(token, secret, { nowSeconds: 1_300 })).toThrow(/expired/i);
     expect(() => verifyDownloadToken(token, secret, { nowSeconds: 1_301 })).toThrow();
   });
 
