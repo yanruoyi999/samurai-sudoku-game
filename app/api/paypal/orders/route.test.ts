@@ -8,6 +8,20 @@ describe("POST /api/paypal/orders", () => {
     vi.unstubAllGlobals();
   });
 
+  it("rejects cross-origin order creation before calling PayPal", async () => {
+    const fetcher = vi.fn<typeof fetch>();
+    vi.stubGlobal("fetch", fetcher);
+
+    const response = await POST(new Request('http://localhost/api/paypal/orders', {
+      method: 'POST',
+      headers: { Origin: 'https://attacker.example', 'Sec-Fetch-Site': 'cross-site' },
+    }));
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("creates an order and returns a private recovery key", async () => {
     vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
     vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
@@ -23,7 +37,10 @@ describe("POST /api/paypal/orders", () => {
         ),
     );
 
-    const response = await POST();
+    const response = await POST(new Request('http://localhost/api/paypal/orders', {
+      method: 'POST',
+      headers: { Origin: 'http://localhost' },
+    }));
     const body = await response.json();
 
     expect(response.status).toBe(201);
