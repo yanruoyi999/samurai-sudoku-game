@@ -50,17 +50,17 @@ describe("GoogleAnalytics", () => {
     expect(dataLayer).toEqual([]);
   });
 
-  it("sends the initial page view from the Google tag bootstrap", async () => {
+  it("leaves page views to the route listener", async () => {
     vi.stubEnv("NEXT_PUBLIC_SUDOKU_GA_ID", "G-TEST");
     const { getGoogleAnalyticsInitScript } = await import("./GoogleAnalytics");
 
     const html = getGoogleAnalyticsInitScript();
 
-    expect(html).toContain("send_page_view: true");
-    expect(html).not.toContain("send_page_view: false");
+    expect(html).toContain("send_page_view: false");
+    expect(html).not.toContain("send_page_view: true");
   });
 
-  it("queues one page-view-enabled config call on the production host", async () => {
+  it("queues one page-view-disabled config call on the production host", async () => {
     const { getGoogleAnalyticsInitScript } = await import("./GoogleAnalytics");
     const html = getGoogleAnalyticsInitScript("G-TEST");
     const dataLayer: unknown[] = [];
@@ -80,6 +80,6 @@ describe("GoogleAnalytics", () => {
     const queuedCalls = dataLayer.map((entry) => Array.from(entry as ArrayLike<unknown>));
     expect(queuedCalls).toHaveLength(2);
     expect(queuedCalls[0]?.[0]).toBe("js");
-    expect(queuedCalls[1]).toEqual(["config", "G-TEST", { send_page_view: true }]);
+    expect(queuedCalls[1]).toEqual(["config", "G-TEST", { send_page_view: false }]);
   });
 });

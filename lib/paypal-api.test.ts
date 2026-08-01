@@ -5,6 +5,7 @@ import {
   buildPayPalOrderPayload,
   capturePayPalOrder,
   createPayPalOrder,
+  createPayPalRequestId,
   isPayPalOrdersConfigured,
   parseCompletedPayPalOrder,
 } from "./paypal-api";
@@ -117,6 +118,13 @@ describe("PayPal PDF pack orders", () => {
     expect(() => parseCompletedPayPalOrder(order, recoveryKey)).toThrow();
   });
 
+  it("derives stable, scoped PayPal idempotency request IDs", () => {
+    const first = createPayPalRequestId('capture', '5O190127TN364715T');
+    expect(createPayPalRequestId('capture', '5O190127TN364715T')).toBe(first);
+    expect(createPayPalRequestId('create', '5O190127TN364715T')).not.toBe(first);
+    expect(first).toMatch(/^[a-f0-9]{32}$/);
+  });
+
   it("creates a PayPal order using server credentials and server pricing", async () => {
     vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
     vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
@@ -144,6 +152,9 @@ describe("PayPal PDF pack orders", () => {
     expect(fetcher.mock.calls[1][0]).toBe("https://api-m.sandbox.paypal.com/v2/checkout/orders");
     const orderRequest = fetcher.mock.calls[1][1];
     expect(orderRequest?.method).toBe("POST");
+    expect(orderRequest?.headers).toEqual(expect.objectContaining({
+      "PayPal-Request-Id": createPayPalRequestId('create', 'recovery-key'),
+    }));
     expect(JSON.parse(String(orderRequest?.body))).toMatchObject(
       buildPayPalOrderPayload("recovery-key"),
     );
@@ -197,6 +208,7 @@ describe("PayPal PDF pack orders", () => {
     expect(fetcher.mock.calls[2][1]).toMatchObject({
       method: "POST",
       headers: expect.objectContaining({
+        "PayPal-Request-Id": createPayPalRequestId('capture', '5O190127TN364715T'),
         Prefer: "return=representation",
       }),
     });

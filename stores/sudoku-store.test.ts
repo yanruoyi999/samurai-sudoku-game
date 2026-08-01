@@ -143,6 +143,38 @@ describe("sudoku store in-progress recovery", () => {
     useSudokuStore.getState().loadPuzzle(SAMPLE_PUZZLE);
   });
 
+  it("ignores invalid and inactive cell values from persisted board data", () => {
+    const state = useSudokuStore.getState();
+    const pos = findEditableSolvedCell();
+    const board = state.board.map((row) => [...row]);
+    board[pos.row][pos.col] = 99;
+    board[0][10] = 5;
+
+    localStorage.setItem(
+      "samurai-sudoku-current-progress",
+      JSON.stringify({
+        puzzleId: SAMPLE_PUZZLE.id,
+        puzzle: SAMPLE_PUZZLE,
+        board,
+        history: [],
+        historyIndex: -1,
+        elapsedTime: 10,
+        hintsUsed: 0,
+        mistakesMade: 0,
+        status: "playing",
+        candidates: [],
+        showCandidates: false,
+        showConflicts: true,
+        savedAt: new Date().toISOString(),
+      }),
+    );
+
+    useSudokuStore.getState().loadPuzzle(SAMPLE_PUZZLE);
+
+    expect(useSudokuStore.getState().board[pos.row][pos.col]).toBe(0);
+    expect(useSudokuStore.getState().board[0][10]).toBe(0);
+  });
+
   it("restores a matching in-progress game when the current progress key belongs to another puzzle", () => {
     const pos = findEditableSolvedCell();
     const value = useSudokuStore.getState().engine?.getSolution()?.[pos.row]?.[pos.col];
@@ -187,5 +219,27 @@ describe("sudoku store completion timer", () => {
     expect(state.status).toBe("completed");
     expect(state.elapsedTime).toBe(125);
     expect(state.startTime).toBeNull();
+  });
+
+  it("does not allow a completed puzzle to be paused or resumed", () => {
+    completeCurrentPuzzle();
+    const completed = useSudokuStore.getState();
+
+    completed.togglePause();
+
+    const state = useSudokuStore.getState();
+    expect(state.status).toBe("completed");
+    expect(state.isPaused).toBe(false);
+    expect(state.startTime).toBeNull();
+  });
+
+  it("does not count hints while paused or completed", () => {
+    useSudokuStore.getState().togglePause();
+    useSudokuStore.getState().incrementHints();
+    expect(useSudokuStore.getState().hintsUsed).toBe(0);
+
+    useSudokuStore.setState({ status: "completed", isPaused: false });
+    useSudokuStore.getState().incrementHints();
+    expect(useSudokuStore.getState().hintsUsed).toBe(0);
   });
 });

@@ -21,7 +21,30 @@ describe('canonical host middleware', () => {
     }
   );
 
-  it('does not redirect the canonical host', () => {
+  it('normalizes http and an explicit port on the canonical host', () => {
+    const redirectUrl = getCanonicalRedirectUrl(
+      new URL(`http://${CANONICAL_HOST}:8080${PRINTABLE_PATH}`),
+      `${CANONICAL_HOST}:8080`
+    );
+
+    expect(redirectUrl?.toString()).toBe(
+      `https://${CANONICAL_HOST}${PRINTABLE_PATH}`
+    );
+  });
+
+  it.each([
+    ['localhost:3000', 'http://localhost:3000'],
+    ['samurai-sudoku-git-fix-example.vercel.app', 'https://samurai-sudoku-git-fix-example.vercel.app'],
+  ])('does not canonicalize development or preview host %s', (hostHeader, origin) => {
+    const redirectUrl = getCanonicalRedirectUrl(
+      new URL(`${origin}${PRINTABLE_PATH}`),
+      hostHeader
+    );
+
+    expect(redirectUrl).toBeNull();
+  });
+
+  it('does not redirect an already canonical https request', () => {
     const redirectUrl = getCanonicalRedirectUrl(
       new URL(`https://${CANONICAL_HOST}${PRINTABLE_PATH}`),
       CANONICAL_HOST

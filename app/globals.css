@@ -27,9 +27,9 @@
     --cell-highlight: 40 33.3% 89.4%;
     --cell-selected: 18.5 54.2% 90.6%;
     --conflict: 10.1 62.6% 48.2%;
-    --candidate-color: 38.6 11.8% 46.7%;
+    --candidate-color: 38.6 11.8% 42%;
     --cell-given: 35 22.2% 10.6%;
-    --cell-entered: 10.1 62.6% 48.2%;
+    --cell-entered: 10.1 62.6% 42%;
   }
 
   .dark {

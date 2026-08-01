@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 
+import { PrintablePageStyle } from '@/components/printable/PrintableSamuraiBoard';
+
 import { trackInteraction } from '@/lib/analytics/events';
 import {
   buildBlankSudokuGridSvg,
@@ -103,7 +105,9 @@ export function BlankSudokuGridGenerator({ locale }: BlankSudokuGridGeneratorPro
   };
 
   return (
-    <section className="border bg-card p-5 md:p-7">
+    <>
+      <PrintablePageStyle paperSize={paperSize} />
+      <section className="border bg-card p-5 md:p-7">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 print:hidden">
         <label className="grid gap-2 text-sm font-medium">
           <span>{isZh ? '网格模板' : 'Grid template'}</span>
@@ -206,6 +210,7 @@ export function BlankSudokuGridGenerator({ locale }: BlankSudokuGridGeneratorPro
           </figure>
         ))}
       </section>
-    </section>
+      </section>
+    </>
   );
 }

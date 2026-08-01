@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Fraunces } from "next/font/google";
 import { headers } from "next/headers";
@@ -6,6 +7,7 @@ import { locales } from "@/i18n";
 import { getSiteBaseUrl } from "@/lib/site-url";
 import { ClarityConsent } from "@/components/analytics/ClarityConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { GoogleAnalyticsListener } from "@/components/analytics/GoogleAnalyticsListener";
 import { VercelAnalytics } from "@/components/analytics/VercelAnalytics";
 import "./globals.css";
 
@@ -81,6 +83,9 @@ export default async function RootLayout({
       <body className="font-sans">
         {children}
         <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalyticsListener />
+        </Suspense>
         <ClarityConsent />
         <VercelAnalytics />
         <SpeedInsights />

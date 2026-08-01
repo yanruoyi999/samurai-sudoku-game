@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { SudokuEngine } from '@/lib/sudoku/engine';
-import { GlobalPosition, getAffectedCells } from '@/lib/sudoku/coordinates';
+import { GlobalPosition, getAffectedCells, globalToLocal } from '@/lib/sudoku/coordinates';
 import { Puzzle, Move, GameStatus, Difficulty } from '@/lib/sudoku/types';
+import { canInteractWithPuzzle } from '@/lib/sudoku/game-controls';
 import {
   getInProgressGames,
   removeInProgressGame,
@@ -11,37 +12,24 @@ import {
 } from '@/lib/storage/game-history';
 
 interface SudokuStore {
-  // Puzzle info
   puzzleId: string | null;
   difficulty: Difficulty | null;
   puzzle: Puzzle | null;
-
-  // Board state
   board: number[][];
   initial: boolean[][];
   engine: SudokuEngine | null;
-
-  // Candidates
   candidates: Map<string, Set<number>>;
   showCandidates: boolean;
-
-  // History
   history: Move[];
   historyIndex: number;
-
-  // Timer
   startTime: number | null;
   elapsedTime: number;
   isPaused: boolean;
-
-  // UI state
   selectedCell: GlobalPosition | null;
   showConflicts: boolean;
   status: GameStatus;
   hintsUsed: number;
   mistakesMade: number;
-
-  // Actions
   loadPuzzle: (puzzle: Puzzle) => void;
   loadInProgressGame: (game: InProgressGame) => void;
   setCell: (pos: GlobalPosition, value: number) => void;
@@ -56,8 +44,6 @@ interface SudokuStore {
   toggleShowCandidates: () => void;
   updateElapsedTime: (time: number) => void;
   incrementHints: () => void;
-
-  // Cache management
   pruneOldCache: () => void;
 }
 
@@ -151,8 +137,15 @@ const rebuildEngine = (puzzle: Puzzle, board: number[][]) => {
   for (let row = 0; row < 21; row++) {
     for (let col = 0; col < 21; col++) {
       const value = board[row]?.[col] ?? 0;
-      if (value !== 0 && !engine.isInitial({ row, col })) {
-        engine.setValue({ row, col }, value);
+      const pos = { row, col };
+      if (
+        Number.isInteger(value) &&
+        value >= 1 &&
+        value <= 9 &&
+        globalToLocal(pos).length > 0 &&
+        !engine.isInitial(pos)
+      ) {
+        engine.setValue(pos, value);
       }
     }
   }
@@ -323,7 +316,6 @@ const buildStateFromInProgressGame = (
 };
 
 export const useSudokuStore = create<SudokuStore>()((set, get) => ({
-      // Initial state
       puzzleId: null,
       difficulty: null,
       puzzle: null,
@@ -345,7 +337,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
       hintsUsed: 0,
       mistakesMade: 0,
 
-      // Load puzzle
       loadPuzzle: (puzzle) => {
         const savedProgress = loadCurrentProgress(puzzle);
         if (savedProgress) {
@@ -382,7 +373,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
-      // Set cell value
       setCell: (pos, value) => {
         const { engine, history, historyIndex, mistakesMade, candidates, isPaused, status } = get();
 
@@ -398,7 +388,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         const isMistake =
           value !== 0 && expectedValue !== 0 && value !== expectedValue;
 
-        // Update engine
         engine.setValue(pos, value);
 
         const newBoard = engine.getBoard();
@@ -406,7 +395,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         const candidatesBefore = serializeCandidates(candidates);
         const candidatesAfter = serializeCandidates(newCandidates);
 
-        // Add to history after candidate changes are known so undo restores notes exactly.
         const newHistory = history.slice(0, historyIndex + 1);
         newHistory.push({
           position: pos,
@@ -425,14 +413,12 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
           candidates: newCandidates,
         });
 
-        // Check if completed
         if (engine.isComplete()) {
           const state = get();
           const timeSpent = getCurrentElapsedTime(state);
 
           set({ status: 'completed', elapsedTime: timeSpent, startTime: null });
 
-          // Save to completed history
           const completedState = get();
           if (completedState.puzzle) {
             const completedAt = new Date().toISOString();
@@ -456,7 +442,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         }
       },
 
-      // Clear cell
       clearCell: (pos) => {
         const { engine, candidates, history, historyIndex, isPaused, status } = get();
         if (isPaused || status === 'completed') return;
@@ -490,12 +475,10 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         get().setCell(pos, 0);
       },
 
-      // Select cell
       selectCell: (pos) => {
         set({ selectedCell: pos });
       },
 
-      // Toggle candidate
       toggleCandidate: (pos, value) => {
         const { candidates, engine, history, historyIndex, isPaused, status } = get();
         if (isPaused || status === 'completed') return;
@@ -536,7 +519,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
-      // Undo
       undo: () => {
         const { history, historyIndex, engine, isPaused, status, candidates } = get();
 
@@ -561,7 +543,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
-      // Redo
       redo: () => {
         const { history, historyIndex, engine, isPaused, status, candidates } = get();
 
@@ -586,7 +567,6 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
-      // Reset
       reset: () => {
         const { engine } = get();
 
@@ -608,19 +588,17 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
-      // Toggle pause
       togglePause: () => {
-        const { isPaused, startTime, elapsedTime } = get();
+        const { isPaused, startTime, elapsedTime, status } = get();
+        if (status === 'completed' || status === 'abandoned') return;
 
         if (isPaused) {
-          // Resume
           set({
             isPaused: false,
             startTime: Date.now() - elapsedTime * 1000,
             status: 'playing',
           });
         } else {
-          // Pause
           const currentElapsed = startTime
             ? Math.floor((Date.now() - startTime) / 1000)
             : elapsedTime;
@@ -634,31 +612,29 @@ export const useSudokuStore = create<SudokuStore>()((set, get) => ({
         saveCurrentProgress(get());
       },
 
-      // Toggle show conflicts
       toggleShowConflicts: () => {
         set((state) => ({ showConflicts: !state.showConflicts }));
         saveCurrentProgress(get());
       },
 
-      // Toggle show candidates
       toggleShowCandidates: () => {
         set((state) => ({ showCandidates: !state.showCandidates }));
         saveCurrentProgress(get());
       },
 
-      // Update elapsed time
       updateElapsedTime: (time) => {
         set({ elapsedTime: time });
         saveCurrentProgress(get(), { throttle: true });
       },
 
-      // Increment hints
       incrementHints: () => {
+        const { status, isPaused } = get();
+        if (!canInteractWithPuzzle(status, isPaused)) return;
+
         set((state) => ({ hintsUsed: state.hintsUsed + 1 }));
         saveCurrentProgress(get());
       },
 
-      // Prune old cache
       pruneOldCache: () => {
         if (typeof window === 'undefined') return;
 

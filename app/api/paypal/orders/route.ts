@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isTrustedSameOriginRequest } from "@/lib/request-origin";
 import {
   PayPalApiError,
   createPayPalOrder,
@@ -9,7 +10,11 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(request: Request) {
+  if (!isTrustedSameOriginRequest(request)) {
+    return noStoreJson({ error: "Cross-origin PayPal requests are not allowed." }, 403);
+  }
+
   try {
     const recoveryKey = createPayPalRecoveryKey();
     const { orderId } = await createPayPalOrder(recoveryKey);

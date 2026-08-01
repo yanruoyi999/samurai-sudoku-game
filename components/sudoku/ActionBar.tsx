@@ -7,6 +7,7 @@ import { SudokuSolver } from "@/lib/sudoku/solver";
 import { generateSamuraiPuzzle } from "@/lib/sudoku/puzzle-generator";
 import { isPuzzleId } from "@/lib/puzzle-id";
 import type { Difficulty } from "@/lib/sudoku/types";
+import { canInteractWithPuzzle } from "@/lib/sudoku/game-controls";
 import { useTranslations, useLocale } from 'next-intl';
 import {
   getGameHistory,
@@ -93,6 +94,7 @@ export function ActionBar() {
   const showConflicts = useSudokuStore((state) => state.showConflicts);
   const showCandidates = useSudokuStore((state) => state.showCandidates);
   const isPaused = useSudokuStore((state) => state.isPaused);
+  const status = useSudokuStore((state) => state.status);
   const historyLength = useSudokuStore((state) => state.history.length);
   const historyIndex = useSudokuStore((state) => state.historyIndex);
   const engine = useSudokuStore((state) => state.engine);
@@ -116,13 +118,12 @@ export function ActionBar() {
     : `Start ${selectedDifficultyLabel} Puzzle`;
   const archiveCtaLabel = locale === 'zh' ? '更多日期题目' : 'More dated puzzles';
 
-  // Load game history
   useEffect(() => {
     const loadHistory = () => {
       const completed = getGameHistory();
       const inProgress = getInProgressGames();
-      setGameHistory(completed.slice(0, 5)); // Show last 5 completed games
-      setInProgressGames(inProgress.slice(0, 3)); // Show last 3 in-progress games
+      setGameHistory(completed.slice(0, 5));
+      setInProgressGames(inProgress.slice(0, 3));
     };
 
     const handleStorage = () => loadHistory();
@@ -143,8 +144,11 @@ export function ActionBar() {
     }
   }, [difficulty]);
 
-  const canUndo = historyIndex >= 0;
-  const canRedo = historyIndex < historyLength - 1;
+  const canInteract = canInteractWithPuzzle(status, isPaused);
+  const canUndo = canInteract && historyIndex >= 0;
+  const canRedo = canInteract && historyIndex < historyLength - 1;
+  const canUseHint = canInteract && Boolean(engine);
+  const canTogglePause = status === 'playing' || status === 'paused';
 
   const handleReset = () => {
     if (confirm(t('resetConfirm') || "Are you sure you want to reset the puzzle? All progress will be lost.")) {
@@ -157,7 +161,7 @@ export function ActionBar() {
   };
 
   const handleNewGame = () => {
-    if (isGenerating || isPending) return; // Prevent rapid clicks
+    if (isGenerating || isPending) return;
 
     const hasEnteredAnything = historyIndex >= 0;
     const canStart = !hasEnteredAnything || confirm(t('newGameConfirm') || "Start a new puzzle? Current progress will be lost.");
@@ -213,7 +217,7 @@ export function ActionBar() {
   };
 
   const handleGetHint = () => {
-    if (!engine) return;
+    if (!engine || !canUseHint) return;
 
     const solver = new SudokuSolver(engine);
     const hint = solver.getHint();
@@ -233,8 +237,6 @@ export function ActionBar() {
       };
 
       setHintMessage(messages[hint.type as keyof typeof messages] || tHints('tryThisCell'));
-
-      // Clear hint message after 5 seconds
       setTimeout(() => setHintMessage(null), 5000);
     } else {
       setHintMessage(tHints('noHint'));
@@ -289,16 +291,13 @@ export function ActionBar() {
 
   return (
     <>
-      {/* Desktop Sidebar Layout (lg+) */}
       <div className="hidden lg:block p-4 space-y-4">
-        {/* Hint Message */}
         {hintMessage && (
           <div className="p-3 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 rounded text-sm">
             💡 {hintMessage}
           </div>
         )}
 
-        {/* Progress Section */}
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">{tStats('progress')}</h3>
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
@@ -313,7 +312,6 @@ export function ActionBar() {
           </div>
         </div>
 
-        {/* Difficulty Selector */}
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">{tGame('difficulty.label')}</h3>
           <div className="grid grid-cols-2 gap-2">
@@ -341,7 +339,6 @@ export function ActionBar() {
           </div>
         </div>
 
-        {/* Control Buttons */}
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">{t('controls')}</h3>
 
@@ -394,7 +391,8 @@ export function ActionBar() {
 
           <button
             onClick={handleGetHint}
-            className="w-full px-4 py-2 text-sm font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            disabled={!canUseHint}
+            className="w-full px-4 py-2 text-sm font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             💡 {t('hint')}
           </button>
@@ -425,7 +423,8 @@ export function ActionBar() {
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={handleTogglePause}
-              className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors"
+              disabled={!canTogglePause}
+              className="px-3 py-2 text-sm font-medium rounded-md border hover:bg-accent transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}
             </button>
@@ -438,7 +437,6 @@ export function ActionBar() {
           </div>
         </div>
 
-        {/* Keyboard Navigation Help */}
         <div className="space-y-2 pt-4 border-t">
           <h3 className="text-sm font-semibold">{t('keyboardControls')}</h3>
           <div className="text-xs space-y-1 text-muted-foreground">
@@ -461,7 +459,6 @@ export function ActionBar() {
           </div>
         </div>
 
-        {/* Game History */}
         <div className="space-y-2 pt-4 border-t">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">{t('gameHistory')}</h3>
@@ -473,7 +470,6 @@ export function ActionBar() {
             </Link>
           </div>
 
-          {/* In Progress Games */}
           {inProgressGames.length > 0 && (
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">{t('inProgress')}:</p>
@@ -508,7 +504,6 @@ export function ActionBar() {
             </div>
           )}
 
-          {/* Completed Games */}
           {gameHistory.length > 0 && (
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">{t('completed')}:</p>
@@ -544,17 +539,14 @@ export function ActionBar() {
         </div>
       </div>
 
-      {/* Mobile/Tablet Bottom Layout */}
       <div className="lg:hidden border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="px-4 py-3 space-y-3">
-          {/* Hint Message */}
           {hintMessage && (
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 border border-blue-500 rounded text-sm text-center">
               💡 {hintMessage}
             </div>
           )}
 
-          {/* Progress Bar */}
           <div>
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
               <span>{tStats('progress')}</span>
@@ -568,7 +560,6 @@ export function ActionBar() {
             </div>
           </div>
 
-          {/* Difficulty Selector */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
               {tGame('difficulty.label')}:
@@ -598,7 +589,6 @@ export function ActionBar() {
             </p>
           </div>
 
-          {/* Action Buttons - Scrollable on mobile */}
           <div className="flex gap-2 overflow-x-auto pb-1">
             <button
               onClick={undo}
@@ -616,7 +606,8 @@ export function ActionBar() {
             </button>
             <button
               onClick={handleGetHint}
-              className="px-3 py-2 text-xs font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors whitespace-nowrap"
+              disabled={!canUseHint}
+              className="px-3 py-2 text-xs font-medium rounded-md border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50"
             >
               💡 {t('hint')}
             </button>
@@ -638,7 +629,8 @@ export function ActionBar() {
             </button>
             <button
               onClick={handleTogglePause}
-              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent transition-colors whitespace-nowrap"
+              disabled={!canTogglePause}
+              className="px-3 py-2 text-xs font-medium rounded-md border hover:bg-accent transition-colors whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPaused ? `▶️ ${t('resume')}` : `⏸️ ${t('pause')}`}
             </button>

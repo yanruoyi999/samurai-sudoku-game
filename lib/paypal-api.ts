@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 import { isStrongDownloadTokenSecret } from "@/lib/download-token";
 import { getPdfPackPriceAmount, getPdfPackProductName } from "@/lib/paypal";
@@ -172,8 +172,12 @@ export function getPayPalClientId(): string {
   return process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID?.trim() ?? "";
 }
 
-export function createPayPalRequestId(): string {
-  return randomUUID();
+export function createPayPalRequestId(scope: 'create' | 'capture', stableKey: string): string {
+  if (!stableKey) throw new Error('A stable PayPal request key is required.');
+  return createHash('sha256')
+    .update(`${scope}:${stableKey}`)
+    .digest('hex')
+    .slice(0, 32);
 }
 
 export async function createPayPalOrder(
@@ -188,7 +192,7 @@ export async function createPayPalOrder(
       Accept: "application/json",
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
-      "PayPal-Request-Id": createPayPalRequestId(),
+      "PayPal-Request-Id": createPayPalRequestId("create", recoveryKey),
     },
     body: JSON.stringify(buildPayPalOrderPayload(recoveryKey)),
   });
@@ -239,7 +243,7 @@ export async function capturePayPalOrder(
       Accept: "application/json",
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
-      "PayPal-Request-Id": createPayPalRequestId(),
+      "PayPal-Request-Id": createPayPalRequestId("capture", orderId),
       Prefer: "return=representation",
     },
     body: "{}",

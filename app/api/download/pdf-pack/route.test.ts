@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+vi.mock("node:fs/promises", () => ({
+  readFile: vi.fn(async () => Buffer.from("PK test paid pack")),
+}));
+
 import { createDownloadToken } from "@/lib/download-token";
 import { PDF_PACK_PRODUCT_ID } from "@/lib/paypal-api";
 import { GET } from "./route";

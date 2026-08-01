@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { createDownloadToken, isStrongDownloadTokenSecret } from "@/lib/download-token";
+import { isTrustedSameOriginRequest } from "@/lib/request-origin";
 import {
   PDF_PACK_PRODUCT_ID,
   PayPalApiError,
@@ -18,6 +19,10 @@ interface CaptureRequestBody {
 }
 
 export async function POST(request: Request) {
+  if (!isTrustedSameOriginRequest(request)) {
+    return noStoreJson({ error: "Cross-origin PayPal requests are not allowed." }, 403);
+  }
+
   let body: CaptureRequestBody;
   try {
     body = (await request.json()) as CaptureRequestBody;

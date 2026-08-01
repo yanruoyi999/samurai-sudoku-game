@@ -196,8 +196,7 @@ export function saveInProgressGame(game: InProgressGame): void {
   if (typeof window === 'undefined') return;
 
   try {
-    const data = localStorage.getItem(IN_PROGRESS_HISTORY_KEY);
-    let history: InProgressGame[] = data ? JSON.parse(data) : [];
+    let history = getInProgressGames();
 
     // Remove existing entry for this puzzle if exists
     history = history.filter(g => g.puzzle.id !== game.puzzle.id);

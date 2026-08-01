@@ -6,6 +6,7 @@ import { useSudokuStore } from "@/stores/sudoku-store";
 import { trackInteraction } from "@/lib/analytics/events";
 import { trackInteractionOncePerPuzzle } from "@/lib/analytics/once";
 import { cn } from "@/lib/utils";
+import { canInteractWithPuzzle } from "@/lib/sudoku/game-controls";
 
 const NUMBER_PAD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 const FEEDBACK_DURATION_MS = 1600;
@@ -46,12 +47,16 @@ export function NumberPad({ onNumberSelect, showCandidates = false }: NumberPadP
   const noteMode = useSudokuStore((state) => state.showCandidates);
   const difficulty = useSudokuStore((state) => state.difficulty);
   const puzzleId = useSudokuStore((state) => state.puzzleId);
+  const status = useSudokuStore((state) => state.status);
+  const isPaused = useSudokuStore((state) => state.isPaused);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selectedCellIsInitial = selectedCell
     ? engine?.isInitial(selectedCell) ?? false
     : false;
-  const canEditSelectedCell = Boolean(selectedCell && !selectedCellIsInitial);
+  const canEditSelectedCell = Boolean(
+    canInteractWithPuzzle(status, isPaused) && selectedCell && !selectedCellIsInitial
+  );
 
   useEffect(() => {
     return () => {
