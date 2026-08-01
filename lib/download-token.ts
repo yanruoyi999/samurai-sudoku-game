@@ -73,7 +73,7 @@ export function verifyDownloadToken(
   }
 
   const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
-  if (payload.exp < nowSeconds) {
+  if (payload.exp <= nowSeconds) {
     throw new Error("Download token has expired.");
   }
 
