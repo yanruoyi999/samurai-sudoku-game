@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 
+import { PrintablePageStyle } from '@/components/printable/PrintableSamuraiBoard';
+
 import { StandardSudokuPrintGrid } from '@/components/sudoku/StandardSudokuPrintGrid';
 import { trackInteraction } from '@/lib/analytics/events';
 import {
@@ -81,7 +83,9 @@ export function PrintableSudokuGenerator({ locale }: PrintableSudokuGeneratorPro
   };
 
   return (
-    <section className="border bg-card p-5 md:p-7">
+    <>
+      <PrintablePageStyle paperSize={paperSize} />
+      <section className="border bg-card p-5 md:p-7">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5 print:hidden">
         <label className="grid gap-2 text-sm font-medium">
           <span>{isZh ? '难度' : 'Difficulty'}</span>
@@ -204,6 +208,7 @@ export function PrintableSudokuGenerator({ locale }: PrintableSudokuGeneratorPro
           </div>
         </section>
       )}
-    </section>
+      </section>
+    </>
   );
 }
