@@ -45,6 +45,25 @@ describe("POST /api/paypal/orders/capture", () => {
     vi.unstubAllGlobals();
   });
 
+  it("rejects cross-origin capture before parsing or calling PayPal", async () => {
+    const fetcher = vi.fn<typeof fetch>();
+    vi.stubGlobal("fetch", fetcher);
+
+    const response = await POST(new Request('http://localhost/api/paypal/orders/capture', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Origin: 'https://attacker.example',
+        'Sec-Fetch-Site': 'cross-site',
+      },
+      body: JSON.stringify({ orderID: '5O190127TN364715T', recoveryKey }),
+    }));
+
+    expect(response.status).toBe(403);
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("rejects malformed order recovery input without calling PayPal", async () => {
     const fetcher = vi.fn<typeof fetch>();
     vi.stubGlobal("fetch", fetcher);
