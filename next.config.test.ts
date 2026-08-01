@@ -27,14 +27,20 @@ describe("PWA puzzle data caching", () => {
   it("never caches PayPal or paid download API responses", () => {
     const protectedApiRule = "urlPattern: /\\/api\\/(?:paypal|download)\\/.*/i";
     expect(source).toContain(protectedApiRule);
-    expect(source.slice(source.indexOf(protectedApiRule))).toMatch(/handler: 'NetworkOnly'/);
+    const protectedApiIndex = source.indexOf(protectedApiRule);
+    const genericApiIndex = source.indexOf("urlPattern: /\/api\/.*/i");
+    expect(source.slice(protectedApiIndex)).toMatch(/handler: 'NetworkOnly'/);
+    expect(protectedApiIndex).toBeLessThan(genericApiIndex);
 
     const legacyDownloadRule =
       "urlPattern: /\\/samuraisudoku\\.zip(?:\\?.*)?$/i";
     expect(source).toContain(legacyDownloadRule);
-    expect(source.slice(source.indexOf(legacyDownloadRule))).toMatch(
+    const legacyDownloadIndex = source.indexOf(legacyDownloadRule);
+    const catchAllIndex = source.indexOf("urlPattern: /.*/i");
+    expect(source.slice(legacyDownloadIndex)).toMatch(
       /handler: 'NetworkOnly'/,
     );
+    expect(legacyDownloadIndex).toBeLessThan(catchAllIndex);
   });
 
   it("keeps public PDFs out of the service worker and uses versioned immutable URLs", () => {
@@ -44,9 +50,12 @@ describe("PWA puzzle data caching", () => {
     const publicPdfRule =
       "urlPattern: /\\/downloads\\/.*\\.pdf(?:\\?.*)?$/i";
     expect(source).toContain(publicPdfRule);
-    expect(source.slice(source.indexOf(publicPdfRule))).toMatch(
+    const publicPdfIndex = source.indexOf(publicPdfRule);
+    const catchAllIndex = source.indexOf("urlPattern: /.*/i");
+    expect(source.slice(publicPdfIndex)).toMatch(
       /handler: 'NetworkOnly'/,
     );
+    expect(publicPdfIndex).toBeLessThan(catchAllIndex);
     expect(source).toContain("source: '/downloads/:file*.pdf'");
     expect(source).toContain(
       "public, max-age=31536000, immutable",
