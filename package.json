@@ -17,6 +17,7 @@
     "check-difficulty": "tsx scripts/puzzles/check-difficulty.ts",
     "audit:internal-links": "tsx scripts/audit-internal-links.ts",
     "audit:page-quality": "tsx scripts/page-quality-audit.ts",
+    "audit:seo-metadata": "tsx scripts/seo-metadata-audit.ts",
     "audit:site": "bash scripts/run-site-audits.sh",
     "test": "vitest run",
     "test:sudoku": "vitest run lib/sudoku",
