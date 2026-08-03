@@ -45,6 +45,19 @@ describe('SEO metadata audit', () => {
     expect(result.issues).toEqual([]);
   });
 
+  it('uses the final streamed document title instead of an earlier SVG title', () => {
+    const url = new URL('https://www.samuraisudoku.net/en/example');
+    const html = `<svg><title>Decorative board icon</title></svg>${pageHtml({
+      title: 'Samurai Sudoku Printable Practice Plan and Free PDF Guide',
+      description: 'Build a Samurai Sudoku paper-solving routine with printable puzzles, answer keys, overlap-box guidance, and a free PDF sampler.',
+      canonical: url.toString(),
+    })}`;
+
+    const result = auditHtmlMetadata(url, html);
+    expect(result.title).toBe('Samurai Sudoku Printable Practice Plan and Free PDF Guide');
+    expect(result.issues).toEqual([]);
+  });
+
   it('accepts complete Chinese metadata without applying English character limits', () => {
     const url = new URL('https://www.samuraisudoku.net/zh/example');
     const result = auditHtmlMetadata(
@@ -72,6 +85,24 @@ describe('SEO metadata audit', () => {
 
     expect(result.issues).toContain('title too short (6 < 28)');
     expect(result.issues).toContain('description too short (12 < 90)');
+  });
+
+  it('keeps long but valid snippets as non-blocking recommendations', () => {
+    const url = new URL('https://www.samuraisudoku.net/en/example');
+    const result = auditHtmlMetadata(
+      url,
+      pageHtml({
+        title: 'A Very Detailed Samurai Sudoku Printable Practice Plan With More Than Seventy Characters',
+        description: 'This deliberately detailed description explains Samurai Sudoku printable puzzles, answer keys, overlap boxes, candidate notes, paper sizes, and classroom practice in more than one hundred and eighty characters for testing.',
+        canonical: url.toString(),
+      }),
+    );
+
+    expect(result.issues).toEqual([]);
+    expect(result.warnings).toEqual([
+      expect.stringContaining('title longer than recommended'),
+      expect.stringContaining('description longer than recommended'),
+    ]);
   });
 
   it('rejects noindex directives on URLs published in the sitemap', () => {
