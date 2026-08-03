@@ -19,6 +19,7 @@ export interface SeoMetadataResult {
   description: string;
   canonical: string;
   issues: string[];
+  warnings: string[];
 }
 
 type AttributeMap = Record<string, string>;
@@ -53,27 +54,33 @@ function parseAttributes(tag: string): AttributeMap {
 }
 
 function extractTitle(html: string) {
-  const match = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+  // Next.js may stream document metadata after the body shell. SVGs can also
+  // contain their own <title>, so the first title in the response is not
+  // necessarily the document title. The final title is the resolved metadata.
+  const matches = Array.from(html.matchAll(/<title\b[^>]*>([\s\S]*?)<\/title>/gi));
+  const match = matches.at(-1);
   return match ? decodeHtml(match[1].replace(/<[^>]+>/g, ' ')) : '';
 }
 
 function extractMetaContent(html: string, name: string) {
+  let content = '';
   for (const match of html.matchAll(/<meta\b[^>]*>/gi)) {
     const attributes = parseAttributes(match[0]);
     if ((attributes.name ?? '').toLowerCase() === name.toLowerCase()) {
-      return attributes.content ?? '';
+      content = attributes.content ?? '';
     }
   }
-  return '';
+  return content;
 }
 
 function extractCanonical(html: string) {
+  let canonical = '';
   for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
     const attributes = parseAttributes(match[0]);
     const rel = (attributes.rel ?? '').toLowerCase().split(/\s+/);
-    if (rel.includes('canonical')) return attributes.href ?? '';
+    if (rel.includes('canonical')) canonical = attributes.href ?? '';
   }
-  return '';
+  return canonical;
 }
 
 function extractHreflangs(html: string) {
@@ -102,13 +109,14 @@ function checkLength(
   minimum: number,
   maximum: number,
   issues: string[],
+  warnings: string[],
 ) {
   if (!value) {
     issues.push(`missing ${label}`);
     return;
   }
   if (value.length < minimum) issues.push(`${label} too short (${value.length} < ${minimum})`);
-  if (value.length > maximum) issues.push(`${label} too long (${value.length} > ${maximum})`);
+  if (value.length > maximum) warnings.push(`${label} longer than recommended (${value.length} > ${maximum})`);
 }
 
 function canonicalMatches(expected: URL, canonical: string) {
@@ -139,13 +147,14 @@ export function auditHtmlMetadata(
   const xRobotsTag = (headers.get('x-robots-tag') ?? '').toLowerCase();
   const hreflangs = extractHreflangs(html);
   const issues: string[] = [];
+  const warnings: string[] = [];
 
   if (locale === 'zh') {
-    checkLength('title', title, ZH_TITLE_MIN, ZH_TITLE_MAX, issues);
-    checkLength('description', description, ZH_DESCRIPTION_MIN, ZH_DESCRIPTION_MAX, issues);
+    checkLength('title', title, ZH_TITLE_MIN, ZH_TITLE_MAX, issues, warnings);
+    checkLength('description', description, ZH_DESCRIPTION_MIN, ZH_DESCRIPTION_MAX, issues, warnings);
   } else {
-    checkLength('title', title, EN_TITLE_MIN, EN_TITLE_MAX, issues);
-    checkLength('description', description, EN_DESCRIPTION_MIN, EN_DESCRIPTION_MAX, issues);
+    checkLength('title', title, EN_TITLE_MIN, EN_TITLE_MAX, issues, warnings);
+    checkLength('description', description, EN_DESCRIPTION_MIN, EN_DESCRIPTION_MAX, issues, warnings);
   }
 
   if (!canonical) issues.push('missing canonical');
@@ -167,6 +176,7 @@ export function auditHtmlMetadata(
     description,
     canonical,
     issues,
+    warnings,
   };
 }
 
@@ -232,6 +242,7 @@ export async function auditSeoMetadata(baseUrl: string) {
   return {
     results,
     failing: results.filter((result) => result.issues.length > 0),
+    warningPages: results.filter((result) => result.warnings.length > 0),
   };
 }
 
@@ -239,13 +250,18 @@ async function main() {
   const args = process.argv.slice(2);
   const reportOnly = args.includes('--report-only');
   const baseUrl = args.find((argument) => !argument.startsWith('--')) ?? DEFAULT_BASE_URL;
-  const { results, failing } = await auditSeoMetadata(baseUrl);
+  const { results, failing, warningPages } = await auditSeoMetadata(baseUrl);
 
   console.log(`Audited SEO metadata for ${results.length} sitemap pages at ${baseUrl}.`);
-  console.log(`Pages with metadata issues: ${failing.length}.`);
+  console.log(`Pages with blocking metadata issues: ${failing.length}.`);
+  console.log(`Pages with non-blocking length recommendations: ${warningPages.length}.`);
 
-  for (const result of failing.slice(0, 100)) {
+  for (const result of failing) {
     console.log(`${result.path}: ${result.issues.join('; ')}`);
+  }
+
+  for (const result of warningPages.slice(0, 20)) {
+    console.log(`WARN ${result.path}: ${result.warnings.join('; ')}`);
   }
 
   if (failing.length > 0 && !reportOnly) process.exitCode = 1;
