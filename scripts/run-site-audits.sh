@@ -6,6 +6,7 @@ SITEMAP_URL="${BASE_URL}/sitemap.xml"
 SERVER_LOG="${SITE_AUDIT_LOG:-/tmp/samurai-next.log}"
 INTERNAL_LINK_LOG="${INTERNAL_LINK_AUDIT_LOG:-/tmp/internal-links-audit.log}"
 PAGE_QUALITY_LOG="${PAGE_QUALITY_AUDIT_LOG:-/tmp/page-quality-audit.log}"
+SEO_METADATA_LOG="${SEO_METADATA_AUDIT_LOG:-/tmp/seo-metadata-audit.log}"
 SERVER_PID=""
 
 cleanup() {
@@ -20,6 +21,7 @@ trap cleanup EXIT
 : > "${SERVER_LOG}"
 : > "${INTERNAL_LINK_LOG}"
 : > "${PAGE_QUALITY_LOG}"
+: > "${SEO_METADATA_LOG}"
 pnpm start --hostname 127.0.0.1 --port 3000 > "${SERVER_LOG}" 2>&1 &
 SERVER_PID=$!
 
@@ -50,9 +52,11 @@ pnpm audit:internal-links "${BASE_URL}" 2>&1 | tee "${INTERNAL_LINK_LOG}"
 INTERNAL_LINK_STATUS=${PIPESTATUS[0]}
 pnpm audit:page-quality "${BASE_URL}" 2>&1 | tee "${PAGE_QUALITY_LOG}"
 PAGE_QUALITY_STATUS=${PIPESTATUS[0]}
+pnpm audit:seo-metadata "${BASE_URL}" 2>&1 | tee "${SEO_METADATA_LOG}"
+SEO_METADATA_STATUS=${PIPESTATUS[0]}
 set -e
 
-if [[ "${INTERNAL_LINK_STATUS}" -ne 0 || "${PAGE_QUALITY_STATUS}" -ne 0 ]]; then
-  echo "Site audits failed: internal-links=${INTERNAL_LINK_STATUS}, page-quality=${PAGE_QUALITY_STATUS}." >&2
+if [[ "${INTERNAL_LINK_STATUS}" -ne 0 || "${PAGE_QUALITY_STATUS}" -ne 0 || "${SEO_METADATA_STATUS}" -ne 0 ]]; then
+  echo "Site audits failed: internal-links=${INTERNAL_LINK_STATUS}, page-quality=${PAGE_QUALITY_STATUS}, seo-metadata=${SEO_METADATA_STATUS}." >&2
   exit 1
 fi

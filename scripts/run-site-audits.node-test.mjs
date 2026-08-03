@@ -14,5 +14,7 @@ test('site audit runner starts Next, waits for sitemap, runs audits, and cleans 
   assert.match(script, /curl .*"\$\{SITEMAP_URL\}"/);
   assert.match(script, /audit:internal-links/);
   assert.match(script, /audit:page-quality/);
+  assert.match(script, /audit:seo-metadata/);
+  assert.match(script, /SEO_METADATA_STATUS/);
   assert.match(script, /kill .*SERVER_PID/);
 });

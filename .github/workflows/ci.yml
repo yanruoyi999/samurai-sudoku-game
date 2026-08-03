@@ -81,5 +81,6 @@ jobs:
             /tmp/samurai-next.log
             /tmp/internal-links-audit.log
             /tmp/page-quality-audit.log
+            /tmp/seo-metadata-audit.log
           if-no-files-found: warn
           retention-days: 7

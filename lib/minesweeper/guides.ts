@@ -28,7 +28,7 @@ export const MINESWEEPER_GUIDES: readonly MinesweeperGuide[] = [
     slug: "how-to-play",
     title: {
       en: "How to Play Minesweeper Online",
-      zh: "扫雷怎么玩",
+      zh: "在线扫雷怎么玩与基础规则",
     },
     description: {
       en: "Learn how to play Minesweeper online, read numbers, mark mines, and clear safe cells without guessing too early.",
@@ -103,7 +103,7 @@ export const MINESWEEPER_GUIDES: readonly MinesweeperGuide[] = [
     slug: "beginner-strategy",
     title: {
       en: "Minesweeper Strategy for Beginners",
-      zh: "扫雷新手策略",
+      zh: "扫雷新手入门策略与技巧",
     },
     description: {
       en: "A beginner Minesweeper strategy guide for reading 1-2-1 patterns, using flags carefully, and avoiding risky early guesses.",
