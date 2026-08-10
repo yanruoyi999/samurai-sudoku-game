@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Script from 'next/script';
 
+import { LumaGameRecommendations } from '@/components/related/LumaGameRecommendations';
 import { getSamuraiGuide } from '@/lib/samurai/guides';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { buildAbsoluteUrl } from '@/lib/site-url';
@@ -216,6 +217,8 @@ export default async function StrategyGuidePage({ params }: PageProps) {
           </p>
         </Link>
       </section>
+
+      <LumaGameRecommendations locale={normalizedLocale} placement="advanced_strategy" />
 
       <footer className="mt-12 grid gap-3 rounded-2xl border bg-muted/30 p-6 md:grid-cols-2 lg:grid-cols-4">
         <Link href={`/${normalizedLocale}/games/samurai/solving-tips`} className="rounded-lg border bg-background px-4 py-3 hover:border-primary hover:bg-primary/5">
