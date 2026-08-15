@@ -1,6 +1,17 @@
 {
   "puzzles": [
     {
+      "id": "2026-08-16",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "536d583e",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
       "id": "2026-08-15",
       "difficulty": "evil",
       "estimatedTime": 90,
@@ -2498,6 +2509,6 @@
       ]
     }
   ],
-  "total": 227,
-  "lastUpdated": "2026-08-15T00:00:00.000Z"
+  "total": 228,
+  "lastUpdated": "2026-08-16T00:00:00.000Z"
 }
