@@ -1,6 +1,17 @@
 {
   "puzzles": [
     {
+      "id": "2026-10-31",
+      "difficulty": "easy",
+      "estimatedTime": 20,
+      "checksum": "3f9431f6",
+      "tags": [
+        "daily",
+        "easy",
+        "generated"
+      ]
+    },
+    {
       "id": "2026-10-30",
       "difficulty": "evil",
       "estimatedTime": 90,
@@ -3334,6 +3345,6 @@
       ]
     }
   ],
-  "total": 303,
-  "lastUpdated": "2026-10-30T00:00:00.000Z"
+  "total": 304,
+  "lastUpdated": "2026-10-31T00:00:00.000Z"
 }
