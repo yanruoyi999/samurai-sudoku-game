@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 interface SwordfishTrainerProps {
   locale: string;
+  initialOrder?: 2 | 3 | 4;
 }
 
 const techniqueNames: Record<number, string> = {
@@ -20,10 +21,10 @@ const techniqueNames: Record<number, string> = {
   4: "Jellyfish",
 };
 
-export function SwordfishTrainer({ locale }: SwordfishTrainerProps) {
+export function SwordfishTrainer({ locale, initialOrder = 3 }: SwordfishTrainerProps) {
   const normalizedLocale = locale === "zh" ? "zh" : "en";
   const isZh = normalizedLocale === "zh";
-  const [order, setOrder] = useState(3);
+  const [order, setOrder] = useState<number>(initialOrder);
   const [orientation, setOrientation] = useState<FishOrientation>("row");
   const [showValid, setShowValid] = useState(true);
   const [revealed, setRevealed] = useState(false);
