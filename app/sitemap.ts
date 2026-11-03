@@ -64,6 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/blank-sudoku-grid-printable', changeFrequency: 'monthly', priority: 0.75 },
     { path: '/sudoku-cross-hatching', changeFrequency: 'monthly', priority: 0.76 },
     { path: '/sudoku-naked-triple', changeFrequency: 'monthly', priority: 0.75 },
+    { path: '/sudoku-x-wing', changeFrequency: 'monthly', priority: 0.75 },
     { path: '/sudoku-swordfish', changeFrequency: 'monthly', priority: 0.77 },
     { path: '/killer-sudoku-cheat-sheet', changeFrequency: 'monthly', priority: 0.69 },
     { path: '/games/samurai', changeFrequency: 'daily', priority: 0.9, followsIndex: true },

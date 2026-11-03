@@ -295,6 +295,11 @@ export default async function SudokuSwordfishPage({ params }: PageProps) {
               ? "三种技巧不是互不相关的图案，而是同一套“基准线数量等于覆盖线并集数量”的证明。阶数越高，肉眼追踪越难，但删除规则没有变化。"
               : "These are not unrelated shapes. They use the same proof: the number of base lines equals the size of the cover-line union. Higher orders are harder to spot, but the elimination rule does not change."}
           </p>
+          <p className="mt-4 leading-7">
+            <Link href={`/${normalizedLocale}/sudoku-x-wing`} className="font-semibold text-primary underline underline-offset-4">
+              {isZh ? "先学 X-Wing：用两种摆放证明二阶排除" : "Learn X-Wing with a two-case proof"}
+            </Link>
+          </p>
           <div className="mt-7 overflow-x-auto">
             <table className="w-full min-w-[42rem] border-collapse text-left">
               <thead><tr className="border-y bg-muted/40"><th className="p-3">{isZh ? "技巧" : "Technique"}</th><th className="p-3">{isZh ? "基准线" : "Base lines"}</th><th className="p-3">{isZh ? "覆盖线" : "Cover lines"}</th><th className="p-3">{isZh ? "典型用途" : "Typical use"}</th></tr></thead>

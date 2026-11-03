@@ -3,7 +3,9 @@
 const MIN_OUTBOUND_INTERNAL_LINKS = 2;
 const MIN_INBOUND_INTERNAL_LINKS = 2;
 const CONCURRENCY = 16;
-const MAX_PAGES = 1000;
+// Measured 2026-11-03: 700 sitemap paths + 614 printable seeds = 1314 pages.
+// Keep a fixed total bound (686 pages of headroom), including every discovered path.
+const MAX_PAGES = 2000;
 const LOCALIZED_PATH = /^\/(en|zh)(?:\/|$)/;
 const DATED_PUZZLE_PATH = /^(\/(?:en|zh)\/games\/samurai)\/(\d{4}-\d{2}-\d{2})$/;
 
@@ -105,6 +107,10 @@ async function main() {
     }
   }
 
+  if (queuedPaths.size > MAX_PAGES) {
+    throw new Error(`Internal-link discovery exceeded the ${MAX_PAGES}-page safety limit.`);
+  }
+
   const queue = [...queuedPaths];
   const audits: PageAudit[] = [];
 
@@ -119,14 +125,13 @@ async function main() {
     for (const result of results) {
       for (const discoveredPath of result.discoveredPaths) {
         if (!queuedPaths.has(discoveredPath)) {
+          if (queuedPaths.size >= MAX_PAGES) {
+            throw new Error(`Internal-link discovery exceeded the ${MAX_PAGES}-page safety limit.`);
+          }
           queuedPaths.add(discoveredPath);
           queue.push(discoveredPath);
         }
       }
-    }
-
-    if (queue.length > MAX_PAGES) {
-      throw new Error(`Internal-link discovery exceeded the ${MAX_PAGES}-page safety limit.`);
     }
   }
 
