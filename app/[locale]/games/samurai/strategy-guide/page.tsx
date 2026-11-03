@@ -188,6 +188,14 @@ export default async function StrategyGuidePage({ params }: PageProps) {
             </section>
           ))}
         </div>
+        <p className="mt-5 leading-7 text-muted-foreground">
+          {isZh
+            ? '候选记录准确后，可以在同一个 9×9 网格内继续练习二行二列排除：'
+            : 'With accurate candidate notes, try a two-row, two-column elimination inside one 9×9 grid: '}
+          <Link href={`/${normalizedLocale}/sudoku-x-wing`} className="font-semibold text-primary underline underline-offset-4">
+            {isZh ? 'X-Wing：两种摆放与候选排除' : 'X-Wing explained with a two-case proof'}
+          </Link>
+        </p>
       </section>
 
       <section className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
