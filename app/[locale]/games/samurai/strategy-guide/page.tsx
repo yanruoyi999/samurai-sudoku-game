@@ -196,6 +196,10 @@ export default async function StrategyGuidePage({ params }: PageProps) {
             {isZh ? 'X-Wing：两种摆放与候选排除' : 'X-Wing explained with a two-case proof'}
           </Link>
         </p>
+        <p className="mt-5 leading-7 text-muted-foreground">
+          {isZh ? '也可以学习三个双候选格组成的 ' : 'Explore a three-bivalue-cell pattern in '}
+          <Link href={`/${normalizedLocale}/sudoku-xy-wing`} className="font-semibold text-primary underline underline-offset-4">{isZh ? 'XY-Wing 两分支证明' : 'the XY-Wing two-branch proof'}</Link>.
+        </p>
       </section>
 
       <section className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -246,6 +246,7 @@ export default async function SudokuNakedTriplePage({ params }: PageProps) {
           <h2 className="mt-2 text-3xl font-semibold">{isZh ? "把候选集合接到完整解题链" : "Connect candidate sets to the solving chain"}</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
+              { href: "/sudoku-xy-wing", title: isZh ? "XY-Wing 两分支" : "XY-Wing", body: isZh ? "用三个双候选格建立两分支排除。" : "Use three bivalue cells for a two-branch elimination." },
               { href: "/games/samurai/candidate-notes", title: isZh ? "候选笔记" : "Candidate notes", body: isZh ? "先保持候选准确并及时更新。" : "Keep candidate lists accurate." },
               { href: "/sudoku-swordfish", title: isZh ? "剑鱼技巧" : "Swordfish", body: isZh ? "从格子集合进阶到行列集合。" : "Move from cell sets to line sets." },
               { href: "/sudoku-cross-hatching", title: isZh ? "交叉排除" : "Cross hatching", body: isZh ? "候选过多时回到基础扫描。" : "Return to visual scanning." },
