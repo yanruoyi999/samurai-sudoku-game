@@ -46,3 +46,17 @@ describe("rendered XY-Wing sketch", () => {
     }
   });
 });
+
+it("renders valid localized article structured data that the quality audit recognizes", async () => {
+  const { scoreHtmlPage } = await import("@/scripts/page-quality-audit");
+  for (const locale of ["en", "zh"]) {
+    const html = renderToStaticMarkup(await XYWingPage({ params: Promise.resolve({ locale }) }));
+    const scripts = [...html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/g)];
+    expect(scripts.length).toBeGreaterThan(0);
+    const schemas = scripts.map(match => JSON.parse(match[1]));
+    const article = schemas.find(schema => schema["@type"] === "TechArticle");
+    expect(article?.mainEntityOfPage).toMatch(new RegExp(`/${locale}/sudoku-xy-wing$`));
+    expect(article?.inLanguage).toBe(locale === "zh" ? "zh-CN" : "en-US");
+    expect(scoreHtmlPage(new URL(`https://example.com/${locale}/sudoku-xy-wing`), html).issues).not.toContain("missing structured data");
+  }
+});
