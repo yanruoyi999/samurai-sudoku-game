@@ -185,6 +185,7 @@ export default async function StrategyGuidePage({ params }: PageProps) {
                 {index + 1}. {item.title}
               </h3>
               <p className="mt-3 leading-7 text-muted-foreground">{item.body}</p>
+              {index === 1 && <p className="mt-3"><Link href={`/${normalizedLocale}/sudoku-hidden-pairs`} className="text-primary underline">{isZh ? '隐性对：检查数字位置与删除方向' : 'Hidden pairs: check digit locations and eliminate extras'}</Link></p>}
             </section>
           ))}
         </div>

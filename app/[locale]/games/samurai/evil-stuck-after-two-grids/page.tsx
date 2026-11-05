@@ -567,10 +567,11 @@ export default async function EvilStuckAfterTwoGridsPage({ params }: PageProps) 
             <h2 className="text-2xl font-semibold tracking-tight">{page.recoveryTitle}</h2>
             <p className="leading-7 text-muted-foreground">{page.recoveryIntro}</p>
             <ol className="space-y-4">
-              {page.recoverySteps.map((item) => (
+              {page.recoverySteps.map((item, index) => (
                 <li key={item.title} className="rounded-lg border bg-background p-5">
                   <h3 className="font-semibold">{item.title}</h3>
                   <p className="mt-2 leading-7 text-muted-foreground">{item.body}</p>
+                  {index === 4 && <p className="mt-3"><Link href={`/${locale}/sudoku-hidden-pairs`} className="text-primary underline">{isZh ? '查看隐性对示例与反例' : 'See the hidden-pair example and near miss'}</Link></p>}
                 </li>
               ))}
             </ol>
