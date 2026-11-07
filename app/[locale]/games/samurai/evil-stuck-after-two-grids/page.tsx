@@ -653,6 +653,10 @@ export default async function EvilStuckAfterTwoGridsPage({ params }: PageProps) 
               </Link>
             </div>
           </section>
+      <section className="mt-10 rounded-lg border p-5">
+        <h2 className="text-xl font-semibold">{isZh ? '再学一种单数字强链' : 'Learn a single-digit strong-link pattern'}</h2>
+        <p className="mt-3"><Link href={`/${locale}/sudoku-skyscraper`} className="font-medium text-primary underline underline-offset-4">{isZh ? 'Skyscraper摩天楼：检查两条强链、共同可见格与反例' : 'Skyscraper: verify two strong links, common peers and a near miss'}</Link></p>
+      </section>
         </article>
       </main>
     </>
