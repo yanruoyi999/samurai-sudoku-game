@@ -21,6 +21,12 @@ describe('Sudoku pronunciation guide contract', () => {
       expect(html).toContain('suˈdəʊkuː');
       expect(html).toContain('soo-DOH-koo');
       expect(html).toContain('s-u-d-o-k-u');
+      expect(html).toContain(locale === 'zh' ? '读音与拼写自查表' : 'Pronunciation and spelling self-check');
+      expect(html).toContain('<caption');
+      expect(html).toContain('data-practice="word-check"');
+      expect(html).toContain(locale === 'zh' ? '一分钟同伴练习' : 'A one-minute partner check');
+      expect(html).toContain(locale === 'zh' ? '查看练习核对结果' : 'Reveal the practice check');
+      expect(html).toContain('Bring a sudoku puzzle tomorrow.');
       expect(html).toContain('oxfordlearnersdictionaries.com');
       expect(html).toContain('collinsdictionary.com');
       expect(html).not.toMatch(/<audio|<iframe|auto[Pp]lay/);
@@ -47,10 +53,13 @@ describe('Sudoku pronunciation guide contract', () => {
     });
   }
   it('is discoverable from two existing context pages and the bilingual sitemap', async () => {
-    for (const file of ['app/[locale]/games/samurai/how-to-play/page.tsx', 'app/[locale]/about/page.tsx']) {
+    for (const file of ['app/[locale]/games/samurai/how-to-play/page.tsx', 'app/[locale]/sudoku-for-kids/resources/page.tsx']) {
       expect(fs.readFileSync(path.resolve(file), 'utf8')).toContain('/sudoku-pronunciation');
     }
     const entries = await sitemap();
+    for (const source of ['/games/samurai/how-to-play', '/sudoku-for-kids/resources']) {
+      for (const lang of ['en', 'zh']) expect(entries.some((entry) => entry.url === `https://www.samuraisudoku.net/${lang}${source}`)).toBe(true);
+    }
     for (const locale of ['en', 'zh']) {
       expect(entries.filter((entry) => entry.url === `https://www.samuraisudoku.net/${locale}${route}`)).toHaveLength(1);
     }

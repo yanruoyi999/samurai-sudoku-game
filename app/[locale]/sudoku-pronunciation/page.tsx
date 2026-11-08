@@ -81,6 +81,33 @@ export default async function SudokuPronunciationPage({ params }: Props) {
           </div>
         </section>
         <section className="space-y-3">
+          <h2 className="text-2xl font-semibold">{zh ? '读音与拼写自查表' : 'Pronunciation and spelling self-check'}</h2>
+          <p>{zh ? '给同伴介绍一道题，或在课堂上读出游戏名称时，可以一次只检查一件事。下面是本页设计的自查活动，不是考试，也不根据某种口音给学习者打分。先选定一个出版方示范，再把它用于你要说的完整句子，避免来回混用不同提示。' : 'When introducing a puzzle to a friend or a class, check one thing at a time. This original activity is not an accent test. Choose one publisher example and use it in the sentence you intend to say rather than switching between different memory cues.'}</p>
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-left text-sm">
+              <caption className="p-3 text-left font-medium">{zh ? '把拼写、重音、句子和试听分开检查' : 'Check spelling, stress, context and listening separately'}</caption>
+              <thead><tr><th scope="col" className="p-3">{zh ? '检查什么' : 'Check'}</th><th scope="col" className="p-3">{zh ? '可以这样做' : 'Try this'}</th></tr></thead>
+              <tbody>
+                <tr className="border-t"><th scope="row" className="p-3">{zh ? '字母顺序' : 'Letter order'}</th><td className="p-3">{zh ? '遮住提示写出 sudoku，再按 s-u-d-o-k-u 逐字对照。如果写成 suduko，先纠正第四个字母的位置；不需要因此改变整个句子的读法。' : 'Cover the cue, write sudoku, then compare s-u-d-o-k-u letter by letter. Correct a swapped o and u as a spelling issue, not as an instruction to change every sound.'}</td></tr>
+                <tr className="border-t"><th scope="row" className="p-3">{zh ? '中间重音' : 'Middle stress'}</th><td className="p-3">{zh ? '用轻、重、轻的节奏慢读记忆提示，再恢复自然速度。DOH 的大写只提醒突出中间一段，不表示要喊出来，也不能代替词典中的音标和声音示范。' : 'Try the light–strong–light cue slowly, then return to a natural pace. Capital DOH indicates emphasis, not shouting or an exact substitute for a dictionary recording.'}</td></tr>
+                <tr className="border-t"><th scope="row" className="p-3">{zh ? '放回语境' : 'Use a sentence'}</th><td className="p-3">{zh ? '先读本页的完整原创例句，再换成你真正要表达的句子。暂停在单词前帮助记忆即可；练熟后不必把三个音节彼此割开，也不需要把每个字母分别念出。' : 'Read the example sentence, then use your own sentence about a puzzle. A pause can help you remember the word; you need not separate every syllable or name every letter in conversation.'}</td></tr>
+                <tr className="border-t"><th scope="row" className="p-3">{zh ? '需要声音时' : 'Need an audible model?'}</th><td className="p-3">{zh ? '打开下方出版方词条，查看其口音标记和可用试听按钮。若当前设备无法播放，不把文字提示当成已听过的录音；本页也不会要求录音、上传语音或开启麦克风。' : 'Open a publisher entry and check its accent label and available play button. When playback is unavailable, do not treat written guidance as audio you have heard. This page asks for no recording, voice upload or microphone permission.'}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section className="space-y-3" data-practice="word-check">
+          <h2 className="text-2xl font-semibold">{zh ? '一分钟同伴练习' : 'A one-minute partner check'}</h2>
+          <p>{zh ? '两人轮流用英语邀请对方解题。先不展开答案，也不需要计时器或录音设备：这是一项帮助记忆的原创练习，不是发音准确度测评。一个人读提示，另一个人只核对下面三件事，再交换角色。独自练习时，也可以先写下判断，然后自己展开核对结果。' : 'Take turns inviting a partner to solve a puzzle. Keep the answer closed at first. You need no timer or recording device: this original memory activity does not measure pronunciation accuracy. One person reads the cue and the other checks the three points below, then swap roles. On your own, write your choices before revealing the check.'}</p>
+          <p lang="en" className="rounded border p-4">Bring a sudoku puzzle tomorrow.</p>
+          <ol className="list-decimal space-y-2 pl-5">
+            <li>{zh ? '先从 sudoku 和 suduko 两种写法中选一个填入邀请句。不要根据近似读音重新拼词，而是对照上方的六个字母；暂时记不住时，可以用手遮住其中一个写法再判断。' : 'Choose sudoku or suduko for the invitation. Use the six-letter spelling above rather than inventing a spelling from the sound cue.'}</li>
+            <li>{zh ? '只看 soo-DOH-koo 这条记忆提示，指出哪一段要更突出。这里问的是本页提示中的重音位置，不是在比较两个人的口音，也不要求把声音提高到不自然的程度。' : 'Point to the emphasized part of soo-DOH-koo. This asks about the stress shown in our cue, not which person has the better accent.'}</li>
+            <li>{zh ? '最后回答：这张网页是否已经让你听到了出版方录音？如果没有点开词典并实际播放，就应回答没有。文字和音标可以帮助准备，但不能冒充一次已经完成的试听。' : 'Decide whether this page has already played a publisher recording. Reading a cue or transcription does not count as listening to audio.'}</li>
+          </ol>
+          <details className="rounded-lg border p-4"><summary className="cursor-pointer font-semibold">{zh ? '查看练习核对结果' : 'Reveal the practice check'}</summary><p className="mt-3">{zh ? '拼写选 sudoku；重音提示是中间的 DOH；本页没有播放录音。三项分别检查字母顺序、提示理解和证据来源，不合成为发音分数。确认后自然地读完整句子，想听声音时再进入下方出版方词条。' : 'Choose sudoku; emphasize the middle DOH in the cue; this page has not played a recording. These check spelling, the written cue and the source of evidence separately—not a pronunciation score. Read the whole invitation naturally, then open a publisher entry when you need an audible model.'}</p></details>
+        </section>
+        <section className="space-y-3">
           <h2 className="text-2xl font-semibold">{zh ? '词典入口：在出版方页面听声音' : 'Dictionary references and listening'}</h2>
           <p>{zh ? '本页不托管、复制或自动播放外部音频。下面的链接会打开出版方词条；可用的声音按钮和口音标记以对方当时页面为准。' : 'No external audio is hosted, copied or played automatically here. These links open the publishers’ entries; available recordings and accent labels depend on their current pages.'}</p>
           <ul className="list-disc space-y-2 pl-5">

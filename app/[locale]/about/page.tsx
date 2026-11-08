@@ -106,13 +106,6 @@ export default async function AboutPage({ params }: AboutPageProps) {
         </Link>
       </section>
 
-      <p className="mt-5 text-muted-foreground">
-        {isZh ? '不确定名称怎么读？' : 'Not sure how to say the name? '}
-        <Link href={`/${locale}/sudoku-pronunciation`} className="text-primary underline">
-          {isZh ? '阅读 Sudoku 英语读音指南与词典入口' : 'Read the sudoku pronunciation guide and dictionary references'}
-        </Link>
-      </p>
-
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
           href={`/${locale}/games/samurai`}
