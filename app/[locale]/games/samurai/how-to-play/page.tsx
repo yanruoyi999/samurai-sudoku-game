@@ -167,6 +167,9 @@ export default async function HowToPlayPage({ params }: HowToPlayPageProps) {
           <Link href={`/${locale}/games/samurai/strategy-guide`} className="rounded-md border px-3 py-2 text-primary hover:bg-primary/10">
             {isZh ? '中高级技巧' : 'Advanced techniques'}
           </Link>
+          <Link href={`/${locale}/sudoku-pronunciation`} className="rounded-md border px-3 py-2 text-primary underline hover:bg-primary/10">
+            {isZh ? 'Sudoku 的英语读音与拼写' : 'How to pronounce and spell sudoku'}
+          </Link>
         </nav>
 
         <div className="mt-6 flex flex-wrap gap-3">

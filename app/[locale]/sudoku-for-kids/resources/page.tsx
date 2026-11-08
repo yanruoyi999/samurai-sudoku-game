@@ -143,6 +143,12 @@ export default async function KidsSudokuResourcesPage({ params }: PageProps) {
               ? '用短规则、问题式提示和分层题目，让孩子练习观察与排除。这里提供 10 分钟活动、家长提问、课堂分层、4×4 到 6×6 的进阶路线，以及不收集儿童个人数据的隐私边界。'
               : 'Use short rules, parent prompts, classroom differentiation, and level-appropriate puzzles to teach observation and elimination. This resource includes a 10-minute lesson, progression from 4×4 to 6×6, and a clear privacy boundary.'}
           </p>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            {isZh ? '用英语介绍活动前，可先和孩子核对游戏名称的读音与拼写：' : 'Before introducing the activity aloud, check the puzzle name together: '}
+            <Link href={`/${normalizedLocale}/sudoku-pronunciation`} className="text-primary underline">
+              {isZh ? 'Sudoku 英语读音与拼写指南' : 'Sudoku pronunciation and spelling guide'}
+            </Link>
+          </p>
         </header>
 
         <section className="mt-12 rounded-2xl border p-6 md:p-8">
