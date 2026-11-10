@@ -178,6 +178,13 @@ export default async function SixBySixKidsSudokuPage({ params }: PageProps) {
           </div>
         </section>
 
+        <p className="mt-10 leading-7 text-muted-foreground">
+          {isZh ? '熟悉行、列、宫的规则后，还可以试试九格宫会转弯的' : 'Once you know how rows, columns and boxes work, try '}
+          <Link href={`/${normalizedLocale}/jigsaw-sudoku`} className="font-semibold text-primary underline underline-offset-4">
+            {isZh ? '9×9 不规则数独' : '9×9 Jigsaw Sudoku'}
+          </Link>{isZh ? '。' : ', where the nine-cell regions have different shapes.'}
+        </p>
+
         <section className="mt-14">
           <h2 className="text-3xl font-semibold">{isZh ? '6×6 儿童数独常见问题' : '6×6 Sudoku for Kids FAQ'}</h2>
           <div className="mt-5 space-y-4">
