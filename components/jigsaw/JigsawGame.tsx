@@ -17,7 +17,7 @@ const labels = {
     resetPrompt: 'Restart this puzzle? This will clear its entries and notes.',
     restart: 'Restart', cancel: 'Cancel', resetDone: 'Puzzle restarted.',
     ready: 'Each bold region, row and column must contain 1–9.',
-    good: 'No incorrect entries so far.', solved: 'Puzzle solved!', given: 'given', empty: 'empty',
+    good: 'No incorrect entries so far.', solved: 'Puzzle solved!', given: 'given', empty: 'empty', incorrect: 'incorrect',
     progress: (n: number, total: number) => `${n} of ${total} empty squares filled`,
     wrong: (n: number) => `${n} incorrect ${n === 1 ? 'entry' : 'entries'} highlighted.`,
     cell: (r: number, c: number, g: number) => `Row ${r}, column ${c}, region ${g}`,
@@ -29,7 +29,7 @@ const labels = {
     resetPrompt: '重开此题？这会清除当前题目的填写和笔记。',
     restart: '重开', cancel: '取消', resetDone: '本题已重开。',
     ready: '每行、每列和每个粗线宫都要填入 1–9。',
-    good: '目前填写的数字均正确。', solved: '解题成功！', given: '题目给定', empty: '空格',
+    good: '目前填写的数字均正确。', solved: '解题成功！', given: '题目给定', empty: '空格', incorrect: '填数错误',
     progress: (n: number, total: number) => `已填 ${n} / ${total} 个空格`,
     wrong: (n: number) => `已标出 ${n} 个错误填数。`,
     cell: (r: number, c: number, g: number) => `第 ${r} 行，第 ${c} 列，第 ${g} 宫`,
@@ -146,7 +146,7 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
           const wrong = errors.has(i);
           const related = arePeers(regions, selected, i);
           const details = v ? String(v) : notes[i].join(', ') || l.empty;
-          const label = `${l.cell(r + 1, c + 1, Number(region) + 1)}: ${details}${clue ? `, ${l.given}` : ''}`;
+          const label = `${l.cell(r + 1, c + 1, Number(region) + 1)}: ${details}${clue ? `, ${l.given}` : ''}${wrong ? `, ${l.incorrect}` : ''}`;
           return (
             <button
               key={i}
@@ -155,7 +155,6 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
               tabIndex={i === selected ? 0 : -1}
               aria-label={label}
               aria-pressed={i === selected}
-              aria-invalid={wrong || undefined}
               onFocus={() => setSelected(i)}
               onClick={event => { setSelected(i); event.currentTarget.focus(); }}
               onKeyDown={event => handleKey(event, i)}
