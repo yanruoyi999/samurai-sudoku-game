@@ -60,8 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: c.summary,
     alternates: { canonical: url, languages: buildLanguageAlternates(PATH) },
     openGraph: { title: c.title, description: c.summary, url, type: 'website' },
-    // Exact-URL backlink evidence is required before this pilot enters the index.
-    robots: { index: false, follow: true },
+    robots: { index: true, follow: true },
   };
 }
 

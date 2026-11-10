@@ -69,6 +69,7 @@ function categorizePath(pathname: string) {
   ]);
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
+  if (path === '/jigsaw-sudoku') return 'sudoku-variant';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
   if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
@@ -95,6 +96,7 @@ function scoreDemand(pathname: string, category: string) {
   if (path.includes('printable') || path.includes('pdf')) return 20;
   if (path.includes('daily') || path.includes('archive')) return 18;
   if (category === 'sudoku-guide') return 17;
+  if (category === 'sudoku-variant') return 17;
   if (path.includes('/games/minesweeper')) return 18;
   if (category === 'kids-sudoku') return 17;
   if (path.includes('/difficulty/evil') || path.includes('/difficulty/hard')) return 17;
@@ -125,6 +127,11 @@ function scorePlayability(category: string, html: string) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
+  if (category === 'sudoku-variant') {
+    const hasBoard = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Jigsaw Sudoku board|不规则数独棋盘)["'][^>]*>\s*<button\b/i);
+    const hasPad = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Number pad|数字键)["'][^>]*>\s*<button\b/i);
+    return hasBoard && hasPad ? 15 : 7;
+  }
   if (category === 'kids-sudoku') return hasInteractiveControl ? 15 : 11;
   if (category === 'samurai-puzzle') return hasInteractiveControl ? 15 : 12;
   if (category === 'samurai-difficulty' || category === 'samurai-archive') return hasInteractiveControl ? 14 : 12;
