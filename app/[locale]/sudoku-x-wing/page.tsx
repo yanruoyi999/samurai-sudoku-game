@@ -145,6 +145,7 @@ export default async function SudokuXWingPage({ params }: PageProps) {
         <section className="border-t pt-6 text-sm leading-6 text-muted-foreground">
           <h2 className="font-semibold text-foreground">{isZh ? "规则来源与示例边界" : "Rule source and example boundaries"}</h2>
           <p className="mt-2">{isZh ? "规则参考：" : "Rule reference: "}<a href={SOURCE} className="text-primary underline underline-offset-4">SudokuWiki — X-Wing Strategy</a>{isZh ? "。坐标草图、两案证明和第三候选反例为本页原创教学内容，未使用外部题目或图片。" : ". The coordinate sketches, two-case explanation and third-candidate counterexample are original teaching examples; no external puzzle or artwork is used."}</p>
+          <p className="mt-2">{isZh ? "在找 Sudoku X 游戏？" : "Looking for the Sudoku X game? "}<Link href={`/${lang}/diagonal-sudoku`} className="text-primary underline underline-offset-4">{isZh ? "试玩对角线数独" : "Play Diagonal Sudoku"}</Link>{isZh ? "。这是增加两条对角线约束的变体。" : ". It is the variant with two extra diagonal constraints."}</p>
         </section>
       </div>
     </article>

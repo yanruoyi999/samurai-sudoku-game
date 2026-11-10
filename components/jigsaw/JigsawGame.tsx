@@ -52,12 +52,29 @@ export function JigsawGame({ locale }: { locale: 'en' | 'zh' }) {
           {puzzles.map(({ id }, i) => <option key={id} value={i}>{i + 1}. {l.names[i]}</option>)}
         </select>
       </label>
-      <Board key={puzzle.id} puzzle={puzzle} l={l} />
+      <VariantBoard key={puzzle.id} puzzle={puzzle} l={l} />
     </div>
   );
 }
 
-function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels.en }) {
+export type BoardLabels = Omit<typeof labels.en, 'choose' | 'names'>;
+
+type VariantBoardProps = {
+  puzzle: typeof puzzles[number];
+  l: BoardLabels;
+  storagePrefix?: string;
+  extraPeer?: (a: number, b: number) => boolean;
+  diagonal?: { at: (index: number) => number; cellLabels: readonly [string, string, string, string] };
+};
+
+const diagonalLines = [
+  undefined,
+  'linear-gradient(45deg, transparent 47.5%, #234e7138 48%, #234e7138 52%, transparent 52.5%)',
+  'linear-gradient(135deg, transparent 47.5%, #234e7138 48%, #234e7138 52%, transparent 52.5%)',
+  'linear-gradient(45deg, transparent 47.5%, #234e7138 48%, #234e7138 52%, transparent 52.5%), linear-gradient(135deg, transparent 47.5%, #234e7138 48%, #234e7138 52%, transparent 52.5%)',
+] as const;
+
+export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, diagonal }: VariantBoardProps) {
   const { id, regions, givens, solution } = puzzle;
   const [board, setBoard] = useState(() => restoreProgress(givens, null));
   const [selected, setSelected] = useState(() => givens.indexOf('0'));
@@ -69,7 +86,7 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
   const resetButton = useRef<HTMLButtonElement>(null);
   const cancelButton = useRef<HTMLButtonElement>(null);
-  const key = keyPrefix + id;
+  const key = storagePrefix + id;
 
   useEffect(() => {
     try { setBoard(restoreProgress(givens, localStorage.getItem(key))); } catch { /* Still playable. */ }
@@ -83,7 +100,7 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
   const { values, notes } = board;
   const total = [...givens].filter(g => g === '0').length;
   const filled = values.filter((v, i) => v && givens[i] === '0').length;
-  const done = isComplete(regions, values);
+  const done = isComplete(regions, values, extraPeer);
   const errors = new Set(checked ? values.flatMap((v, i) => v && v !== Number(solution[i]) ? [i] : []) : []);
   const editable = ready && givens[selected] === '0';
 
@@ -144,9 +161,10 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
           const region = regions[i];
           const clue = givens[i] !== '0';
           const wrong = errors.has(i);
-          const related = arePeers(regions, selected, i);
+          const related = arePeers(regions, selected, i) || extraPeer?.(selected, i);
+          const mark = diagonal?.at(i) ?? 0;
           const details = v ? String(v) : notes[i].join(', ') || l.empty;
-          const label = `${l.cell(r + 1, c + 1, Number(region) + 1)}: ${details}${clue ? `, ${l.given}` : ''}${wrong ? `, ${l.incorrect}` : ''}`;
+          const label = `${l.cell(r + 1, c + 1, Number(region) + 1)}: ${details}${clue ? `, ${l.given}` : ''}${wrong ? `, ${l.incorrect}` : ''}${mark ? `, ${diagonal?.cellLabels[mark]}` : ''}`;
           return (
             <button
               key={i}
@@ -160,7 +178,8 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
               onKeyDown={event => handleKey(event, i)}
               className="relative flex aspect-square min-w-0 items-center justify-center text-base focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-sky-800 sm:text-xl"
               style={{
-                backgroundColor: wrong ? '#fee2e2' : i === selected ? '#a8d7f4' : palette[Number(region)],
+                backgroundColor: wrong ? '#fee2e2' : i === selected ? '#a8d7f4' : mark ? '#e3eff8' : palette[Number(region)],
+                backgroundImage: diagonalLines[mark],
                 color: wrong ? '#991b1b' : clue ? '#172033' : '#185279',
                 fontWeight: clue ? 750 : 500,
                 boxShadow: related ? 'inset 0 0 0 2px #33415523' : undefined,

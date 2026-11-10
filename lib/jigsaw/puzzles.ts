@@ -31,19 +31,21 @@ export function arePeers(regions: string, a: number, b: number) {
   );
 }
 
-export function conflicts(regions: string, values: readonly number[]) {
+type ExtraPeer = (a: number, b: number) => boolean;
+
+export function conflicts(regions: string, values: readonly number[], extraPeer?: ExtraPeer) {
   const found = new Set<number>();
   values.forEach((value, a) => {
     if (!value) return;
     for (let b = a + 1; b < values.length; b++) {
-      if (value === values[b] && arePeers(regions, a, b)) { found.add(a); found.add(b); }
+      if (value === values[b] && (arePeers(regions, a, b) || extraPeer?.(a, b))) { found.add(a); found.add(b); }
     }
   });
   return found;
 }
 
-export function isComplete(regions: string, values: readonly number[]) {
-  return values.length === 81 && values.every(validDigit) && conflicts(regions, values).size === 0;
+export function isComplete(regions: string, values: readonly number[], extraPeer?: ExtraPeer) {
+  return values.length === 81 && values.every(validDigit) && conflicts(regions, values, extraPeer).size === 0;
 }
 
 type Progress = { values: number[]; notes: number[][] };
