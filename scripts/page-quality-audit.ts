@@ -127,7 +127,11 @@ function scorePlayability(category: string, html: string) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
-  if (category === 'sudoku-variant') return hasInteractiveControl ? 15 : 7;
+  if (category === 'sudoku-variant') {
+    const hasBoard = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Jigsaw Sudoku board|不规则数独棋盘)["'][^>]*>\s*<button\b/i);
+    const hasPad = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Number pad|数字键)["'][^>]*>\s*<button\b/i);
+    return hasBoard && hasPad ? 15 : 7;
+  }
   if (category === 'kids-sudoku') return hasInteractiveControl ? 15 : 11;
   if (category === 'samurai-puzzle') return hasInteractiveControl ? 15 : 12;
   if (category === 'samurai-difficulty' || category === 'samurai-archive') return hasInteractiveControl ? 14 : 12;
