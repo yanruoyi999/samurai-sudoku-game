@@ -283,6 +283,12 @@ export default async function WhatIsSamuraiSudokuPage({
           {isZh ? "不规则数独" : "Jigsaw Sudoku"}
         </Link>{isZh ? "。" : "."}
       </p>
+      <p className="mt-2 leading-relaxed text-muted-foreground">
+        {isZh ? "如果想保留正方形九宫、加入两条线的约束，可以玩" : "To keep square boxes and add two extra lines, try "}
+        <Link href={`/${locale}/diagonal-sudoku`} className="font-semibold text-primary underline underline-offset-4">
+          {isZh ? "对角线数独" : "Diagonal Sudoku"}
+        </Link>{isZh ? "。" : "."}
+      </p>
 
       <section className="mt-12 rounded-lg border bg-secondary/30 p-6">
         <h2 className="text-2xl font-semibold">{isZh ? "新手从哪里开始？" : "Where should a beginner start?"}</h2>
