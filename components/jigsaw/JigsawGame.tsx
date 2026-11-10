@@ -169,6 +169,7 @@ function Board({ puzzle, l }: { puzzle: typeof puzzles[number]; l: typeof labels
               }}
             >
               <span aria-hidden="true">{v || ''}</span>
+              {wrong && <span aria-hidden="true" className="absolute right-0.5 top-0.5 text-[10px] font-bold leading-none">×</span>}
               {!v && notes[i].length > 0 && (
                 <span aria-hidden="true" className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3 items-center text-[8px] leading-none sm:text-[11px]">
                   {digits.map(d => <span key={d}>{notes[i].includes(d) ? d : ''}</span>)}
