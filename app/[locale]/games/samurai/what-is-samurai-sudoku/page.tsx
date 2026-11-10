@@ -277,6 +277,13 @@ export default async function WhatIsSamuraiSudokuPage({
         </div>
       </section>
 
+      <p className="mt-4 leading-relaxed text-muted-foreground">
+        {isZh ? "如果你想在单盘里试试改变宫形的变体，可以玩" : "For a one-grid variant that changes the shape of the regions, try "}
+        <Link href={`/${locale}/jigsaw-sudoku`} className="font-semibold text-primary underline underline-offset-4">
+          {isZh ? "不规则数独" : "Jigsaw Sudoku"}
+        </Link>{isZh ? "。" : "."}
+      </p>
+
       <section className="mt-12 rounded-lg border bg-secondary/30 p-6">
         <h2 className="text-2xl font-semibold">{isZh ? "新手从哪里开始？" : "Where should a beginner start?"}</h2>
         <p className="mt-3 leading-relaxed text-muted-foreground">
