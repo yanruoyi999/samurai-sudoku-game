@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { normalizeSitemapLocations, scoreHtmlPage } from './page-quality-audit';
+import { auditPageQuality, normalizeSitemapLocations, scoreHtmlPage } from './page-quality-audit';
 
 const highQualityGuide = `
 <!doctype html>
@@ -89,6 +89,41 @@ describe('page quality scoring', () => {
     );
     expect(printable.breakdown.demand).toBeGreaterThanOrEqual(16);
     expect(minesweeper.breakdown.demand).toBeGreaterThanOrEqual(16);
+  });
+
+  it.each([
+    ['en', '16×16 Sudoku board', 'Number pad'],
+    ['zh', '16×16 数独棋盘', '屏幕数字键'],
+  ])('recognizes the %s 16×16 variant and checks its actual controls', (locale, boardLabel, padLabel) => {
+    const url = new URL(`https://www.samuraisudoku.net/${locale}/16x16-sudoku`);
+    const cells = Array.from({ length: 256 }, (_, index) => `<button data-hexadoku-cell="${index}"></button>`).join('');
+    const digits = Array.from({ length: 16 }, (_, index) => `<button>${index + 1}</button>`).join('');
+    const board = `<div role="grid" aria-label="${boardLabel}"><div role="row">${cells}</div></div>`;
+    const pad = `<div role="group" aria-label="${padLabel}">${digits}</div>`;
+    const full = scoreHtmlPage(url, board + pad);
+    expect(full.category).toBe('sudoku-variant');
+    expect(full.breakdown.playability).toBe(15);
+    expect(full.issues).not.toContain('incomplete 16×16 Sudoku controls');
+    expect(scoreHtmlPage(url, board).breakdown.playability).toBe(7);
+    expect(scoreHtmlPage(url, pad).issues).toContain('incomplete 16×16 Sudoku controls');
+    const jigsaw = '<div aria-label="Jigsaw Sudoku board"><button></button></div><div aria-label="Number pad"><button></button></div>';
+    expect(scoreHtmlPage(url, jigsaw).issues).toContain('incomplete 16×16 Sudoku controls');
+    const jigsawUrl = new URL('https://www.samuraisudoku.net/en/jigsaw-sudoku');
+    expect(scoreHtmlPage(jigsawUrl, board + pad).breakdown.playability).toBe(7);
+  });
+
+  it('fails a 16×16 page without playable controls even when its total passes the threshold', async () => {
+    const origin = 'https://www.samuraisudoku.net';
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(`<urlset><url><loc>${origin}/en/16x16-sudoku</loc></url></urlset>`))
+      .mockResolvedValueOnce(new Response(highQualityGuide));
+    try {
+      const { results, failing } = await auditPageQuality(origin);
+      expect(results[0].score).toBeGreaterThanOrEqual(80);
+      expect(failing).toEqual(results);
+    } finally {
+      fetchMock.mockRestore();
+    }
   });
 
   it('classifies the Kids Sudoku hub and every nested resource as one high-intent cluster', () => {

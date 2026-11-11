@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url';
 const DEFAULT_THRESHOLD = 80;
 const DEFAULT_BASE_URL = 'https://www.samuraisudoku.net';
 const CONCURRENCY = 12;
+const INCOMPLETE_HEXADOKU = 'incomplete 16×16 Sudoku controls';
 
 export interface PageQualityBreakdown {
   performance: number;
@@ -69,7 +70,7 @@ function categorizePath(pathname: string) {
   ]);
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
-  if (path === '/jigsaw-sudoku') return 'sudoku-variant';
+  if (path === '/jigsaw-sudoku' || path === '/16x16-sudoku') return 'sudoku-variant';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
   if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
@@ -123,11 +124,19 @@ function scorePerformance(byteLength: number) {
   return 4;
 }
 
-function scorePlayability(category: string, html: string) {
+function scorePlayability(category: string, html: string, isHexadoku: boolean) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
   if (category === 'sudoku-variant') {
+    if (isHexadoku) {
+      const hasBoard = hasPattern(html, /<div\b[^>]*\brole=["']grid["'][^>]*\baria-label=["'](?:16×16 Sudoku board|16×16 数独棋盘)["']/i);
+      const cells = new Set(Array.from(html.matchAll(/<button\b[^>]*\bdata-hexadoku-cell=["'](\d+)["']/gi), match => Number(match[1]))
+        .filter(index => index >= 0 && index < 256));
+      const numberPad = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Number pad|屏幕数字键)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+      const hasPad = numberPad?.match(/<button\b/gi)?.length === 16;
+      return hasBoard && cells.size === 256 && hasPad ? 15 : 7;
+    }
     const hasBoard = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Jigsaw Sudoku board|不规则数独棋盘)["'][^>]*>\s*<button\b/i);
     const hasPad = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Number pad|数字键)["'][^>]*>\s*<button\b/i);
     return hasBoard && hasPad ? 15 : 7;
@@ -163,12 +172,13 @@ function scoreSeo(html: string, issues: string[]) {
 
 export function scoreHtmlPage(url: URL, html: string): PageQualityResult {
   const category = categorizePath(url.pathname);
+  const isHexadoku = /^\/(?:(?:en|zh)\/)?16x16-sudoku$/.test(url.pathname);
   const issues: string[] = [];
   const textLength = effectiveContentLength(stripTags(html));
   const internalLinkCount = uniqueInternalLinks(html, url).size;
   const breakdown: PageQualityBreakdown = {
     performance: scorePerformance(Buffer.byteLength(html)),
-    playability: scorePlayability(category, html),
+    playability: scorePlayability(category, html, isHexadoku),
     demand: scoreDemand(url.pathname, category),
     content: scoreContent(textLength),
     seo: scoreSeo(html, issues),
@@ -177,6 +187,7 @@ export function scoreHtmlPage(url: URL, html: string): PageQualityResult {
 
   if (textLength < 900 && category !== 'trust-page') issues.push('thin content');
   if (internalLinkCount < 2) issues.push('too few internal links');
+  if (isHexadoku && breakdown.playability < 15) issues.push(INCOMPLETE_HEXADOKU);
 
   return {
     url: url.toString(),
@@ -232,7 +243,7 @@ export async function auditPageQuality(baseUrl: string, threshold = DEFAULT_THRE
   });
   return {
     results,
-    failing: results.filter((result) => result.score < threshold),
+    failing: results.filter((result) => result.score < threshold || result.issues.includes(INCOMPLETE_HEXADOKU)),
     threshold,
   };
 }
@@ -271,7 +282,7 @@ async function main() {
   }
 
   if (failing.length > 0) {
-    console.log('\nPages below threshold:');
+    console.log('\nPages below threshold or missing required controls:');
     for (const result of failing.slice(0, 50)) {
       console.log(`${result.score} ${result.path} [${result.category}] issues=${result.issues.join(', ') || 'none'}`);
     }
