@@ -5,6 +5,7 @@ const DEFAULT_BASE_URL = 'https://www.samuraisudoku.net';
 const CONCURRENCY = 12;
 const INCOMPLETE_HEXADOKU = 'incomplete 16×16 Sudoku controls';
 const INCOMPLETE_KILLER = 'incomplete Killer Sudoku controls';
+const INCOMPLETE_SOLVER = 'incomplete Sudoku solver controls';
 
 export interface PageQualityBreakdown {
   performance: number;
@@ -71,6 +72,7 @@ function categorizePath(path: string) {
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
   if (path === '/jigsaw-sudoku' || path === '/16x16-sudoku' || path === '/killer-sudoku') return 'sudoku-variant';
+  if (path === '/sudoku-solver') return 'sudoku-solver';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
   if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
@@ -97,7 +99,7 @@ function scoreDemand(pathname: string, category: string) {
   if (path.includes('printable') || path.includes('pdf')) return 20;
   if (path.includes('daily') || path.includes('archive')) return 18;
   if (category === 'sudoku-guide') return 17;
-  if (category === 'sudoku-variant') return 17;
+  if (category === 'sudoku-variant' || category === 'sudoku-solver') return 17;
   if (path.includes('/games/minesweeper')) return 18;
   if (category === 'kids-sudoku') return 17;
   if (path.includes('/difficulty/evil') || path.includes('/difficulty/hard')) return 17;
@@ -124,17 +126,32 @@ function scorePerformance(byteLength: number) {
   return 4;
 }
 
+function hasNineDigitPad(html: string) {
+  const pad = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Number pad|屏幕数字键)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+  if (!pad) return false;
+  const digits = Array.from(pad.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/gi), ([, text]) => text.trim());
+  return digits.sort().join(',') === '1,2,3,4,5,6,7,8,9';
+}
+
+function hasAll81Cells(indexes: number[]) {
+  return indexes.length === 81 && new Set(indexes).size === 81 && indexes.every(index => index < 81);
+}
+
+function hasSolverControls(html: string) {
+  const board = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Sudoku input grid|数独输入棋盘)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+  if (!board || !hasNineDigitPad(html)) return false;
+  const indexes = Array.from(board.matchAll(/<button\b[^>]*\bdata-solver-cell=["'](\d+)["']/gi), ([, index]) => Number(index));
+  return hasAll81Cells(indexes)
+    && hasPattern(html, /<textarea\b[^>]*\bdata-solver-paste(?=[\s=>])/i)
+    && hasPattern(html, /<button\b[^>]*\bdata-solver-action=["']solve["']/i);
+}
+
 function hasKillerControls(html: string) {
   const board = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Killer Sudoku board|杀手数独棋盘)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
-  const pad = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Number pad|屏幕数字键)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
-  if (!board || !pad) return false;
+  if (!board || !hasNineDigitPad(html)) return false;
 
   const cells = Array.from(board.matchAll(/<button\b[^>]*\bdata-killer-cell=["'](\d+)["'][^>]*>([\s\S]*?)<\/button>/gi));
-  const indexes = cells.map(([, index]) => Number(index));
-  if (indexes.length !== 81 || new Set(indexes).size !== 81 || indexes.some(index => index >= 81)) return false;
-
-  const digits = Array.from(pad.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/gi), ([, text]) => text.trim());
-  if (digits.sort().join(',') !== '1,2,3,4,5,6,7,8,9') return false;
+  if (!hasAll81Cells(cells.map(([, index]) => Number(index)))) return false;
 
   const cageSums = cells.flatMap(([, , body]) =>
     Array.from(body.matchAll(/<span\b[^>]*\bdata-killer-sum=["']([1-9]\d?)["'][^>]*>\s*\1\s*<\/span>/gi), ([, total]) => Number(total)),
@@ -146,6 +163,7 @@ function hasKillerControls(html: string) {
 function scorePlayability(category: string, html: string, path: string) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
+  if (category === 'sudoku-solver') return hasSolverControls(html) ? 15 : 7;
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
   if (category === 'sudoku-variant') {
     if (path === '/killer-sudoku') return hasKillerControls(html) ? 15 : 7;
@@ -209,6 +227,7 @@ export function scoreHtmlPage(url: URL, html: string): PageQualityResult {
   if (internalLinkCount < 2) issues.push('too few internal links');
   if (path === '/16x16-sudoku' && breakdown.playability < 15) issues.push(INCOMPLETE_HEXADOKU);
   if (path === '/killer-sudoku' && breakdown.playability < 15) issues.push(INCOMPLETE_KILLER);
+  if (path === '/sudoku-solver' && breakdown.playability < 15) issues.push(INCOMPLETE_SOLVER);
 
   return {
     url: url.toString(),
@@ -265,7 +284,8 @@ export async function auditPageQuality(baseUrl: string, threshold = DEFAULT_THRE
   return {
     results,
     failing: results.filter((result) => result.score < threshold
-      || result.issues.includes(INCOMPLETE_HEXADOKU) || result.issues.includes(INCOMPLETE_KILLER)),
+      || result.issues.includes(INCOMPLETE_HEXADOKU) || result.issues.includes(INCOMPLETE_KILLER)
+      || result.issues.includes(INCOMPLETE_SOLVER)),
     threshold,
   };
 }

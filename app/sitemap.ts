@@ -66,6 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/printable-sudoku', changeFrequency: 'weekly', priority: 0.84 },
     { path: '/blank-sudoku-grid-printable', changeFrequency: 'monthly', priority: 0.75 },
     { path: '/sudoku-cross-hatching', changeFrequency: 'monthly', priority: 0.76 },
+    { path: '/sudoku-solver', changeFrequency: 'monthly', priority: 0.77 },
     { path: '/sudoku-pronunciation', changeFrequency: 'monthly', priority: 0.65, lastModified: new Date('2026-11-08T00:00:00Z') },
     { path: '/sudoku-skyscraper', changeFrequency: 'monthly', priority: 0.75 },
     { path: '/sudoku-hidden-pairs', changeFrequency: 'monthly', priority: 0.75 },

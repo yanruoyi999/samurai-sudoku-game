@@ -533,6 +533,13 @@ export default async function SudokuCrossHatchingPage({ params }: PageProps) {
                 : "If two cells survive, do not guess. Move to another box or digit until a new placement changes the original rows or columns. This loop of changing targets and returning after progress is more reliable than clearing the board."}
             </p>
           </div>
+          <p className="mt-4 leading-7 text-muted-foreground">
+            {isZh ? "有自己的 9×9 题目？在" : "Have your own 9×9 puzzle? Use the "}
+            <Link className="font-semibold text-primary underline underline-offset-4" href={`/${normalizedLocale}/sudoku-solver`}>
+              {isZh ? "数独求解器" : "Sudoku solver with steps"}
+            </Link>
+            {isZh ? "里查看哪些数字只有一个落点。" : " to see which digits have only one possible position."}
+          </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <TrackedLink
               href={`/${normalizedLocale}/games/samurai/difficulty/easy`}

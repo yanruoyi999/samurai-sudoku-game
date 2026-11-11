@@ -76,6 +76,21 @@ describe('sitemap', () => {
     }
   });
 
+  it('lists both canonical 9×9 solver locales separately from the Samurai solver', async () => {
+    const base = 'https://www.samuraisudoku.net';
+    const entries = await sitemap();
+    for (const locale of ['en', 'zh']) {
+      const tools = entries.filter(entry => entry.url === `${base}/${locale}/sudoku-solver`);
+      expect(tools).toHaveLength(1);
+      expect(tools[0].alternates?.languages).toEqual({
+        en: `${base}/en/sudoku-solver`,
+        zh: `${base}/zh/sudoku-solver`,
+        'x-default': `${base}/en/sudoku-solver`,
+      });
+      expect(entries.some(entry => entry.url === `${base}/${locale}/games/samurai/solver`)).toBe(true);
+    }
+  });
+
   it('uses printable-samurai-sudoku as the canonical printable resource page', async () => {
     const entries = await sitemap();
     const urls = new Set(entries.map((entry) => entry.url));

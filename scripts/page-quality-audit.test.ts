@@ -166,6 +166,42 @@ describe('page quality scoring', () => {
     }
   });
 
+  it.each([
+    ['en', 'Sudoku input grid', 'Number pad'],
+    ['zh', '数独输入棋盘', '屏幕数字键'],
+  ])('requires %s solver input, keypad, paste field and solve button', (locale, boardLabel, padLabel) => {
+    const url = new URL(`https://www.samuraisudoku.net/${locale}/sudoku-solver`);
+    const cells = Array.from({ length: 81 }, (_, index) => `<button data-solver-cell="${index}"></button>`).join('');
+    const pad = Array.from({ length: 9 }, (_, index) => `<button>${index + 1}</button>`).join('');
+    const board = `<div role="group" aria-label="${boardLabel}">${cells}</div>`;
+    const controls = `${board}<div role="group" aria-label="${padLabel}">${pad}</div><textarea data-solver-paste="true"></textarea><button data-solver-action="solve"></button>`;
+    expect(scoreHtmlPage(url, controls)).toMatchObject({ category: 'sudoku-solver', breakdown: { playability: 15 } });
+    for (const incomplete of [
+      controls.replace('data-solver-cell="80"', 'data-solver-cell="79"'),
+      controls.replace('<button>9</button>', '<button>8</button>'),
+      controls.replace('data-solver-paste', 'data-missing'),
+      controls.replace('data-solver-action="solve"', 'data-solver-action="clear"'),
+    ]) {
+      expect(scoreHtmlPage(url, incomplete).issues).toContain('incomplete Sudoku solver controls');
+    }
+    const samurai = new URL(`https://www.samuraisudoku.net/${locale}/games/samurai/solver`);
+    expect(scoreHtmlPage(samurai, controls).category).toBe('samurai-guide');
+  });
+
+  it('fails a Sudoku solver page without controls despite a passing total', async () => {
+    const origin = 'https://www.samuraisudoku.net';
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(`<urlset><url><loc>${origin}/en/sudoku-solver</loc></url></urlset>`))
+      .mockResolvedValueOnce(new Response(highQualityGuide));
+    try {
+      const { results, failing } = await auditPageQuality(origin);
+      expect(results[0].score).toBeGreaterThanOrEqual(80);
+      expect(failing).toEqual(results);
+    } finally {
+      fetchMock.mockRestore();
+    }
+  });
+
   it('classifies the Kids Sudoku hub and every nested resource as one high-intent cluster', () => {
     for (const path of [
       '/en/sudoku-for-kids',
