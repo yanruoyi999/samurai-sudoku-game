@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: c.description,
     alternates: { canonical: url, languages: buildLanguageAlternates(path) },
     openGraph: { title: c.title, description: c.description, url, type: 'website' },
-    robots: { index: false, follow: true },
+    robots: { index: true, follow: true },
   };
 }
 

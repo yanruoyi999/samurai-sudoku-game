@@ -4,6 +4,7 @@ const DEFAULT_THRESHOLD = 80;
 const DEFAULT_BASE_URL = 'https://www.samuraisudoku.net';
 const CONCURRENCY = 12;
 const INCOMPLETE_HEXADOKU = 'incomplete 16×16 Sudoku controls';
+const INCOMPLETE_KILLER = 'incomplete Killer Sudoku controls';
 
 export interface PageQualityBreakdown {
   performance: number;
@@ -60,8 +61,7 @@ function uniqueInternalLinks(html: string, url: URL) {
   return links;
 }
 
-function categorizePath(pathname: string) {
-  const path = pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
+function categorizePath(path: string) {
   const standaloneSudokuGuides = new Set([
     '/sudoku-cross-hatching',
     '/sudoku-naked-triple',
@@ -70,7 +70,7 @@ function categorizePath(pathname: string) {
   ]);
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
-  if (path === '/jigsaw-sudoku' || path === '/16x16-sudoku') return 'sudoku-variant';
+  if (path === '/jigsaw-sudoku' || path === '/16x16-sudoku' || path === '/killer-sudoku') return 'sudoku-variant';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
   if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
@@ -124,12 +124,32 @@ function scorePerformance(byteLength: number) {
   return 4;
 }
 
-function scorePlayability(category: string, html: string, isHexadoku: boolean) {
+function hasKillerControls(html: string) {
+  const board = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Killer Sudoku board|杀手数独棋盘)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+  const pad = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Number pad|屏幕数字键)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+  if (!board || !pad) return false;
+
+  const cells = Array.from(board.matchAll(/<button\b[^>]*\bdata-killer-cell=["'](\d+)["'][^>]*>([\s\S]*?)<\/button>/gi));
+  const indexes = cells.map(([, index]) => Number(index));
+  if (indexes.length !== 81 || new Set(indexes).size !== 81 || indexes.some(index => index >= 81)) return false;
+
+  const digits = Array.from(pad.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/gi), ([, text]) => text.trim());
+  if (digits.sort().join(',') !== '1,2,3,4,5,6,7,8,9') return false;
+
+  const cageSums = cells.flatMap(([, , body]) =>
+    Array.from(body.matchAll(/<span\b[^>]*\bdata-killer-sum=["']([1-9]\d?)["'][^>]*>\s*\1\s*<\/span>/gi), ([, total]) => Number(total)),
+  );
+  // Each row sums to 45, and the cages partition all nine rows.
+  return cageSums.every(sum => sum <= 45) && cageSums.reduce((total, sum) => total + sum, 0) === 405;
+}
+
+function scorePlayability(category: string, html: string, path: string) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
   if (category === 'sudoku-variant') {
-    if (isHexadoku) {
+    if (path === '/killer-sudoku') return hasKillerControls(html) ? 15 : 7;
+    if (path === '/16x16-sudoku') {
       const hasBoard = hasPattern(html, /<div\b[^>]*\brole=["']grid["'][^>]*\baria-label=["'](?:16×16 Sudoku board|16×16 数独棋盘)["']/i);
       const cells = new Set(Array.from(html.matchAll(/<button\b[^>]*\bdata-hexadoku-cell=["'](\d+)["']/gi), match => Number(match[1]))
         .filter(index => index >= 0 && index < 256));
@@ -171,14 +191,14 @@ function scoreSeo(html: string, issues: string[]) {
 }
 
 export function scoreHtmlPage(url: URL, html: string): PageQualityResult {
-  const category = categorizePath(url.pathname);
-  const isHexadoku = /^\/(?:(?:en|zh)\/)?16x16-sudoku$/.test(url.pathname);
+  const path = url.pathname.replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
+  const category = categorizePath(path);
   const issues: string[] = [];
   const textLength = effectiveContentLength(stripTags(html));
   const internalLinkCount = uniqueInternalLinks(html, url).size;
   const breakdown: PageQualityBreakdown = {
     performance: scorePerformance(Buffer.byteLength(html)),
-    playability: scorePlayability(category, html, isHexadoku),
+    playability: scorePlayability(category, html, path),
     demand: scoreDemand(url.pathname, category),
     content: scoreContent(textLength),
     seo: scoreSeo(html, issues),
@@ -187,7 +207,8 @@ export function scoreHtmlPage(url: URL, html: string): PageQualityResult {
 
   if (textLength < 900 && category !== 'trust-page') issues.push('thin content');
   if (internalLinkCount < 2) issues.push('too few internal links');
-  if (isHexadoku && breakdown.playability < 15) issues.push(INCOMPLETE_HEXADOKU);
+  if (path === '/16x16-sudoku' && breakdown.playability < 15) issues.push(INCOMPLETE_HEXADOKU);
+  if (path === '/killer-sudoku' && breakdown.playability < 15) issues.push(INCOMPLETE_KILLER);
 
   return {
     url: url.toString(),
@@ -243,7 +264,8 @@ export async function auditPageQuality(baseUrl: string, threshold = DEFAULT_THRE
   });
   return {
     results,
-    failing: results.filter((result) => result.score < threshold || result.issues.includes(INCOMPLETE_HEXADOKU)),
+    failing: results.filter((result) => result.score < threshold
+      || result.issues.includes(INCOMPLETE_HEXADOKU) || result.issues.includes(INCOMPLETE_KILLER)),
     threshold,
   };
 }

@@ -63,6 +63,13 @@ describe('sitemap', () => {
 
     for (const locale of ['en', 'zh']) {
       expect(entries.filter(entry => entry.url === `https://www.samuraisudoku.net/${locale}/16x16-sudoku`)).toHaveLength(1);
+      const killer = entries.filter(entry => entry.url === `https://www.samuraisudoku.net/${locale}/killer-sudoku`);
+      expect(killer).toHaveLength(1);
+      expect(killer[0].alternates?.languages).toEqual({
+        en: 'https://www.samuraisudoku.net/en/killer-sudoku',
+        zh: 'https://www.samuraisudoku.net/zh/killer-sudoku',
+        'x-default': 'https://www.samuraisudoku.net/en/killer-sudoku',
+      });
       for (const path of KIDS_SUDOKU_PATHS) {
         expect(urls.has(`https://www.samuraisudoku.net/${locale}${path}`)).toBe(true);
       }

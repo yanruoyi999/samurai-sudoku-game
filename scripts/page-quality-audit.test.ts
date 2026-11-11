@@ -126,6 +126,46 @@ describe('page quality scoring', () => {
     }
   });
 
+  it.each([
+    ['en', 'Killer Sudoku board', 'Number pad'],
+    ['zh', '杀手数独棋盘', '屏幕数字键'],
+  ])('recognizes the %s Killer grid, distinct keypad digits and visible cage sums', (locale, boardLabel, padLabel) => {
+    const url = new URL(`https://www.samuraisudoku.net/${locale}/killer-sudoku`);
+    const marks = '<span data-killer-sum="15">15</span>';
+    const cells = Array.from({ length: 81 }, (_, index) => `<button data-killer-cell="${index}">${index < 27 ? marks : ''}</button>`).join('');
+    const pad = Array.from({ length: 9 }, (_, index) => `<button>${index + 1}</button>`).join('');
+    const board = `<div role="group" aria-label="${boardLabel}">${cells}</div>`;
+    const controls = `${board}<div role="group" aria-label="${padLabel}">${pad}</div>`;
+    expect(scoreHtmlPage(url, controls)).toMatchObject({ category: 'sudoku-variant', breakdown: { playability: 15 } });
+    for (const incomplete of [
+      controls.replace('data-killer-cell="80"', 'data-killer-cell="79"'),
+      controls.replace('<button>9</button>', '<button>8</button>'),
+      controls.replace('<button>8</button><button>9</button>', '<button></button><button>89</button>'),
+      controls.replace(marks, ''),
+      controls.replace(marks, '<span data-killer-sum="15"></span>'),
+      controls.replace(board, '<div role="group" aria-label="Jigsaw Sudoku board"><button></button></div>') + cells,
+    ]) {
+      expect(scoreHtmlPage(url, incomplete).issues).toContain('incomplete Killer Sudoku controls');
+    }
+    const cheatSheet = new URL(`https://www.samuraisudoku.net/${locale}/killer-sudoku-cheat-sheet`);
+    expect(scoreHtmlPage(cheatSheet, controls).category).toBe('sudoku-guide');
+    expect(scoreHtmlPage(cheatSheet, controls).issues).not.toContain('incomplete Killer Sudoku controls');
+  });
+
+  it('fails a Killer page without playable controls even when its total passes the threshold', async () => {
+    const origin = 'https://www.samuraisudoku.net';
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(`<urlset><url><loc>${origin}/en/killer-sudoku</loc></url></urlset>`))
+      .mockResolvedValueOnce(new Response(highQualityGuide));
+    try {
+      const { results, failing } = await auditPageQuality(origin);
+      expect(results[0].score).toBeGreaterThanOrEqual(80);
+      expect(failing).toEqual(results);
+    } finally {
+      fetchMock.mockRestore();
+    }
+  });
+
   it('classifies the Kids Sudoku hub and every nested resource as one high-intent cluster', () => {
     for (const path of [
       '/en/sudoku-for-kids',
