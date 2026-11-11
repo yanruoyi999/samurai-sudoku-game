@@ -29,7 +29,11 @@ export function TrackedLink({
   ...anchorProps
 }: TrackedLinkProps) {
   const handleClick = () => {
-    trackInteraction(eventName, eventProperties);
+    try {
+      trackInteraction(eventName, eventProperties);
+    } catch {
+      // Analytics failures must not interrupt a link.
+    }
   };
 
   const external = isExternalHref(href);
