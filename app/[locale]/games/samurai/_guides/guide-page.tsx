@@ -880,6 +880,11 @@ export function SamuraiGuidePage({ guide, locale }: SamuraiGuidePageProps) {
                   body: isZh ? '先用行、列和宫扫描缩小候选。' : 'Reduce candidates with row, column, and box scans.',
                 },
                 {
+                  href: '/sudoku-solver',
+                  title: isZh ? '数独求解器' : 'Sudoku solver with steps',
+                  body: isZh ? '输入自己的 9×9 题目，逐步查看单数和区块排除。' : 'Enter your own 9×9 puzzle to step through singles and locked candidates.',
+                },
+                {
                   href: '/sudoku-naked-triple',
                   title: isZh ? '显性三数组' : 'Naked triple',
                   body: isZh ? '学习三个格如何锁定三个候选。' : 'Learn how three cells lock three candidates.',
