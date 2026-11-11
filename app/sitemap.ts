@@ -59,6 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/sudoku-for-kids/answers', changeFrequency: 'monthly', priority: 0.68 },
     { path: '/sudoku-for-kids/6x6', changeFrequency: 'monthly', priority: 0.73 },
     { path: '/jigsaw-sudoku', changeFrequency: 'monthly', priority: 0.74, lastModified: new Date('2026-11-10T00:00:00Z') },
+    { path: '/16x16-sudoku', changeFrequency: 'monthly', priority: 0.74, lastModified: new Date('2026-11-11T00:00:00Z') },
     { path: '/sudoku-for-kids/worksheet-generator', changeFrequency: 'monthly', priority: 0.76 },
     { path: '/sudoku-for-kids/resources', changeFrequency: 'monthly', priority: 0.7 },
     { path: '/printable-sudoku', changeFrequency: 'weekly', priority: 0.84 },
