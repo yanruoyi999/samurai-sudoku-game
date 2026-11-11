@@ -65,6 +65,11 @@ type VariantBoardProps = {
   storagePrefix?: string;
   extraPeer?: (a: number, b: number) => boolean;
   diagonal?: { at: (index: number) => number; cellLabels: readonly [string, string, string, string] };
+  cages?: {
+    at: (index: number) => { sum?: number; label: string; top: boolean; right: boolean; bottom: boolean; left: boolean };
+    complete: (values: readonly number[]) => boolean;
+  };
+  onAction?: (action: 'start' | 'check' | 'complete') => void;
 };
 
 const diagonalLines = [
@@ -74,7 +79,7 @@ const diagonalLines = [
   'linear-gradient(45deg, transparent 47.5%, #234e7138 48%, #234e7138 52%, transparent 52.5%), linear-gradient(135deg, transparent 47.5%, #234e7138 48%, #234e7138 52%, transparent 52.5%)',
 ] as const;
 
-export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, diagonal }: VariantBoardProps) {
+export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, diagonal, cages, onAction }: VariantBoardProps) {
   const { id, regions, givens, solution } = puzzle;
   const [board, setBoard] = useState(() => restoreProgress(givens, null));
   const [selected, setSelected] = useState(() => givens.indexOf('0'));
@@ -86,10 +91,15 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
   const resetButton = useRef<HTMLButtonElement>(null);
   const cancelButton = useRef<HTMLButtonElement>(null);
+  const started = useRef(false);
   const key = storagePrefix + id;
 
   useEffect(() => {
-    try { setBoard(restoreProgress(givens, localStorage.getItem(key))); } catch { /* Still playable. */ }
+    try {
+      const saved = restoreProgress(givens, localStorage.getItem(key));
+      started.current = saved.values.some((value, i) => value && givens[i] === '0') || saved.notes.some(note => note.length);
+      setBoard(saved);
+    } catch { /* Still playable. */ }
     setReady(true);
   }, [givens, key]);
 
@@ -100,9 +110,14 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
   const { values, notes } = board;
   const total = [...givens].filter(g => g === '0').length;
   const filled = values.filter((v, i) => v && givens[i] === '0').length;
-  const done = isComplete(regions, values, extraPeer);
+  function complete(entries: readonly number[]) {
+    return isComplete(regions, entries, extraPeer) && (cages?.complete(entries) ?? true);
+  }
+
+  const done = complete(values);
   const errors = new Set(checked ? values.flatMap((v, i) => v && v !== Number(solution[i]) ? [i] : []) : []);
-  const editable = ready && givens[selected] === '0';
+  const editable = ready && givens[selected] === '0' && !(cages && done);
+  const helpId = cages ? 'killer-input-help' : 'jigsaw-input-help';
 
   function commit(next: typeof board) {
     setBoard(next);
@@ -123,6 +138,13 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
     setChecked(false);
     setRestarted(false);
     commit(next);
+    if (onAction) {
+      if (digit && !started.current) {
+        started.current = true;
+        onAction('start');
+      }
+      if (!done && complete(next.values)) onAction('complete');
+    }
   }
 
   function handleKey(event: KeyboardEvent<HTMLButtonElement>, i: number) {
@@ -143,6 +165,7 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
   function closeReset(restart: boolean) {
     if (restart) {
       commit(restoreProgress(givens, null));
+      started.current = false;
       setChecked(false);
       setNoteMode(false);
       setRestarted(true);
@@ -153,8 +176,8 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
 
   return (
     <div className="max-w-lg space-y-3">
-      <p id="jigsaw-input-help" className="text-sm text-muted-foreground">{l.instructions}</p>
-      <div role="group" aria-label={l.board} aria-describedby="jigsaw-input-help" className="grid w-full grid-cols-9 overflow-hidden rounded border-2 border-slate-800 bg-slate-800">
+      <p id={helpId} className="text-sm text-muted-foreground">{l.instructions}</p>
+      <div role="group" aria-label={l.board} aria-describedby={helpId} className="grid w-full grid-cols-9 overflow-hidden rounded border-2 border-slate-800 bg-slate-800">
         {values.map((v, i) => {
           const r = Math.floor(i / 9);
           const c = i % 9;
@@ -163,8 +186,9 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
           const wrong = errors.has(i);
           const related = arePeers(regions, selected, i) || extraPeer?.(selected, i);
           const mark = diagonal?.at(i) ?? 0;
+          const cage = cages?.at(i);
           const details = v ? String(v) : notes[i].join(', ') || l.empty;
-          const label = `${l.cell(r + 1, c + 1, Number(region) + 1)}: ${details}${clue ? `, ${l.given}` : ''}${wrong ? `, ${l.incorrect}` : ''}${mark ? `, ${diagonal?.cellLabels[mark]}` : ''}`;
+          const label = `${l.cell(r + 1, c + 1, Number(region) + 1)}: ${details}${clue ? `, ${l.given}` : ''}${wrong ? `, ${l.incorrect}` : ''}${mark ? `, ${diagonal?.cellLabels[mark]}` : ''}${cage ? `, ${cage.label}` : ''}`;
           return (
             <button
               key={i}
@@ -173,6 +197,7 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
               tabIndex={i === selected ? 0 : -1}
               aria-label={label}
               aria-pressed={i === selected}
+              data-killer-cell={cage ? i : undefined}
               onFocus={() => setSelected(i)}
               onClick={event => { setSelected(i); event.currentTarget.focus(); }}
               onKeyDown={event => handleKey(event, i)}
@@ -187,10 +212,22 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
                 borderBottom: r === 8 ? 0 : region === regions[i + 9] ? '1px solid #64748b55' : '2px solid #1e293b',
               }}
             >
-              <span aria-hidden="true">{v || ''}</span>
+              {cage && (
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0.5 border-dashed border-slate-600"
+                  style={{ borderWidth: [cage.top, cage.right, cage.bottom, cage.left].map(edge => edge ? '1px' : '0').join(' ') }}
+                />
+              )}
+              {cage?.sum !== undefined && (
+                <span aria-hidden="true" data-killer-sum={cage.sum} className="pointer-events-none absolute left-1 top-1 font-mono text-[8px] font-semibold leading-none text-slate-800 sm:text-[11px]">
+                  {cage.sum}
+                </span>
+              )}
+              <span aria-hidden="true" className={cage?.sum !== undefined ? 'mt-2' : undefined}>{v || ''}</span>
               {wrong && <span aria-hidden="true" className="absolute right-0.5 top-0.5 text-[10px] font-bold leading-none">×</span>}
               {!v && notes[i].length > 0 && (
-                <span aria-hidden="true" className="pointer-events-none absolute inset-0 grid grid-cols-3 grid-rows-3 items-center text-[8px] leading-none sm:text-[11px]">
+                <span aria-hidden="true" className={`pointer-events-none absolute inset-x-0 bottom-0 grid grid-cols-3 grid-rows-3 items-center leading-none sm:text-[11px] ${cage?.sum !== undefined ? 'top-2.5 text-[7px] sm:top-4' : 'top-0 text-[8px]'}`}>
                   {digits.map(d => <span key={d}>{notes[i].includes(d) ? d : ''}</span>)}
                 </span>
               )}
@@ -198,13 +235,13 @@ export function VariantBoard({ puzzle, l, storagePrefix = keyPrefix, extraPeer, 
           );
         })}
       </div>
-      <div role="group" aria-label={l.pad} className="grid grid-cols-9 gap-1">
+      <div role="group" aria-label={l.pad} className={`grid gap-1 ${cages ? 'grid-cols-5 sm:grid-cols-9' : 'grid-cols-9'}`}>
         {digits.map(d => <button type="button" className="min-h-11 min-w-0 rounded-md border border-border font-semibold hover:bg-muted disabled:opacity-50" key={d} onClick={() => edit(d)} disabled={!editable || (noteMode && !!values[selected])}>{d}</button>)}
       </div>
       <div className="flex flex-wrap gap-2">
         <button type="button" aria-pressed={noteMode} className={control + (noteMode ? ' bg-primary text-primary-foreground hover:bg-primary/90' : '')} onClick={() => setNoteMode(!noteMode)}>{l.notes}</button>
         <button type="button" className={control} disabled={!editable} onClick={() => edit(0)}>{l.erase}</button>
-        <button type="button" className={control} disabled={!ready || !filled} onClick={() => { setRestarted(false); setChecked(true); }}>{l.check}</button>
+        <button type="button" className={control} disabled={!ready || !filled} onClick={() => { setRestarted(false); setChecked(true); onAction?.('check'); }}>{l.check}</button>
         <button ref={resetButton} type="button" className={control} disabled={!ready} aria-expanded={resetting} onClick={() => setResetting(!resetting)}>{l.reset}</button>
       </div>
       {resetting && <div className="rounded-md border border-border bg-muted/40 p-3" onKeyDown={e => { if (e.key === 'Escape') closeReset(false); }}>

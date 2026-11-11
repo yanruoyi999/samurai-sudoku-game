@@ -262,6 +262,17 @@ export default async function KillerSudokuCheatSheetPage({ params }: PageProps) 
               ? "Killer Sudoku 速查表列出指定格数和总和的全部不重复数字组合。它只能缩小组合范围，不能代替行、列、宫和每个候选位置的逻辑验证。"
               : "A Killer Sudoku cheat sheet lists every distinct-digit combination for a cage size and sum. It narrows the arithmetic possibilities, but row, column, box, and candidate-position logic still decide the placement."}
           </p>
+          <p className="mt-2 leading-7 text-muted-foreground">
+            {isZh ? "想把组合用到整张棋盘上？" : "Try those combinations on a full board. "}
+            <TrackedLink
+              href={`/${normalizedLocale}/killer-sudoku`}
+              eventName="killer_sudoku_open"
+              eventProperties={{ locale: normalizedLocale, source: "killer-sudoku-cheat-sheet" }}
+              className="font-semibold text-primary underline underline-offset-4"
+            >
+              {isZh ? "在线玩杀手数独" : "Play Killer Sudoku online"}
+            </TrackedLink>{isZh ? "。" : "."}
+          </p>
         </div>
       </section>
 

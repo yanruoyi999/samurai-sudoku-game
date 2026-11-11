@@ -299,6 +299,14 @@ export default async function WhatIsSamuraiSudokuPage({
         </TrackedLink>{isZh ? "。" : "."}
       </p>
 
+      <p className="mt-2 leading-relaxed text-muted-foreground">
+        {isZh ? "想在一盘 9×9 里用笼和值推理，可以玩" : "To solve a single 9×9 grid using cage sums, play "}
+        <TrackedLink href={`/${locale}/killer-sudoku`} className="font-semibold text-primary underline underline-offset-4"
+          eventName="killer_sudoku_open" eventProperties={{ locale, source: 'what-is-samurai-sudoku' }}>
+          {isZh ? "杀手数独" : "Killer Sudoku"}
+        </TrackedLink>{isZh ? "。" : "."}
+      </p>
+
       <section className="mt-12 rounded-lg border bg-secondary/30 p-6">
         <h2 className="text-2xl font-semibold">{isZh ? "新手从哪里开始？" : "Where should a beginner start?"}</h2>
         <p className="mt-3 leading-relaxed text-muted-foreground">
