@@ -17,6 +17,7 @@ vi.mock("@/lib/analytics/events", () => ({
 vi.stubGlobal("React", React);
 
 import { TrackedLink } from "./TrackedLink";
+import { trackInteraction } from "@/lib/analytics/events";
 
 describe("TrackedLink", () => {
   it("renders downloads as native anchors so Next.js does not prefetch them as routes", () => {
@@ -39,5 +40,11 @@ describe("TrackedLink", () => {
     );
 
     expect(html).toContain('data-next-link="true"');
+  });
+
+  it("lets navigation continue if the analytics client throws", () => {
+    vi.mocked(trackInteraction).mockImplementationOnce(() => { throw new Error("telemetry unavailable"); });
+    const link = TrackedLink({ href: "/en/16x16-sudoku", eventName: "hexadoku_open", children: "Play" });
+    expect(() => link.props.onClick()).not.toThrow();
   });
 });

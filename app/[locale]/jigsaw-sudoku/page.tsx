@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { JigsawGame } from '@/components/jigsaw/JigsawGame';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 
@@ -103,6 +104,10 @@ export default async function JigsawSudokuPage({ params }: Props) {
         <ul className="list-disc pl-6">
           <li><Link className={link} href={`/${locale}/games/samurai/what-is-samurai-sudoku`}>{c.links[0]}</Link></li>
           <li><Link className={link} href={`/${locale}/sudoku-for-kids/6x6`}>{c.links[1]}</Link></li>
+          <li><TrackedLink className={link} href={`/${locale}/16x16-sudoku`}
+            eventName="hexadoku_open" eventProperties={{ locale, source: 'jigsaw-sudoku' }}>
+            {locale === 'zh' ? '玩规则方宫的 16×16 数独' : 'Play 16×16 Sudoku with square boxes'}
+          </TrackedLink></li>
         </ul>
       </section>
     </main>

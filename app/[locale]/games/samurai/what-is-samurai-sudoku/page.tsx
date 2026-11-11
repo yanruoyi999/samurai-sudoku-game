@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 import { buildLanguageAlternates } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
@@ -288,6 +289,14 @@ export default async function WhatIsSamuraiSudokuPage({
         <Link href={`/${locale}/diagonal-sudoku`} className="font-semibold text-primary underline underline-offset-4">
           {isZh ? "对角线数独" : "Diagonal Sudoku"}
         </Link>{isZh ? "。" : "."}
+      </p>
+
+      <p className="mt-2 leading-relaxed text-muted-foreground">
+        {isZh ? "想玩一个更大的单盘棋盘，可以试试" : "For one large board with regular boxes, try "}
+        <TrackedLink href={`/${locale}/16x16-sudoku`} className="font-semibold text-primary underline underline-offset-4"
+          eventName="hexadoku_open" eventProperties={{ locale, source: 'what-is-samurai-sudoku' }}>
+          {isZh ? "16×16 数独" : "16×16 Sudoku"}
+        </TrackedLink>{isZh ? "。" : "."}
       </p>
 
       <section className="mt-12 rounded-lg border bg-secondary/30 p-6">
