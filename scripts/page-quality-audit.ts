@@ -69,7 +69,7 @@ function categorizePath(pathname: string) {
   ]);
 
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
-  if (path === '/jigsaw-sudoku') return 'sudoku-variant';
+  if (path === '/jigsaw-sudoku' || path === '/16x16-sudoku') return 'sudoku-variant';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
   if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
@@ -130,7 +130,14 @@ function scorePlayability(category: string, html: string) {
   if (category === 'sudoku-variant') {
     const hasBoard = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Jigsaw Sudoku board|不规则数独棋盘)["'][^>]*>\s*<button\b/i);
     const hasPad = hasPattern(html, /<div\b[^>]*\baria-label=["'](?:Number pad|数字键)["'][^>]*>\s*<button\b/i);
-    return hasBoard && hasPad ? 15 : 7;
+    if (hasBoard && hasPad) return 15;
+
+    const hasLargeBoard = hasPattern(html, /<div\b[^>]*\brole=["']grid["'][^>]*\baria-label=["'](?:16×16 Sudoku board|16×16 数独棋盘)["']/i);
+    const cells = new Set(Array.from(html.matchAll(/<button\b[^>]*\bdata-hexadoku-cell=["'](\d+)["']/gi), match => Number(match[1]))
+      .filter(index => index >= 0 && index < 256));
+    const numberPad = html.match(/<div\b[^>]*\brole=["']group["'][^>]*\baria-label=["'](?:Number pad|屏幕数字键)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+    const hasLargePad = numberPad?.match(/<button\b/gi)?.length === 16;
+    return hasLargeBoard && cells.size === 256 && hasLargePad ? 15 : 7;
   }
   if (category === 'kids-sudoku') return hasInteractiveControl ? 15 : 11;
   if (category === 'samurai-puzzle') return hasInteractiveControl ? 15 : 12;

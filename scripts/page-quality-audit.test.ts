@@ -91,6 +91,22 @@ describe('page quality scoring', () => {
     expect(minesweeper.breakdown.demand).toBeGreaterThanOrEqual(16);
   });
 
+  it.each([
+    ['en', '16×16 Sudoku board', 'Number pad'],
+    ['zh', '16×16 数独棋盘', '屏幕数字键'],
+  ])('recognizes the %s 16×16 variant and checks its actual controls', (locale, boardLabel, padLabel) => {
+    const url = new URL(`https://www.samuraisudoku.net/${locale}/16x16-sudoku`);
+    const cells = Array.from({ length: 256 }, (_, index) => `<button data-hexadoku-cell="${index}"></button>`).join('');
+    const digits = Array.from({ length: 16 }, (_, index) => `<button>${index + 1}</button>`).join('');
+    const board = `<div role="grid" aria-label="${boardLabel}"><div role="row">${cells}</div></div>`;
+    const pad = `<div role="group" aria-label="${padLabel}">${digits}</div>`;
+    const full = scoreHtmlPage(url, board + pad);
+    expect(full.category).toBe('sudoku-variant');
+    expect(full.breakdown.playability).toBe(15);
+    expect(scoreHtmlPage(url, board).breakdown.playability).toBe(7);
+    expect(scoreHtmlPage(url, pad).breakdown.playability).toBe(7);
+  });
+
   it('classifies the Kids Sudoku hub and every nested resource as one high-intent cluster', () => {
     for (const path of [
       '/en/sudoku-for-kids',
