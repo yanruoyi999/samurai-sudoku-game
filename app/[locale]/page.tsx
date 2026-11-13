@@ -158,6 +158,14 @@ export default async function HomePage() {
         : 'A lower-friction logic game with classic boards, timer, flag mode, and a safe first click.',
       game: 'minesweeper',
     },
+    {
+      href: `/${locale}/jigsaw-sudoku`,
+      title: isZh ? '不规则数独' : 'Jigsaw Sudoku',
+      body: isZh
+        ? '挑战不规则宫格数独，每行、每列和每个异形宫都要填入 1 到 9。'
+        : 'Play a 9×9 puzzle with irregular regions. Use 1 to 9 once in each row, column, and region.',
+      game: 'jigsaw_sudoku',
+    },
   ];
 
   const features: HomeFeatureItem[] = [
