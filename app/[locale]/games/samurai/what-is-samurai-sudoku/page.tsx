@@ -285,6 +285,12 @@ export default async function WhatIsSamuraiSudokuPage({
         </Link>{isZh ? "。" : "."}
       </p>
       <p className="mt-2 leading-relaxed text-muted-foreground">
+        {isZh ? '想试试不用数字的区域谜题，可以看看' : 'For a region puzzle without digits, try the '}
+        <Link href={`/${locale}/meowdoku-rules`} className="font-semibold text-primary underline underline-offset-4">
+          {isZh ? 'Meowdoku 规则和原创练习' : 'Meowdoku rules and original practice puzzle'}
+        </Link>{isZh ? '。' : '.'}
+      </p>
+      <p className="mt-2 leading-relaxed text-muted-foreground">
         {isZh ? "如果想保留正方形九宫、加入两条线的约束，可以玩" : "To keep square boxes and add two extra lines, try "}
         <Link href={`/${locale}/diagonal-sudoku`} className="font-semibold text-primary underline underline-offset-4">
           {isZh ? "对角线数独" : "Diagonal Sudoku"}
