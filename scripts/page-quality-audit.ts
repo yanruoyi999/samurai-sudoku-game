@@ -73,6 +73,7 @@ function categorizePath(path: string) {
   if (path === '/' || path === '/games/samurai') return 'samurai-core';
   if (path === '/jigsaw-sudoku' || path === '/16x16-sudoku' || path === '/killer-sudoku') return 'sudoku-variant';
   if (path === '/sudoku-solver') return 'sudoku-solver';
+  if (path === '/meowdoku-rules') return 'cat-logic-guide';
   if (path === '/sudoku-for-kids' || path.startsWith('/sudoku-for-kids/')) return 'kids-sudoku';
   if (path === '/printable-sudoku' || path === '/blank-sudoku-grid-printable') return 'sudoku-printable';
   if (standaloneSudokuGuides.has(path)) return 'sudoku-guide';
@@ -164,6 +165,10 @@ function scorePlayability(category: string, html: string, path: string) {
   const hasInteractiveControl = hasPattern(html, /<(button|input|select|textarea)\b/i);
 
   if (category === 'sudoku-solver') return hasSolverControls(html) ? 15 : 7;
+  if (category === 'cat-logic-guide') {
+    const board = html.match(/<div\b[^>]*\baria-label=["'](?:Four by four practice board|四乘四练习盘)["'][^>]*>([\s\S]*?)<\/div>/i)?.[1];
+    return board?.match(/<button\b/gi)?.length === 16 ? 15 : 7;
+  }
   if (category === 'samurai-core' || category === 'minesweeper-core') return hasInteractiveControl ? 15 : 12;
   if (category === 'sudoku-variant') {
     if (path === '/killer-sudoku') return hasKillerControls(html) ? 15 : 7;

@@ -62,6 +62,7 @@ describe('sitemap', () => {
     expect(urls.has('https://www.samuraisudoku.net/zh/blank-sudoku-grid-printable')).toBe(true);
 
     for (const locale of ['en', 'zh']) {
+      expect(entries.filter(entry => entry.url === `https://www.samuraisudoku.net/${locale}/meowdoku-rules`)).toHaveLength(1);
       expect(entries.filter(entry => entry.url === `https://www.samuraisudoku.net/${locale}/16x16-sudoku`)).toHaveLength(1);
       const killer = entries.filter(entry => entry.url === `https://www.samuraisudoku.net/${locale}/killer-sudoku`);
       expect(killer).toHaveLength(1);
