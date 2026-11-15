@@ -1,9 +1,25 @@
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { unstable_getResponseFromNextConfig } from "next/experimental/testing/server";
 import { describe, expect, it } from "vitest";
 
 import puzzleCachePolicy from "./lib/pwa/puzzle-cache-policy.json";
 
 const source = readFileSync("next.config.js", "utf8");
+
+describe("legacy Samurai entrance", () => {
+  it("permanently redirects the unprefixed game URL to its English equivalent", async () => {
+    const nextConfig = createRequire(import.meta.url)("./next.config.js");
+    const response = await unstable_getResponseFromNextConfig({
+      url: "https://www.samuraisudoku.net/games/samurai?from=old-link",
+      nextConfig,
+    });
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(
+      "https://www.samuraisudoku.net/en/games/samurai?from=old-link",
+    );
+  });
+});
 
 describe("PWA puzzle data caching", () => {
   it("keeps the mutable index separate and refreshes dated puzzle data", () => {

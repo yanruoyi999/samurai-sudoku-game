@@ -220,6 +220,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/games/samurai',
+        destination: '/en/games/samurai',
+        statusCode: 301,
+      },
+      {
         source: '/downloads/samurai-sudoku-starter-pack-with-solutions-a4.pdf',
         destination: `/downloads/samurai-sudoku-free-3-puzzle-sampler-a4-v${printableSamplerAssetVersion}.pdf`,
         permanent: true,
