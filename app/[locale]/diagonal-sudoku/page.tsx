@@ -22,7 +22,7 @@ const content = {
     daily: 'The daily pick rotates through the same 12 original puzzles using the UTC date when you open the page. Choose any of the 12 to practice without waiting. Each puzzle has one solution under the full rules; the givens alone permit more than one answer if you ignore both diagonals.',
     compareTitle: 'Is Sudoku X the same as X-Wing?',
     compare: 'No. Sudoku X names the two-diagonal variant. X-Wing is a solving technique based on candidate positions in rows and columns. Jigsaw Sudoku changes the shape of the boxes instead; this game keeps the nine square boxes.',
-    links: ['Play Jigsaw Sudoku', 'Learn the X-Wing technique'],
+    links: ['Play Jigsaw Sudoku', 'Learn the X-Wing technique', 'Try two Star Battle puzzles'],
   },
   zh: {
     title: '对角线数独（Sudoku X）：免费在线玩',
@@ -38,7 +38,7 @@ const content = {
     daily: '今日题目按打开页面时的 UTC 日期在 12 道原创题中轮换，练习模式可随时选任一题。每题在完整规则下只有一个解；如果忽略两条对角线，给定数字可以有多个解。',
     compareTitle: 'Sudoku X 与 X-Wing 一样吗？',
     compare: '不同。Sudoku X 是对角线数独的别名，X-Wing 则是根据行列候选位置来排除数字的技巧。不规则数独改变宫的形状；本游戏仍使用九个正方形宫。',
-    links: ['玩不规则数独', '学习 X-Wing 技巧'],
+    links: ['玩不规则数独', '学习 X-Wing 技巧', '试做两道星战谜题'],
   },
 };
 
@@ -92,6 +92,7 @@ export default async function DiagonalSudokuPage({ params }: Props) {
         <ul className="list-disc space-y-2 pl-6">
           <li><Link className="text-primary underline underline-offset-4" href={`/${locale}/jigsaw-sudoku`}>{c.links[0]}</Link></li>
           <li><Link className="text-primary underline underline-offset-4" href={`/${locale}/sudoku-x-wing`}>{c.links[1]}</Link></li>
+          <li><Link className="text-primary underline underline-offset-4" href={`/${locale}/star-battle-puzzle`}>{c.links[2]}</Link></li>
         </ul>
       </section>
     </main>
