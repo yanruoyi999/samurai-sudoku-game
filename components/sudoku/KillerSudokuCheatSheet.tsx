@@ -92,6 +92,11 @@ export function KillerSudokuCheatSheet({
                 ? "结果只列出 1–9 中互不重复的数字组合，不考虑数字在笼格内的排列顺序。"
                 : "Results use distinct digits from 1–9 and ignore their order inside the cage."}
             </p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {isZh
+                ? "每个结果都包含全部选中的必选数字，且不含任何排除数字。"
+                : "Every result includes all required digits and none of the excluded digits."}
+            </p>
 
             <form noValidate onSubmit={(event) => { event.preventDefault(); calculate(); }}>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
@@ -212,6 +217,11 @@ export function KillerSudokuCheatSheet({
                 {isZh ? "打印或另存 PDF" : "Print or save PDF"}
               </button>
             </div>
+            <p className="mt-3 text-sm text-muted-foreground print:hidden">
+              {isZh
+                ? "打印的是 2、3、4 格完整速查表，不受计算器筛选影响。"
+                : "Printing includes the full 2-, 3- and 4-cell tables, regardless of calculator filters."}
+            </p>
 
             <header className="hidden print:block">
               <h1 className="text-2xl font-bold">
