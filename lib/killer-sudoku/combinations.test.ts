@@ -55,6 +55,20 @@ describe("findKillerSudokuCombinations", () => {
       findKillerSudokuCombinations({ cageSize: 9, targetSum: 45 }).combinations,
     ).toEqual([[1, 2, 3, 4, 5, 6, 7, 8, 9]]);
   });
+
+  it("filters a cage by known and ruled-out digits", () => {
+    const cage = { cageSize: 3, targetSum: 15, requiredDigits: [9] };
+    expect(findKillerSudokuCombinations(cage).combinations).toEqual([[1, 5, 9], [2, 4, 9]]);
+    expect(findKillerSudokuCombinations({ ...cage, excludedDigits: [5] }).combinations).toEqual([[2, 4, 9]]);
+    expect(findKillerSudokuCombinations({ ...cage, excludedDigits: [1, 2] }).combinations).toEqual([]);
+  });
+
+  it("distinguishes conflicting and invalid filters from an empty result", () => {
+    const cage = { cageSize: 2, targetSum: 10 };
+    expect(findKillerSudokuCombinations({ ...cage, requiredDigits: [4], excludedDigits: [4] }).filterError).toBe("overlap");
+    expect(findKillerSudokuCombinations({ ...cage, requiredDigits: [1, 2, 3] }).filterError).toBe("too-many-required");
+    expect(findKillerSudokuCombinations({ ...cage, excludedDigits: [0] }).filterError).toBe("invalid-digits");
+  });
 });
 
 describe("buildKillerCheatSheet", () => {

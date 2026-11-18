@@ -1,6 +1,8 @@
 export interface KillerCombinationQuery {
   cageSize: number;
   targetSum: number;
+  requiredDigits?: readonly number[];
+  excludedDigits?: readonly number[];
 }
 
 export interface KillerCombinationResult extends KillerCombinationQuery {
@@ -8,6 +10,7 @@ export interface KillerCombinationResult extends KillerCombinationQuery {
   minimumSum: number;
   maximumSum: number;
   isValid: boolean;
+  filterError?: "invalid-digits" | "overlap" | "too-many-required";
 }
 
 const MIN_DIGIT = 1;
@@ -32,6 +35,8 @@ export function getKillerSumRange(cageSize: number) {
 export function findKillerSudokuCombinations({
   cageSize,
   targetSum,
+  requiredDigits = [],
+  excludedDigits = [],
 }: KillerCombinationQuery): KillerCombinationResult {
   const range = getKillerSumRange(cageSize);
   const validTarget = Number.isInteger(targetSum);
@@ -48,15 +53,21 @@ export function findKillerSudokuCombinations({
   }
 
   const { minimumSum, maximumSum } = range;
+  const emptyResult = { cageSize, targetSum, combinations: [], minimumSum, maximumSum, isValid: false };
+  const allDigits = [...requiredDigits, ...excludedDigits];
+  if (allDigits.some((digit) => !Number.isInteger(digit) || digit < MIN_DIGIT || digit > MAX_DIGIT)) {
+    return { ...emptyResult, filterError: "invalid-digits" };
+  }
+  const required = new Set(requiredDigits);
+  const excluded = new Set(excludedDigits);
+  if (requiredDigits.some((digit) => excluded.has(digit))) {
+    return { ...emptyResult, filterError: "overlap" };
+  }
+  if (required.size > cageSize) {
+    return { ...emptyResult, filterError: "too-many-required" };
+  }
   if (targetSum < minimumSum || targetSum > maximumSum) {
-    return {
-      cageSize,
-      targetSum,
-      combinations: [],
-      minimumSum,
-      maximumSum,
-      isValid: false,
-    };
+    return emptyResult;
   }
 
   const combinations: number[][] = [];
@@ -65,7 +76,7 @@ export function findKillerSudokuCombinations({
     const remainingSlots = cageSize - digits.length;
 
     if (remainingSlots === 0) {
-      if (remainingSum === 0) {
+      if (remainingSum === 0 && requiredDigits.every((digit) => digits.includes(digit))) {
         combinations.push(digits);
       }
       return;
@@ -75,6 +86,9 @@ export function findKillerSudokuCombinations({
     for (let digit = nextDigit; digit <= largestStart; digit += 1) {
       if (digit > remainingSum) {
         break;
+      }
+      if (excluded.has(digit)) {
+        continue;
       }
 
       let minimumTail = 0;
