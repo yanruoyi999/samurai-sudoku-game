@@ -207,6 +207,15 @@ const nextConfig = {
       },
       // Static assets caching
       {
+        source: '/fonts/fraunces-v1/:file*.woff2',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
         source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp)',
         headers: [
           {
