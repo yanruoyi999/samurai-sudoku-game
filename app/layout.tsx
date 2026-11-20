@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Fraunces } from "next/font/google";
 import { headers } from "next/headers";
 import { locales } from "@/i18n";
 import { getSiteBaseUrl } from "@/lib/site-url";
@@ -9,15 +8,8 @@ import { ClarityConsent } from "@/components/analytics/ClarityConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsListener } from "@/components/analytics/GoogleAnalyticsListener";
 import { VercelAnalytics } from "@/components/analytics/VercelAnalytics";
+import "./fraunces.css";
 import "./globals.css";
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-display",
-});
 
 const siteBaseUrl = getSiteBaseUrl();
 const googleSiteVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
@@ -68,8 +60,10 @@ export default async function RootLayout({
   const htmlLang = locales.find((locale) => locale === requestedLocale) ?? "en";
 
   return (
-    <html lang={htmlLang} className={fraunces.variable} suppressHydrationWarning>
+    <html lang={htmlLang} suppressHydrationWarning>
       <head>
+        <link rel="preload" href="/fonts/fraunces-v1/normal-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/fraunces-v1/italic-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
