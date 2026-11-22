@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { trackInteraction } from "@/lib/analytics/events";
 import {
@@ -28,6 +28,11 @@ export function SwordfishTrainer({ locale, initialOrder = 3 }: SwordfishTrainerP
   const [orientation, setOrientation] = useState<FishOrientation>("row");
   const [showValid, setShowValid] = useState(true);
   const [revealed, setRevealed] = useState(false);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
   const example = useMemo(
     () => getFishExample(order, orientation, showValid),
     [order, orientation, showValid],
@@ -95,10 +100,11 @@ export function SwordfishTrainer({ locale, initialOrder = 3 }: SwordfishTrainerP
                 <button
                   key={nextOrder}
                   type="button"
+                  disabled={!ready}
                   onClick={() => changeExample({ nextOrder })}
                   aria-pressed={order === nextOrder}
                   className={cn(
-                    "min-h-11 border-r px-3 text-sm font-semibold last:border-r-0",
+                    "min-h-11 border-r px-3 text-sm font-semibold last:border-r-0 disabled:cursor-wait disabled:opacity-60",
                     order === nextOrder
                       ? "bg-foreground text-background"
                       : "bg-background hover:bg-muted",
@@ -113,10 +119,11 @@ export function SwordfishTrainer({ locale, initialOrder = 3 }: SwordfishTrainerP
                 <button
                   key={nextOrientation}
                   type="button"
+                  disabled={!ready}
                   onClick={() => changeExample({ nextOrientation })}
                   aria-pressed={orientation === nextOrientation}
                   className={cn(
-                    "min-h-11 border-r px-3 text-sm font-semibold last:border-r-0",
+                    "min-h-11 border-r px-3 text-sm font-semibold last:border-r-0 disabled:cursor-wait disabled:opacity-60",
                     orientation === nextOrientation
                       ? "bg-primary text-primary-foreground"
                       : "bg-background hover:bg-muted",
@@ -133,10 +140,11 @@ export function SwordfishTrainer({ locale, initialOrder = 3 }: SwordfishTrainerP
                 <button
                   key={String(nextValid)}
                   type="button"
+                  disabled={!ready}
                   onClick={() => changeExample({ nextValid })}
                   aria-pressed={showValid === nextValid}
                   className={cn(
-                    "min-h-11 border-r px-3 text-sm font-semibold last:border-r-0",
+                    "min-h-11 border-r px-3 text-sm font-semibold last:border-r-0 disabled:cursor-wait disabled:opacity-60",
                     showValid === nextValid
                       ? "bg-amber-500 text-amber-950"
                       : "bg-background hover:bg-muted",
@@ -238,8 +246,9 @@ export function SwordfishTrainer({ locale, initialOrder = 3 }: SwordfishTrainerP
           </p>
           <button
             type="button"
+            disabled={!ready}
             onClick={reveal}
-            className="mt-5 min-h-11 w-full rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground hover:bg-primary/90"
+            className="mt-5 min-h-11 w-full rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60"
           >
             {isZh ? "显示基准线、覆盖线与排除项" : "Reveal lines and eliminations"}
           </button>
