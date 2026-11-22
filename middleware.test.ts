@@ -21,6 +21,16 @@ describe('canonical host middleware', () => {
     }
   );
 
+  it('preserves an encoded path and the complete query when redirecting the apex', () => {
+    const pathAndQuery = '/en/%73udoku-solver?source=a%2Fb&x=1&x=2&empty=&bare&encoded=%2b%2B%20+%26';
+    const redirectUrl = getCanonicalRedirectUrl(
+      new URL(`https://samuraisudoku.net${pathAndQuery}`),
+      'samuraisudoku.net'
+    );
+
+    expect(redirectUrl?.href).toBe(`https://${CANONICAL_HOST}${pathAndQuery}`);
+  });
+
   it('normalizes http and an explicit port on the canonical host', () => {
     const redirectUrl = getCanonicalRedirectUrl(
       new URL(`http://${CANONICAL_HOST}:8080${PRINTABLE_PATH}`),
