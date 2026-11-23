@@ -4,7 +4,7 @@ function createWindow(search = "") {
   const store = new Map<string, string>();
 
   return {
-    location: { search },
+    location: { search, origin: "https://www.samuraisudoku.net" },
     localStorage: {
       getItem: (key: string) => store.get(key) ?? null,
       setItem: (key: string, value: string) => store.set(key, value),
@@ -26,10 +26,14 @@ describe("gtag analytics helpers", () => {
 
     const { pageview } = await import("./gtag");
 
-    pageview("/en/games/samurai");
+    pageview("/en/sudoku-solver?example=1");
 
     expect(window.dataLayer).toEqual([
-      ["config", "G-TEST", { page_path: "/en/games/samurai" }],
+      ["event", "page_view", {
+        send_to: "G-TEST",
+        page_path: "/en/sudoku-solver?example=1",
+        page_location: "https://www.samuraisudoku.net/en/sudoku-solver?example=1",
+      }],
     ]);
     expect(typeof window.gtag).toBe("function");
   });

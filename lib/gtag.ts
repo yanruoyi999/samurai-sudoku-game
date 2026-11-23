@@ -6,10 +6,6 @@ import {
 export { GA_READY_EVENT, GA_TRACKING_ID } from "@/lib/gtag-config";
 import { GA_TRACKING_ID } from "@/lib/gtag-config";
 
-type GtagParams = {
-  page_path: string;
-};
-
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -47,9 +43,11 @@ export const pageview = (url: string) => {
     isAnalyticsOptedOut()
   ) return;
 
-  window.gtag("config", GA_TRACKING_ID, {
+  window.gtag("event", "page_view", {
+    send_to: GA_TRACKING_ID,
     page_path: url,
-  } satisfies GtagParams);
+    page_location: new URL(url, window.location.origin).href,
+  });
 };
 
 export const trackEvent = (action: string, params: EventParams = {}) => {
