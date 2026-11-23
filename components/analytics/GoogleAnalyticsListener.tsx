@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import {
   applyAnalyticsOptOutFromUrl,
@@ -9,12 +9,13 @@ import {
 import { GA_TRACKING_ID } from "@/lib/gtag-config";
 
 export function GoogleAnalyticsListener() {
+  const pathname = usePathname();
   const search = useSearchParams()?.toString();
 
   useEffect(() => {
     if (!GA_TRACKING_ID) return;
     setGoogleAnalyticsDisabled(GA_TRACKING_ID, applyAnalyticsOptOutFromUrl());
-  }, [search]);
+  }, [pathname, search]);
 
   return null;
 }
