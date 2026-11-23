@@ -56,6 +56,20 @@ export function hasPageCountPermission(): boolean {
   }
 }
 
+export function onPageCountGrant(countVisiblePage: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (
+      event.key === preference &&
+      event.newValue === 'yes' &&
+      event.storageArea === window.localStorage
+    ) {
+      countVisiblePage();
+    }
+  };
+  window.addEventListener('storage', onStorage);
+  return () => window.removeEventListener('storage', onStorage);
+}
+
 export function setPageCountPermission(allowed: boolean) {
   if (allowed) {
     localStorage.setItem(preference, 'yes');

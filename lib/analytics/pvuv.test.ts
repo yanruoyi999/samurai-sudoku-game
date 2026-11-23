@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   hasPageCountPermission,
+  onPageCountGrant,
   reportPageCount,
   setPageCountPermission,
 } from './pvuv';
@@ -38,6 +39,31 @@ describe('opt-in page counts', () => {
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
     vi.useRealTimers();
+  });
+  it('rechecks only a grant from this origin’s local storage and stops on cleanup', () => {
+    const events = new EventTarget();
+    window.addEventListener = events.addEventListener.bind(events);
+    window.removeEventListener = events.removeEventListener.bind(events);
+    const check = vi.fn();
+    const stop = onPageCountGrant(check);
+    const change = (
+      key: string,
+      newValue: string | null,
+      storageArea: object = localStorage,
+    ) => {
+      events.dispatchEvent(
+        Object.assign(new Event('storage'), { key, newValue, storageArea }),
+      );
+    };
+    change('unrelated', 'yes');
+    change('pvuv-permission-v1', null);
+    change('pvuv-permission-v1', 'yes', {});
+    expect(check).not.toHaveBeenCalled();
+    change('pvuv-permission-v1', 'yes');
+    expect(check).toHaveBeenCalledOnce();
+    stop();
+    change('pvuv-permission-v1', 'yes');
+    expect(check).toHaveBeenCalledOnce();
   });
   it('sends a real public page with only five documented fields after explicit consent', () => {
     expect(count()).toBe(false);
