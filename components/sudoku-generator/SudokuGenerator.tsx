@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { Locale } from '@/i18n';
+import { trackInteraction } from '@/lib/analytics/events';
 import { formatSudokuPuzzle, type GeneratedSudoku } from '@/lib/standard-sudoku/generate';
 import { STANDARD_SUDOKU_PUZZLES } from '@/lib/standard-sudoku/puzzles';
 
@@ -132,6 +133,11 @@ export function SudokuGenerator({ locale }: { locale: Locale }) {
         if (result) {
           setPuzzle(result);
           setRevealed(false);
+          try {
+            trackInteraction('sudoku_generator_completed', { locale });
+          } catch {
+            // Telemetry must not interrupt the generated result.
+          }
         }
         setNotice(result ? labels.ready : labels.error);
       }
