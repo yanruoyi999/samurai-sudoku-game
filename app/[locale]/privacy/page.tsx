@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageCountPreference } from '@/components/analytics/PvuvPageCount';
 import Link from "next/link";
 
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
@@ -38,8 +39,17 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
         {isZh ? "隐私政策" : "Privacy Policy"}
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        {isZh ? "最后更新：2026年7月13日" : "Last updated: July 13, 2026"}
+        {isZh ? "最后更新：2026年11月23日" : "Last updated: November 23, 2026"}
       </p>
+
+      <section className="mt-8 space-y-3" id="page-counts">
+        <h2 className="text-2xl font-semibold">{isZh ? '可选页面访问统计' : 'Optional page counts'}</h2>
+        <p>{isZh
+          ? '开启后，选定的公开页面会将页面地址和保存在浏览器中的两个随机标识发送给 PVUV.ai。访客标识有效期为 30 天；若连续 30 分钟没有统计到新页面，会话标识到期。过期标识会在下次统计页面时替换。带查询参数或锚点的页面会跳过。PVUV.ai 会收到请求的 IP 地址与浏览器请求头，可据此推断地区和流量质量。关闭此设置会清除这两个本地标识。开启「请勿跟踪」或全球隐私控制信号也会停止统计。'
+          : 'If you turn this on, selected public pages send PVUV.ai the page address and two random identifiers stored in this browser. The visitor ID expires after 30 days, and the session ID after 30 minutes without a counted page. Expired IDs are replaced on the next counted page. Pages with a query or fragment are skipped. The request exposes your IP address and browser headers to PVUV.ai, which can derive location and traffic quality. Turning this off clears these local IDs. Do Not Track and Global Privacy Control also stop counting.'}</p>
+        <p className="mt-2"><a href="https://www.pvuv.ai/privacy" rel="noreferrer" className="underline">{isZh ? 'PVUV.ai 隐私政策' : 'PVUV.ai privacy policy'}</a></p>
+        <PageCountPreference isZh={isZh} />
+      </section>
 
       <section className="mt-8 space-y-3">
         <h2 className="text-2xl font-semibold">{isZh ? "我们收集什么" : "What We Collect"}</h2>

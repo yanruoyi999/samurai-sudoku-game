@@ -6,6 +6,7 @@ import { isLocale, locales } from '@/i18n';
 import { buildLanguageAlternates, buildLocalizedUrl } from '@/lib/seo';
 import { ThemeProvider } from "@/components/theme-provider";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { PvuvPageCount } from '@/components/analytics/PvuvPageCount';
 import { TypeformFeedbackButton } from "@/components/feedback/TypeformFeedbackButton";
 import { SiteHeader } from "@/components/site/SiteHeader";
 
@@ -83,6 +84,7 @@ export default async function LocaleLayout({
       >
         <div className="font-sans">
           <SiteHeader locale={locale} />
+          <PvuvPageCount />
           {children}
           <InstallPrompt locale={locale} />
           <TypeformFeedbackButton locale={locale} />
