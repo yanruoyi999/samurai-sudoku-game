@@ -45,7 +45,7 @@ export function getGoogleAnalyticsInitScript(
           window.gtag = window.gtag || function gtag(){window.dataLayer.push(arguments);}
           if (!analyticsOptedOut) {
             window.gtag('js', new Date());
-            window.gtag('config', trackingId, { send_page_view: false });
+            window.gtag('config', trackingId, { send_page_view: true });
           }
           window.__samuraiGaReady = true;
           window.dispatchEvent(new Event(readyEvent));
