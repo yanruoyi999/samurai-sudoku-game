@@ -4,7 +4,7 @@ function createWindow(search = "") {
   const store = new Map<string, string>();
 
   return {
-    location: { search, origin: "https://www.samuraisudoku.net" },
+    location: { search },
     localStorage: {
       getItem: (key: string) => store.get(key) ?? null,
       setItem: (key: string, value: string) => store.set(key, value),
@@ -20,42 +20,27 @@ describe("gtag analytics helpers", () => {
     delete (globalThis as { window?: unknown }).window;
   });
 
-  it("queues a page view when the GA script is not ready yet", async () => {
+  it("queues a solver event when the GA script has not loaded", async () => {
     vi.stubEnv("NEXT_PUBLIC_SUDOKU_GA_ID", "G-TEST");
     (globalThis as { window?: Window }).window = createWindow();
 
-    const { pageview } = await import("./gtag");
+    const { trackEvent } = await import("./gtag");
 
-    pageview("/en/sudoku-solver?example=1");
+    trackEvent("sudoku_solver_start", { locale: "en" });
 
     expect(window.dataLayer).toEqual([
-      ["event", "page_view", {
-        send_to: "G-TEST",
-        page_path: "/en/sudoku-solver?example=1",
-        page_location: "https://www.samuraisudoku.net/en/sudoku-solver?example=1",
-      }],
+      ["event", "sudoku_solver_start", { locale: "en" }],
     ]);
     expect(typeof window.gtag).toBe("function");
   });
 
-  it("detects the GA init readiness flag", async () => {
-    vi.stubEnv("NEXT_PUBLIC_SUDOKU_GA_ID", "G-TEST");
-    (globalThis as { window?: Window }).window = {
-      __samuraiGaReady: true,
-    } as Window;
-
-    const { isGoogleAnalyticsReady } = await import("./gtag");
-
-    expect(isGoogleAnalyticsReady()).toBe(true);
-  });
-
-  it("does not queue page views after analytics opt-out", async () => {
+  it("does not queue solver events after analytics opt-out", async () => {
     vi.stubEnv("NEXT_PUBLIC_SUDOKU_GA_ID", "G-TEST");
     (globalThis as { window?: Window }).window = createWindow("?analytics=off");
 
-    const { pageview } = await import("./gtag");
+    const { trackEvent } = await import("./gtag");
 
-    pageview("/en/games/samurai");
+    trackEvent("sudoku_solver_finish", { locale: "en", outcome: "solved" });
 
     expect(window.dataLayer).toBeUndefined();
     expect((window as unknown as Record<string, boolean>)["ga-disable-G-TEST"]).toBe(true);
