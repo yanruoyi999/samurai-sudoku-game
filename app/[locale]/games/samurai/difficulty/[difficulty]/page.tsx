@@ -162,6 +162,7 @@ const PRACTICE_GUIDES: Record<
       { href: '/games/samurai/candidate-notes', label: { en: 'Candidate notes guide', zh: '候选数笔记指南' } },
       { href: '/games/samurai/overlap-boxes', label: { en: 'Overlap boxes explained', zh: '重叠宫详解' } },
       { href: '/games/samurai/strategy-guide', label: { en: 'Strategy guide', zh: '解题策略' } },
+      { href: '/sudoku-swordfish', label: { en: 'Practice Swordfish within a single 9×9 grid', zh: '在单个 9×9 盘内练习剑鱼法' } },
     ],
     faq: [
       {
