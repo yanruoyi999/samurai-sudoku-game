@@ -29,6 +29,7 @@ describe("PayPalCheckout fallback", () => {
     const html = renderToStaticMarkup(
       <PayPalCheckout
         autoDeliveryEnabled={false}
+        environment="sandbox"
         clientId=""
         locale="en"
         price="$9.90"
@@ -46,6 +47,7 @@ describe("PayPalCheckout fallback", () => {
     const html = renderToStaticMarkup(
       <PayPalCheckout
         autoDeliveryEnabled
+        environment="sandbox"
         clientId="test-client-id"
         locale="en"
         price="$9.90"
@@ -63,6 +65,7 @@ describe("PayPalCheckout fallback", () => {
     const html = renderToStaticMarkup(
       <PayPalCheckout
         autoDeliveryEnabled
+        environment="sandbox"
         clientId="test-client-id"
         deferUntilActivated
         locale="en"

@@ -25,7 +25,7 @@ import {
   getPdfPackPriceAmount,
   getPdfPackProductName,
 } from "@/lib/paypal";
-import { getPayPalClientId, isPayPalOrdersConfigured } from "@/lib/paypal-api";
+import { getPayPalClientId, getPayPalEnvironment, isPayPalOrdersConfigured } from "@/lib/paypal-api";
 import { getPuzzle, getPuzzleIndex } from "@/lib/puzzles";
 import { buildLanguageAlternates, buildLocalizedUrl } from "@/lib/seo";
 import { buildAbsoluteUrl } from "@/lib/site-url";
@@ -131,6 +131,7 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
   const paidPackProductName = getPdfPackProductName();
   const autoDeliveryEnabled = isPayPalOrdersConfigured();
   const payPalClientId = getPayPalClientId();
+  const paymentEnvironment = getPayPalEnvironment();
   const supportHref = `/${locale}/contact`;
   const latestPuzzle = selectRecentDailyPuzzles(index.puzzles, 1)[0];
 
@@ -570,9 +571,15 @@ export default async function PrintableSamuraiSudokuResourcePage({ params }: Pag
                 : `One-time payment with no renewal. Start with the Expert preview walkthrough and answer, then get every answer and portable edition for $${paidPackDailyPrice} a day.`}
             </p>
             <div className="mt-6">
+              {autoDeliveryEnabled && paymentEnvironment === "sandbox" && (
+                <p className="mb-3 text-sm font-medium" role="status">
+                  {isZh ? "当前为 PayPal 沙盒结账，仅供测试，不会收取真实款项。" : "This checkout uses the PayPal sandbox. Test payments only. No real money is charged."}
+                </p>
+              )}
               <PayPalCheckout
                 autoDeliveryEnabled={autoDeliveryEnabled}
                 clientId={payPalClientId}
+                environment={paymentEnvironment}
                 deferUntilActivated
                 experimentId={EXPERIMENT_ID}
                 locale={locale}

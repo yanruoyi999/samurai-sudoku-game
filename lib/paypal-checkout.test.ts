@@ -19,6 +19,18 @@ describe("PayPal checkout client response parsing", () => {
     expect(() => parsePayPalCreateResponse({ orderID: "bad" })).toThrow();
   });
 
+  it("preserves the actual amount verified for an older order", () => {
+    const receipt = parsePayPalCaptureResponse({
+      orderID: "5O190127TN364715T",
+      captureID: "3Y662965014333303",
+      downloadUrl: "/api/download/pdf-pack?token=signed-token",
+      newCapture: true,
+      amount: "4.95",
+      currency: "USD",
+    });
+    expect(receipt).toMatchObject({ amount: "4.95", currency: "USD", newCapture: true });
+  });
+
   it("accepts only the internal paid pack download route", () => {
     expect(
       parsePayPalCaptureResponse({
@@ -29,6 +41,7 @@ describe("PayPal checkout client response parsing", () => {
     ).toEqual({
       orderID: "5O190127TN364715T",
       captureID: "3Y662965014333303",
+      newCapture: false,
       downloadUrl: "/api/download/pdf-pack?token=signed-token",
     });
 

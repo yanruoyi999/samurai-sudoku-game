@@ -10,6 +10,9 @@ export interface PayPalCreateResponse {
 export interface PayPalCaptureResponse {
   orderID: string;
   captureID: string;
+  newCapture: boolean;
+  amount?: string;
+  currency?: "USD";
   downloadUrl: string;
 }
 
@@ -56,6 +59,11 @@ export function parsePayPalCaptureResponse(value: unknown): PayPalCaptureRespons
   return {
     orderID: response.orderID,
     captureID: response.captureID,
+    // Older deployments can issue a valid download without a new-capture receipt.
+    newCapture: response.newCapture === true,
+    ...(response.currency === "USD" && typeof response.amount === "string" && /^\d+\.\d{2}$/.test(response.amount)
+      ? { amount: response.amount, currency: "USD" as const }
+      : {}),
     downloadUrl: response.downloadUrl,
   };
 }
