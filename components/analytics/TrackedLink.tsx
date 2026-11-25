@@ -11,6 +11,7 @@ type AnalyticsProperties = Record<string, AnalyticsValue | null | undefined>;
 type TrackedLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "onClick"> & {
   href: string;
   eventName: string;
+  reloadDocument?: boolean;
   eventProperties?: AnalyticsProperties;
   children: ReactNode;
 };
@@ -23,6 +24,7 @@ export function TrackedLink({
   href,
   eventName,
   eventProperties,
+  reloadDocument,
   children,
   rel,
   target,
@@ -37,7 +39,7 @@ export function TrackedLink({
   };
 
   const external = isExternalHref(href);
-  const nativeAnchor = external || anchorProps.download !== undefined;
+  const nativeAnchor = reloadDocument || external || anchorProps.download !== undefined;
 
   if (nativeAnchor) {
     const safeTarget = target ?? (external && href.startsWith("http") ? "_blank" : undefined);

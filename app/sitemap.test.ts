@@ -15,7 +15,7 @@ const KIDS_SUDOKU_PATHS = [
 
 describe('sitemap', () => {
   it('excludes practice trials in both languages until they are approved for indexing', async () => {
-    expect((await sitemap()).some(entry => /\/(star-battle-puzzle|train-tracks-puzzle|suguru-puzzle)\/?$/.test(entry.url))).toBe(false);
+    expect((await sitemap()).some(entry => /\/(star-battle-puzzle|train-tracks-puzzle|suguru-puzzle|shingoki-puzzle)\/?$/.test(entry.url))).toBe(false);
   });
 
   it("uses each difficulty archive's newest puzzle date as lastModified", async () => {
