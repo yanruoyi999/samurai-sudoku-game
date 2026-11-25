@@ -229,6 +229,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/shingoki-puzzle',
+        destination: '/en/shingoki-puzzle',
+        permanent: true,
+      },
+      {
         source: '/games/samurai',
         destination: '/en/games/samurai',
         statusCode: 301,

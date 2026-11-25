@@ -42,6 +42,15 @@ describe("TrackedLink", () => {
     expect(html).toContain('data-next-link="true"');
   });
 
+  it("supports a new document load for measured pilot entry pages", () => {
+    const html = renderToStaticMarkup(
+      <TrackedLink href="/en/shingoki-puzzle" eventName="shingoki_entry" reloadDocument>Draw a loop</TrackedLink>,
+    );
+    expect(html).toContain('href="/en/shingoki-puzzle"');
+    expect(html).not.toContain("data-next-link");
+    expect(html).not.toContain("reloadDocument");
+  });
+
   it("lets navigation continue if the analytics client throws", () => {
     vi.mocked(trackInteraction).mockImplementationOnce(() => { throw new Error("telemetry unavailable"); });
     const link = TrackedLink({ href: "/en/16x16-sudoku", eventName: "hexadoku_open", children: "Play" });
