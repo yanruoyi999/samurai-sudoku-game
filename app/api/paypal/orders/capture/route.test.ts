@@ -115,7 +115,7 @@ describe("POST /api/paypal/orders/capture", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toContain("no-store");
-    expect(body.newCapture).toBe(false);
+    expect(body).toMatchObject({ newCapture: false, amount: "9.90", currency: "USD" });
     expect(token).toBeTruthy();
     if (!token) throw new Error("capture response must include a download token");
     expect(verifyDownloadToken(token, tokenSecret)).toMatchObject({

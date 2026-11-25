@@ -58,6 +58,8 @@ export async function POST(request: Request) {
         orderID: completedOrder.orderId,
         captureID: completedOrder.captureId,
         newCapture: completedOrder.newCapture,
+        amount: completedOrder.amount,
+        currency: completedOrder.currency,
         downloadUrl: `/api/download/pdf-pack?token=${encodeURIComponent(token)}`,
       },
       200,

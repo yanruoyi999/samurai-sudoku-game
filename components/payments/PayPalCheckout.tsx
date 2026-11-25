@@ -99,11 +99,13 @@ export function PayPalCheckout({
         locale,
         product: "100_printable_pack",
         provider: "paypal",
-        price,
+        ...(captured.newCapture && captured.amount && captured.currency
+          ? { price: `$${captured.amount}`, value: Number(captured.amount), currency: captured.currency }
+          : {}),
         experiment_id: experimentId,
       }, environment);
     },
-    [environment, experimentId, isZh, locale, price],
+    [environment, experimentId, isZh, locale],
   );
 
   useEffect(() => {
