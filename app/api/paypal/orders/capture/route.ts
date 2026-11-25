@@ -16,6 +16,7 @@ export const dynamic = "force-dynamic";
 interface CaptureRequestBody {
   orderID?: unknown;
   recoveryKey?: unknown;
+  recoverOnly?: unknown;
 }
 
 export async function POST(request: Request) {
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const completedOrder = await capturePayPalOrder(orderID, recoveryKey);
+    const completedOrder = await capturePayPalOrder(orderID, recoveryKey, fetch, body.recoverOnly === true);
     const token = createDownloadToken(
       {
         orderId: completedOrder.orderId,
@@ -56,13 +57,14 @@ export async function POST(request: Request) {
       {
         orderID: completedOrder.orderId,
         captureID: completedOrder.captureId,
+        newCapture: completedOrder.newCapture,
         downloadUrl: `/api/download/pdf-pack?token=${encodeURIComponent(token)}`,
       },
       200,
     );
   } catch (error) {
     if (error instanceof PayPalApiError) {
-      return noStoreJson({ error: error.message }, error.status);
+      return noStoreJson({ error: error.message, approvedAmount: error.approvedAmount }, error.status);
     }
     console.error("Unexpected PayPal capture error.", error);
     return noStoreJson({ error: "Unable to verify or capture the PayPal order." }, 500);

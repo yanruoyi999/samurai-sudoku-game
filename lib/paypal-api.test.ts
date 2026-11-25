@@ -174,12 +174,25 @@ describe("PayPal PDF pack orders", () => {
 
     await expect(
       capturePayPalOrder("5O190127TN364715T", "recovery-key", fetcher),
-    ).resolves.toMatchObject({ captureId: "3Y662965014333303" });
+    ).resolves.toMatchObject({ captureId: "3Y662965014333303", newCapture: false });
     expect(fetcher).toHaveBeenCalledTimes(2);
     expect(fetcher.mock.calls[1][1]?.method).toBe("GET");
   });
 
-  it("requests the complete order representation when capturing an approved order", async () => {
+  it("only reads the order on return to the page, even when approved", async () => {
+    vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
+    vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ access_token: "token" }))
+      .mockResolvedValueOnce(Response.json(completedOrder({ status: "APPROVED" }, "4.95")));
+
+    await expect(capturePayPalOrder("5O190127TN364715T", "recovery-key", fetcher, true))
+      .rejects.toMatchObject({ status: 409, approvedAmount: "4.95" });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(fetcher.mock.calls[1][1]?.method).toBe("GET");
+  });
+
+  it.each([[201, true], [200, false]] as const)("classifies PayPal capture HTTP %d with a stable request ID", async (status, newCapture) => {
     vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
     vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
     const fetcher = vi
@@ -189,17 +202,17 @@ describe("PayPal PDF pack orders", () => {
       )
       .mockResolvedValueOnce(
         new Response(
-          JSON.stringify({ id: "5O190127TN364715T", status: "APPROVED" }),
+          JSON.stringify(completedOrder({ status: "APPROVED" })),
           { status: 200 },
         ),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify(completedOrder()), { status: 201 }),
+        new Response(JSON.stringify(completedOrder()), { status }),
       );
 
     await expect(
       capturePayPalOrder("5O190127TN364715T", "recovery-key", fetcher),
-    ).resolves.toMatchObject({ captureId: "3Y662965014333303" });
+    ).resolves.toMatchObject({ captureId: "3Y662965014333303", newCapture });
 
     expect(fetcher).toHaveBeenCalledTimes(3);
     expect(fetcher.mock.calls[2][0]).toBe(

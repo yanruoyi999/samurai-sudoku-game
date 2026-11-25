@@ -4,6 +4,7 @@ import Script from "next/script";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { downloadPackFile, trackPackOutcome, type PayPalEnvironment } from "@/lib/pack-download";
 import { trackInteraction } from "@/lib/analytics/events";
 import { PAID_PACK_ACTIVATION_EVENT } from "@/lib/printable-offer-events";
 import {
@@ -17,6 +18,7 @@ const STORAGE_KEY = "samurai-pdf-pack-paypal-order";
 interface PayPalCheckoutProps {
   autoDeliveryEnabled: boolean;
   clientId: string;
+  environment: PayPalEnvironment;
   deferUntilActivated?: boolean;
   experimentId?: string;
   locale: string;
@@ -33,7 +35,7 @@ interface PayPalButtonsOptions {
   style?: Record<string, string | number>;
   createOrder: () => Promise<string>;
   onApprove: (data: { orderID: string }) => Promise<void>;
-  onCancel: () => void;
+  onCancel: (data: { orderID?: string }) => void;
   onError: (error: unknown) => void;
 }
 
@@ -49,6 +51,7 @@ export function PayPalCheckout({
   autoDeliveryEnabled,
   clientId,
   deferUntilActivated = false,
+  environment,
   experimentId,
   locale,
   price,
@@ -62,40 +65,45 @@ export function PayPalCheckout({
   const [activated, setActivated] = useState(!deferUntilActivated);
   const [status, setStatus] = useState<"idle" | "creating" | "capturing" | "complete">("idle");
   const [error, setError] = useState("");
+  const [approvedOrder, setApprovedOrder] = useState<{ order: PayPalCreateResponse; amount: string } | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [showDirectDownload, setShowDirectDownload] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState("");
 
   const captureOrder = useCallback(
-    async (order: PayPalCreateResponse, recovery = false) => {
+    async (order: PayPalCreateResponse, recoverOnly = false) => {
       setStatus("capturing");
       setError("");
       const response = await fetch("/api/paypal/orders/capture", {
         method: "POST",
         cache: "no-store",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(order),
+        body: JSON.stringify({ ...order, recoverOnly }),
       });
       const body = await readJson(response);
+      if (recoverOnly && response.status === 409 && body && typeof body === "object" && "approvedAmount" in body &&
+          typeof body.approvedAmount === "string" && /^\d+\.\d{2}$/.test(body.approvedAmount)) {
+        setApprovedOrder({ order, amount: body.approvedAmount });
+        setStatus("idle");
+        return;
+      }
       if (!response.ok) {
         throw new Error(getApiError(body, isZh ? "付款尚未完成，请返回 PayPal 完成批准。" : "Payment is not complete yet. Return to PayPal and approve it first."));
       }
 
       const captured = parsePayPalCaptureResponse(body);
+      setApprovedOrder(null);
       setDownloadUrl(captured.downloadUrl);
       setStatus("complete");
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ ...order, completed: true, downloadUrl: captured.downloadUrl }),
-      );
-      trackInteraction(recovery ? "paid_pack_download_recovered" : "paid_pack_purchase", {
+      trackPackOutcome(captured.newCapture ? "paid_pack_purchase" : "paid_pack_download_recovered", {
         locale,
-        order_id: captured.orderID,
         product: "100_printable_pack",
         provider: "paypal",
         price,
         experiment_id: experimentId,
-      });
+      }, environment);
     },
-    [experimentId, isZh, locale, price],
+    [environment, experimentId, isZh, locale, price],
   );
 
   useEffect(() => {
@@ -128,6 +136,7 @@ export function PayPalCheckout({
     if (
       !activated ||
       !autoDeliveryEnabled ||
+      approvedOrder ||
       !scriptReady ||
       !containerRef.current ||
       !window.paypal
@@ -152,15 +161,19 @@ export function PayPalCheckout({
 
         const order = parsePayPalCreateResponse(body);
         activeOrderRef.current = order;
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+        } catch {
+          // This tab still has the recovery details if storage is unavailable.
+        }
         setStatus("idle");
-        trackInteraction("paid_pack_checkout_created", {
+        trackPackOutcome("paid_pack_checkout_created", {
           locale,
           product: "100_printable_pack",
           provider: "paypal",
           price,
           experiment_id: experimentId,
-        });
+        }, environment);
         return order.orderID;
       },
       onApprove: async ({ orderID }) => {
@@ -170,13 +183,24 @@ export function PayPalCheckout({
         }
         await captureOrder(order);
       },
-      onCancel: () => {
+      onCancel: ({ orderID } = {}) => {
+        const cancelledId = orderID ?? activeOrderRef.current?.orderID;
+        if (cancelledId && activeOrderRef.current?.orderID === cancelledId) {
+          activeOrderRef.current = null;
+        }
+        if (cancelledId && readSavedOrder()?.orderID === cancelledId) {
+          try {
+            window.localStorage.removeItem(STORAGE_KEY);
+          } catch {
+            // The active tab no longer attempts recovery for the cancelled order.
+          }
+        }
         setStatus("idle");
-        trackInteraction("paid_pack_checkout_cancel", {
+        trackPackOutcome("paid_pack_checkout_cancel", {
           locale,
           provider: "paypal",
           experiment_id: experimentId,
-        });
+        }, environment);
       },
       onError: (checkoutError) => {
         console.error("PayPal checkout failed.", checkoutError);
@@ -209,7 +233,7 @@ export function PayPalCheckout({
       buttons.close?.();
       buttonsRef.current = null;
     };
-  }, [activated, autoDeliveryEnabled, captureOrder, experimentId, isZh, locale, price, scriptReady]);
+  }, [activated, approvedOrder, autoDeliveryEnabled, captureOrder, environment, experimentId, isZh, locale, price, scriptReady]);
 
   if (!autoDeliveryEnabled) {
     return (
@@ -267,7 +291,20 @@ export function PayPalCheckout({
         onReady={() => setScriptReady(true)}
         onError={() => setError(isZh ? "PayPal 按钮加载失败，请稍后重试或联系客服。" : "PayPal buttons failed to load. Try again later or contact support.")}
       />
-      <div ref={containerRef} aria-label={isZh ? "PayPal 安全结账" : "Secure PayPal checkout"} />
+      {approvedOrder && (
+        <button
+          type="button"
+          disabled={status === "capturing"}
+          className="w-full rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground"
+          onClick={() => void captureOrder(approvedOrder.order).catch(() => {
+            setStatus("idle");
+            setError(isZh ? "无法完成这笔订单，请重试或联系客服。" : "Could not complete this order. Retry or contact support.");
+          })}
+        >
+          {isZh ? `确认支付已批准订单的 $${approvedOrder.amount} 并下载` : `Pay $${approvedOrder.amount} to finish your approved order`}
+        </button>
+      )}
+      <div hidden={Boolean(approvedOrder) || status === "capturing" || Boolean(downloadUrl)} ref={containerRef} aria-label={isZh ? "PayPal 安全结账" : "Secure PayPal checkout"} />
       {!scriptReady && (
         <p className="text-sm text-muted-foreground" role="status">
           {isZh ? "正在加载安全结账..." : "Loading secure checkout..."}
@@ -281,21 +318,36 @@ export function PayPalCheckout({
         </p>
       )}
       {downloadUrl && (
-        <a
-          href={downloadUrl}
+        <button
+          type="button"
+          disabled={downloading}
           className="mt-3 inline-flex w-full justify-center rounded-lg bg-primary px-5 py-3 font-semibold text-primary-foreground hover:bg-primary/90"
-          onClick={() => trackInteraction("paid_pack_download", {
-            locale,
-            provider: "paypal",
-            experiment_id: experimentId,
-          })}
+          onClick={async () => {
+            setDownloading(true);
+            setShowDirectDownload(false);
+            setError("");
+            try {
+              await downloadPackFile(downloadUrl, "application/zip", "samurai-sudoku-100-puzzle-pack.zip");
+              trackPackOutcome("paid_pack_download", { locale, provider: "paypal", experiment_id: experimentId }, environment);
+            } catch {
+              setShowDirectDownload(true);
+              setError(isZh ? "下载未完成，请重试或使用直接下载。" : "The download did not finish. Retry or use the direct download.");
+            } finally {
+              setDownloading(false);
+            }
+          }}
         >
           {isZh ? "下载 100 题 PDF 包" : "Download the 100-puzzle PDF pack"}
-        </a>
+        </button>
       )}
       {error && (
         <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm" role="alert">
           <p>{error}</p>
+          {showDirectDownload && downloadUrl && (
+            <button type="button" className="mt-2 block underline" onClick={() => window.location.assign(downloadUrl)}>
+              {isZh ? "直接下载 ZIP" : "Download ZIP directly"}
+            </button>
+          )}
           <TrackedLink
             href={supportHref}
             eventName="paid_pack_checkout_support_click"

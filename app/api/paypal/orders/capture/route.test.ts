@@ -74,6 +74,23 @@ describe("POST /api/paypal/orders/capture", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("offers the approved amount on recovery without collecting money or issuing a download", async () => {
+    vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
+    vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
+    vi.stubEnv("PDF_DOWNLOAD_TOKEN_SECRET", tokenSecret);
+    const order = completedOrder();
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ access_token: "token" }))
+      .mockResolvedValueOnce(Response.json({ ...order, status: "APPROVED" }));
+    vi.stubGlobal("fetch", fetcher);
+
+    const response = await POST(request({ orderID: order.id, recoveryKey, recoverOnly: true }));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ approvedAmount: "9.90", error: expect.any(String) });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(fetcher.mock.calls[1][1]?.method).toBe("GET");
+  });
+
   it("returns a signed download URL for a completed matching order", async () => {
     vi.stubEnv("NEXT_PUBLIC_PAYPAL_CLIENT_ID", "client-id");
     vi.stubEnv("PAYPAL_CLIENT_SECRET", "client-secret");
@@ -98,6 +115,7 @@ describe("POST /api/paypal/orders/capture", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(body.newCapture).toBe(false);
     expect(token).toBeTruthy();
     if (!token) throw new Error("capture response must include a download token");
     expect(verifyDownloadToken(token, tokenSecret)).toMatchObject({

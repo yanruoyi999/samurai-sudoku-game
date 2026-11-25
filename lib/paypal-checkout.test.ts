@@ -29,6 +29,7 @@ describe("PayPal checkout client response parsing", () => {
     ).toEqual({
       orderID: "5O190127TN364715T",
       captureID: "3Y662965014333303",
+      newCapture: false,
       downloadUrl: "/api/download/pdf-pack?token=signed-token",
     });
 

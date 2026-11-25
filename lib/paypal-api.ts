@@ -48,6 +48,7 @@ export class PayPalApiError extends Error {
   constructor(
     message: string,
     readonly status = 502,
+    readonly approvedAmount?: string,
   ) {
     super(message);
     this.name = "PayPalApiError";
@@ -110,40 +111,33 @@ export function buildPayPalOrderPayload(recoveryKey: string) {
   };
 }
 
+function getMatchingOrderAmount(order: PayPalOrder, recoveryKey: string) {
+  const unit = order.purchase_units?.[0];
+  if (unit?.reference_id !== PDF_PACK_PRODUCT_ID || unit.custom_id !== PDF_PACK_PRODUCT_ID || unit.invoice_id !== recoveryKey) {
+    throw new PayPalApiError("PayPal order does not match this product or recovery key.", 409);
+  }
+  const amount = unit.amount?.value ? normalizeUsdAmount(unit.amount.value) : "";
+  if (unit.amount?.currency_code !== "USD" || (amount !== normalizeUsdAmount(getPdfPackPriceAmount()) && !LEGACY_PDF_PACK_AMOUNTS.has(amount))) {
+    throw new PayPalApiError("PayPal order amount does not match this product.", 409);
+  }
+  return amount;
+}
+
 export function parseCompletedPayPalOrder(
   value: unknown,
   recoveryKey: string,
 ): CompletedPayPalOrder {
   const order = value as PayPalOrder;
-  const unit = order?.purchase_units?.[0];
-  const capture = unit?.payments?.captures?.find((item) => item.status === "COMPLETED");
-  const expectedAmount = normalizeUsdAmount(getPdfPackPriceAmount());
-  const unitAmount = unit?.amount?.value ? normalizeUsdAmount(unit.amount.value) : "";
-  const captureAmount = capture?.amount?.value
-    ? normalizeUsdAmount(capture.amount.value)
-    : "";
-  const acceptedAmounts = new Set([expectedAmount, ...LEGACY_PDF_PACK_AMOUNTS]);
-
   if (!order?.id || order.status !== "COMPLETED") {
     throw new Error("PayPal order is not completed.");
   }
-  if (
-    unit?.reference_id !== PDF_PACK_PRODUCT_ID ||
-    unit.custom_id !== PDF_PACK_PRODUCT_ID ||
-    unit.invoice_id !== recoveryKey
-  ) {
-    throw new Error("PayPal order does not match this product or recovery key.");
-  }
-  if (
-    unit.amount?.currency_code !== "USD" ||
-    capture?.amount?.currency_code !== "USD" ||
-    unitAmount !== captureAmount ||
-    !acceptedAmounts.has(unitAmount)
-  ) {
-    throw new Error("PayPal order amount does not match this product.");
-  }
-  if (!capture.id) {
+  const unitAmount = getMatchingOrderAmount(order, recoveryKey);
+  const capture = order.purchase_units?.[0]?.payments?.captures?.find((item) => item.status === "COMPLETED");
+  if (!capture?.id) {
     throw new Error("PayPal capture is missing.");
+  }
+  if (capture.amount?.currency_code !== "USD" || normalizeUsdAmount(capture.amount.value) !== unitAmount) {
+    throw new Error("PayPal order amount does not match this product.");
   }
 
   return {
@@ -154,8 +148,12 @@ export function parseCompletedPayPalOrder(
   };
 }
 
+export function getPayPalEnvironment() {
+  return process.env.PAYPAL_ENVIRONMENT === "live" ? "live" : "sandbox";
+}
+
 export function getPayPalApiBaseUrl(): string {
-  return process.env.PAYPAL_ENVIRONMENT === "live"
+  return getPayPalEnvironment() === "live"
     ? "https://api-m.paypal.com"
     : "https://api-m.sandbox.paypal.com";
 }
@@ -209,7 +207,8 @@ export async function capturePayPalOrder(
   orderId: string,
   recoveryKey: string,
   fetcher: Fetcher = fetch,
-): Promise<CompletedPayPalOrder> {
+  recoverOnly = false,
+): Promise<CompletedPayPalOrder & { newCapture: boolean }> {
   if (!isValidPayPalOrderId(orderId)) {
     throw new PayPalApiError("Invalid PayPal order ID.", 400);
   }
@@ -227,13 +226,19 @@ export async function capturePayPalOrder(
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  const existingOrder = await readPayPalJson(existingResponse, "read order");
+  const existingOrder = await readPayPalJson(existingResponse, "read order") as PayPalOrder;
+  if (existingOrder?.id !== orderId) throw new PayPalApiError("PayPal returned a different order.");
 
-  if ((existingOrder as PayPalOrder).status === "COMPLETED") {
-    return parseCompletedPayPalOrder(existingOrder, recoveryKey);
+  if (existingOrder.status === "COMPLETED") {
+    return { ...parseCompletedPayPalOrder(existingOrder, recoveryKey), newCapture: false };
   }
-  if ((existingOrder as PayPalOrder).status !== "APPROVED") {
+  if (existingOrder.status !== "APPROVED") {
     throw new PayPalApiError("PayPal order has not been approved.", 409);
+  }
+
+  const amount = getMatchingOrderAmount(existingOrder, recoveryKey);
+  if (recoverOnly) {
+    throw new PayPalApiError("Confirm the approved payment to finish this order.", 409, amount);
   }
 
   const captureResponse = await fetcher(`${orderUrl}/capture`, {
@@ -249,7 +254,8 @@ export async function capturePayPalOrder(
     body: "{}",
   });
   const capturedOrder = await readPayPalJson(captureResponse, "capture order");
-  return parseCompletedPayPalOrder(capturedOrder, recoveryKey);
+  // PayPal returns 201 for a fresh capture and 200 for an idempotent replay.
+  return { ...parseCompletedPayPalOrder(capturedOrder, recoveryKey), newCapture: captureResponse.status === 201 };
 }
 
 async function getPayPalAccessToken(fetcher: Fetcher): Promise<string> {

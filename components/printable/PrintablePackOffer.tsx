@@ -6,8 +6,10 @@ import React, {
   useState,
   type AnchorHTMLAttributes,
   type ReactNode,
+  type MouseEvent,
 } from "react";
 
+import { downloadPackFile, trackPackOutcome } from "@/lib/pack-download";
 import { trackInteraction } from "@/lib/analytics/events";
 import {
   FREE_PACK_DOWNLOADED_EVENT,
@@ -39,8 +41,18 @@ export function PrintableFreeDownloadLink({
   href,
   ...anchorProps
 }: PrintableFreeDownloadLinkProps) {
-  const handleClick = () => {
-    trackInteraction("download_free_pdf", eventProperties);
+  const handleClick = async (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || event.button !== 0) return;
+    event.preventDefault();
+    const filename = href.split("/").at(-1) || "samurai-sudoku.pdf";
+    try {
+      await downloadPackFile(href, "application/pdf", filename);
+    } catch {
+      // Preserve native file access when the browser cannot fetch or save a blob.
+      window.location.assign(href);
+      return;
+    }
+    trackPackOutcome("download_free_pdf", eventProperties);
     window.dispatchEvent(
       new CustomEvent<FreePackDownloadedDetail>(FREE_PACK_DOWNLOADED_EVENT, {
         detail: {
