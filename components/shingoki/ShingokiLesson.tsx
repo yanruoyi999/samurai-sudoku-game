@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Locale } from '@/i18n';
 import { trackInteraction } from '@/lib/analytics/events';
 import { puzzles } from '@/lib/shingoki/board';
-import { edgeCorrect, initialProgress, readProgress, reasons, startSecond, submitLoop, submitReason, toggleEdge, type Progress } from '@/lib/shingoki/lesson';
+import { gradeFirstReason, initialProgress, readProgress, reasons, startSecond, submitLoop, submitReason, toggleEdge, type Progress } from '@/lib/shingoki/lesson';
 import type { QaSource } from '@/lib/shingoki/traffic';
 import { ShingokiBoard } from './ShingokiBoard';
 
@@ -92,22 +92,24 @@ export function ShingokiLesson({ locale, qa }: { locale: Locale; qa: QaSource })
     try { sessionStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
     const properties = { locale, qa_source: qa, puzzle_number: level };
     try {
-      if (!last.started && next.started) trackInteraction('shingoki_start', properties);
+      if (!last.started && next.started) trackInteraction('shingoki_start', { ...properties, outcome: 'first_start' });
       if (last.stage === next.stage) return;
       nextFocus.current = true;
       switch (next.stage) {
         case 'first':
           trackInteraction('shingoki_reason_submit', {
-            ...properties, edge_correct: edgeCorrect(next.firstEdge), reason_correct: next.reason === 'top',
-            correct: edgeCorrect(next.firstEdge) && next.reason === 'top',
+            ...properties, ...gradeFirstReason(next.firstEdge, next.reason),
           });
           break;
         case 'second':
-          trackInteraction('shingoki_start', { ...properties, puzzle_number: 2 });
+          trackInteraction('shingoki_start', { ...properties, puzzle_number: 2, outcome: 'second_start' });
           break;
         case 'firstDone':
         case 'done':
-          trackInteraction('shingoki_complete', { ...properties, without_hints: next.stage === 'done' });
+          trackInteraction('shingoki_complete', {
+            ...properties, without_hints: next.stage === 'done',
+            outcome: next.stage === 'done' ? 'second_complete_without_hints' : 'first_complete',
+          });
           break;
       }
     } catch { /* A telemetry failure must allow the lesson to continue. */ }
@@ -126,7 +128,7 @@ export function ShingokiLesson({ locale, qa }: { locale: Locale; qa: QaSource })
       className="text-xl font-semibold">{level === 1 ? c.first : c.second}</h2>
     {stage === 'reason' && <p>{c.choose}</p>}
     {stage === 'first' && <p data-stage-focus tabIndex={-1} role="status">
-      <strong>{edgeCorrect(progress.firstEdge) && progress.reason === 'top' ? c.right : c.review}</strong> {c.explain} {c.draw}
+      <strong>{gradeFirstReason(progress.firstEdge, progress.reason).correct ? c.right : c.review}</strong> {c.explain} {c.draw}
     </p>}
     {stage === 'second' && <p>{c.independent}</p>}
     {!finished && <p className="text-sm text-muted-foreground">{c.controls}</p>}

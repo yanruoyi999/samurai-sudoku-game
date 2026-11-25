@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { edgeCorrect, initialProgress, readProgress, startSecond, submitLoop, submitReason, toggleEdge } from './lesson';
+import { gradeFirstReason, initialProgress, readProgress, startSecond, submitLoop, submitReason, toggleEdge } from './lesson';
 import { qaSource, withQa } from './traffic';
 
 const firstSolution = 'A1-A2 A2-A3 A3-A4 A4-B4 B3-B4 B3-C3 C3-C4 C4-D4 D3-D4 D2-D3 C2-D2 C1-C2 B1-C1 A1-B1'.split(' ');
@@ -16,12 +16,22 @@ describe('Shingoki lesson', () => {
     expect(toggleEdge(down, 'B1-B2').edges).toEqual([]);
     const answered = submitReason({ ...down, reason: 'top' });
     expect(answered.firstEdge).toBe('B1-B2');
-    expect(edgeCorrect(answered.firstEdge)).toBe(false);
-    expect(edgeCorrect('A1-B1')).toBe(true);
-    expect(edgeCorrect('B1-C1')).toBe(true);
+    expect(gradeFirstReason(answered.firstEdge, answered.reason).correct).toBe(false);
     expect(submitReason(answered)).toBe(answered);
     expect(startSecond(answered)).toBe(answered);
     expect(submitLoop(answered)).toBe(answered);
+  });
+
+  it.each([
+    ['A1-B1', 'top', 'edge_right_reason_right', true, true],
+    ['B1-C1', 'top', 'edge_right_reason_right', true, true],
+    ['B1-C1', 'all', 'edge_right_reason_wrong', true, false],
+    ['B1-B2', 'top', 'edge_wrong_reason_right', false, true],
+    ['B1-B2', 'turn', 'edge_wrong_reason_wrong', false, false],
+  ] as const)('reports the registered outcome for %s and %s', (id, reason, outcome, edgeOk, reasonOk) => {
+    expect(gradeFirstReason(id, reason)).toEqual({
+      outcome, edge_correct: edgeOk, reason_correct: reasonOk, correct: edgeOk && reasonOk,
+    });
   });
 
   it('locks each valid completion, starts the second board blank, and restores without re-emitting', () => {

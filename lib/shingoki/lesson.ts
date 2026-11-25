@@ -15,8 +15,15 @@ export function initialProgress(): Progress {
   return { stage: 'reason', started: false, edges: [], reason: null, firstEdge: null };
 }
 
-export function edgeCorrect(id: string | null) {
-  return id === 'A1-B1' || id === 'B1-C1';
+export function gradeFirstReason(edge: string | null, reason: Reason | null) {
+  const edgeCorrect = edge === 'A1-B1' || edge === 'B1-C1';
+  const reasonCorrect = reason === 'top';
+  return {
+    edge_correct: edgeCorrect,
+    reason_correct: reasonCorrect,
+    correct: edgeCorrect && reasonCorrect,
+    outcome: (edgeCorrect ? 'edge_right' : 'edge_wrong') + (reasonCorrect ? '_reason_right' : '_reason_wrong'),
+  };
 }
 
 export function readProgress(raw: string | null): Progress {
